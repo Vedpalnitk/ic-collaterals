@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agentic AI in Banking — One-pager · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  /* ─────────── TOKENS ─────────── */
+  :root {
+    --white:      #FFFFFF;
+    --deep:       #182534;
+    --pavement:   #404040;
+    --blue:       #007CC3;
+    --stone:      #A7A9AC;
+    --slate:      #6D6E71;
+    --lt-blue:    #3699DA;
+    --tint-blue:  #E6F2FA;
+    --tint-stone: #F2F2F3;
+    --rule:       #E2E4E7;
+
+    --display: 'Fraunces', 'Times New Roman', serif;
+    --body:    'Newsreader', 'Georgia', serif;
+    --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  /* ─────────── ON-SCREEN ENVIRONMENT ─────────── */
+  body {
+    margin: 0;
+    background: #ECECEE;
+    font-family: var(--body);
+    color: var(--pavement);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    padding: 40px 0;
+  }
+  ::selection { background: var(--deep); color: var(--white); }
+
+  /* ─────────── THE PAGE (A4 portrait) ─────────── */
+  .sheet {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    background: var(--white);
+    padding: 16mm 18mm 14mm;
+    position: relative;
+    box-shadow: 0 1px 0 rgba(24,37,52,0.04), 0 24px 60px -20px rgba(24,37,52,0.18);
+    display: grid;
+    grid-template-rows: auto auto auto 1fr auto auto;
+    gap: 8mm;
+  }
+
+  /* ─────────── 1. MASTHEAD ─────────── */
+  .masthead {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding-bottom: 4mm;
+    border-bottom: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 8pt;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--slate);
+  }
+  .masthead .mark { color: var(--deep); font-weight: 600; }
+  .masthead .meta { display: flex; gap: 14px; }
+  .masthead .meta span:not(:last-child)::after {
+    content: '·'; margin-left: 14px; color: var(--stone);
+  }
+
+  /* ─────────── 2. HEAD BLOCK ─────────── */
+  .head .kicker {
+    font-family: var(--mono);
+    font-size: 8pt;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin: 0 0 6mm;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .head .kicker::before {
+    content: ''; width: 42px; height: 1px; background: var(--blue);
+  }
+  .head h1 {
+    font-family: var(--display);
+    font-optical-sizing: auto;
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+    font-weight: 380;
+    font-size: 44pt;
+    line-height: 0.98;
+    letter-spacing: -0.024em;
+    color: var(--deep);
+    margin: 0 0 5mm;
+    max-width: 16ch;
+  }
+  .head h1 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+    font-weight: 380;
+  }
+  .head .lead {
+    font-family: var(--body);
+    font-size: 12.5pt;
+    line-height: 1.45;
+    color: var(--pavement);
+    max-width: 64ch;
+    margin: 0;
+    font-weight: 360;
+  }
+  .head .lead em { font-style: italic; color: var(--deep); }
+
+  /* ─────────── 3. STAT STRIP ─────────── */
+  .stat-strip {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr 1px 1fr;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 6mm 0;
+    align-items: end;
+  }
+  .stat-strip .sep { background: var(--rule); }
+  .stat-strip .stat { padding: 0 4mm; }
+  .stat-strip .stat:first-child { padding-left: 0; }
+  .stat-strip .stat:last-child  { padding-right: 0; }
+  .stat-strip .figure {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1;
+    font-weight: 360;
+    font-size: 40pt;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: var(--blue);
+    margin: 0 0 2mm;
+  }
+  .stat-strip .figure small {
+    font-size: 16pt;
+    color: var(--pavement);
+    margin-left: 2px;
+    font-variation-settings: "opsz" 72, "SOFT" 0, "WONK" 0;
+  }
+  .stat-strip .label {
+    font-family: var(--mono);
+    font-size: 7.5pt;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--slate);
+    line-height: 1.4;
+  }
+  .stat-strip .label strong { color: var(--deep); font-weight: 600; }
+
+  /* ─────────── 4. TWO-COLUMN BODY ─────────── */
+  .body {
+    display: grid;
+    grid-template-columns: 1.05fr 1px 1fr;
+    gap: 8mm;
+    align-items: start;
+  }
+  .body .col-sep { background: var(--rule); }
+  .col-section {
+    margin-bottom: 6mm;
+  }
+  .col-section:last-child { margin-bottom: 0; }
+  .col-section .h {
+    font-family: var(--mono);
+    font-size: 7.5pt;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin: 0 0 3mm;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .col-section .h::before {
+    content: ''; width: 18px; height: 1px; background: var(--blue);
+  }
+
+  /* Thesis pull quote */
+  .thesis {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 96, "SOFT" 60, "WONK" 0;
+    font-style: italic;
+    font-weight: 340;
+    font-size: 20pt;
+    line-height: 1.18;
+    letter-spacing: -0.012em;
+    color: var(--deep);
+    margin: 0;
+    border-left: 1px solid var(--blue);
+    padding-left: 5mm;
+  }
+  .thesis em {
+    font-style: italic;
+    color: var(--blue);
+    font-variation-settings: "opsz" 96, "SOFT" 100, "WONK" 1;
+  }
+
+  /* Takeaways */
+  .takeaways { margin: 0; padding: 0; list-style: none; counter-reset: ta; }
+  .takeaways li {
+    counter-increment: ta;
+    display: grid;
+    grid-template-columns: 8mm 1fr;
+    gap: 3mm;
+    padding: 3mm 0;
+    border-top: 1px solid var(--rule);
+    font-family: var(--body);
+    font-size: 10pt;
+    line-height: 1.4;
+    color: var(--pavement);
+  }
+  .takeaways li:last-child { border-bottom: 1px solid var(--rule); }
+  .takeaways li::before {
+    content: counter(ta, decimal-leading-zero);
+    font-family: var(--mono);
+    font-size: 8pt;
+    letter-spacing: 0.12em;
+    color: var(--blue);
+    font-weight: 600;
+    padding-top: 0.5mm;
+  }
+  .takeaways li strong { color: var(--deep); font-weight: 600; }
+
+  /* Five no-regret moves */
+  .moves { margin: 0; padding: 0; list-style: none; }
+  .moves li {
+    display: grid;
+    grid-template-columns: 10mm 1fr;
+    gap: 3mm;
+    padding: 3mm 0;
+    border-top: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  .moves li:last-child { border-bottom: 1px solid var(--rule); }
+  .moves li .roman {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 48, "SOFT" 100, "WONK" 1;
+    font-style: italic;
+    font-weight: 340;
+    font-size: 18pt;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--blue);
+  }
+  .moves li h6 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 24, "SOFT" 0, "WONK" 0;
+    font-size: 11.5pt;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--deep);
+    margin: 0 0 1.5mm;
+    letter-spacing: -0.005em;
+  }
+  .moves li p {
+    font-family: var(--body);
+    font-size: 9.5pt;
+    line-height: 1.4;
+    color: var(--slate);
+    margin: 0;
+  }
+
+  /* ─────────── 5. CTA / "WHAT NEXT" ─────────── */
+  .cta {
+    background: var(--tint-blue);
+    border-left: 2px solid var(--blue);
+    padding: 6mm 7mm;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 6mm;
+    align-items: center;
+  }
+  @media (max-width: 600px) { .cta { grid-template-columns: 1fr; } }
+  .cta .ask {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 48, "SOFT" 60, "WONK" 0;
+    font-style: italic;
+    font-size: 14pt;
+    line-height: 1.25;
+    color: var(--deep);
+    margin: 0;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .cta .ask::before {
+    content: 'The next conversation worth having — ';
+    font-style: normal;
+    font-family: var(--mono);
+    font-size: 7.5pt;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    display: block;
+    margin-bottom: 2mm;
+    font-weight: 600;
+  }
+  .cta .contact {
+    font-family: var(--mono);
+    font-size: 8pt;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--slate);
+    text-align: right;
+    line-height: 1.6;
+  }
+  .cta .contact .h {
+    color: var(--blue); font-weight: 600;
+    margin-bottom: 2mm;
+  }
+  .cta .contact .placeholder {
+    display: inline-block;
+    background: var(--white);
+    border-left: 2px solid var(--blue);
+    padding: 1.5mm 3mm;
+    color: var(--blue);
+    font-size: 7pt;
+    letter-spacing: 0.16em;
+    margin-bottom: 1.5mm;
+  }
+  .cta .contact .value {
+    color: var(--deep);
+    font-weight: 600;
+    font-family: var(--mono);
+    text-transform: none;
+    letter-spacing: 0.04em;
+    font-size: 8pt;
+  }
+
+  /* ─────────── 6. FOOTER COLOPHON ─────────── */
+  .colophon {
+    border-top: 1px solid var(--rule);
+    padding-top: 3mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--mono);
+    font-size: 6.5pt;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  .colophon .left strong { color: var(--slate); }
+  .colophon a { color: var(--blue); }
+
+  /* ─────────── PRINT ─────────── */
+  @page { size: A4 portrait; margin: 0; }
+  @media print {
+    body { background: var(--white); padding: 0; }
+    .sheet { box-shadow: none; width: 210mm; min-height: 297mm; margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<section class="sheet">
+
+  <!-- 1. MASTHEAD -->
+  <header class="masthead">
+    <span class="mark">Infosys Consulting</span>
+    <div class="meta">
+      <span>Point of view</span>
+      <span>Banking</span>
+      <span>One-pager</span>
+      <span>May 2026</span>
+    </div>
+  </header>
+
+  <!-- 2. HEAD -->
+  <div class="head">
+    <p class="kicker">Agentic AI in banking — at a glance</p>
+    <h1>Agents that change the <em>work</em>, not just the worker.</h1>
+    <p class="lead">
+      Banks have spent two years bolting generative AI onto existing processes and have learned an uncomfortable lesson: <em>pilots plateau.</em> Better models will not break the ceiling — redesign will. The next decade of value comes from rebuilding the process, and the operating model, around what an agent can actually do.
+    </p>
+  </div>
+
+  <!-- 3. STAT STRIP -->
+  <div class="stat-strip">
+    <div class="stat">
+      <p class="figure">40<small>+</small></p>
+      <p class="label"><strong>Generative AI pilots</strong><br>at the median large bank — value concentrated in two or three.</p>
+    </div>
+    <div class="sep"></div>
+    <div class="stat">
+      <p class="figure">~85<small>%</small></p>
+      <p class="label"><strong>Per-token cost decline</strong><br>for frontier reasoning models, 2023 → 2026.</p>
+    </div>
+    <div class="sep"></div>
+    <div class="stat">
+      <p class="figure">24<small>mo</small></p>
+      <p class="label"><strong>The window</strong><br>in which leaders cross from pilots to a live agent-native process.</p>
+    </div>
+  </div>
+
+  <!-- 4. TWO-COLUMN BODY -->
+  <div class="body">
+
+    <div class="col">
+      <div class="col-section">
+        <p class="h">The thesis</p>
+        <p class="thesis">Banks have been adding agents to processes. The next decade is about <em>redesigning processes around agents.</em></p>
+      </div>
+
+      <div class="col-section">
+        <p class="h">Three things to walk away with</p>
+        <ol class="takeaways">
+          <li><span><strong>The pilot plateau is a design problem, not a model problem.</strong> Better models will not break the ceiling. Redesign will.</span></li>
+          <li><span><strong>Value lives in process redesign and operating-model change</strong> — controls, risk, talent — not in better assistants.</span></li>
+          <li><span><strong>The next 24 months will separate banks that "use AI"</strong> from banks that are agent-native. Stage three is decided inside this window.</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="col-sep"></div>
+
+    <div class="col">
+      <div class="col-section">
+        <p class="h">Five no-regret moves to start now</p>
+        <ul class="moves">
+          <li>
+            <span class="roman">i</span>
+            <div>
+              <h6>Establish an agent control plane.</h6>
+              <p>Pick one orchestration stack. Standardize. Multiple stacks fragment evals, controls, and talent.</p>
+            </div>
+          </li>
+          <li>
+            <span class="roman">ii</span>
+            <div>
+              <h6>Build the eval discipline.</h6>
+              <p>Every capability ships with a measurable scorecard. No eval, no promotion. Evals are the only durable asset when models change.</p>
+            </div>
+          </li>
+          <li>
+            <span class="roman">iii</span>
+            <div>
+              <h6>Pick a redesign, not a copilot.</h6>
+              <p>Choose a process worth redrawing — not just augmenting. Copilots have known ceilings; redesigns don't.</p>
+            </div>
+          </li>
+          <li>
+            <span class="roman">iv</span>
+            <div>
+              <h6>Get the governance ready early.</h6>
+              <p>Model risk, audit trail, regulator-readable explanations from day one. First-movers shape the precedent.</p>
+            </div>
+          </li>
+          <li>
+            <span class="roman">v</span>
+            <div>
+              <h6>Reshape the talent contract.</h6>
+              <p>Hire and train agent designers, agent-ops, and agent product managers. The role gap closes in six to twelve months — three years if you wait.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 5. CTA -->
+  <div class="cta">
+    <p class="ask">Which process would you redesign if you could start over today?</p>
+    <div class="contact">
+      <div class="h">Talk to us</div>
+      <div class="placeholder">[ PLACEHOLDER · IC contact ]</div>
+      <div class="value">[ Name ]<br>[ email@infosysconsulting.com ]</div>
+    </div>
+  </div>
+
+  <!-- 6. COLOPHON -->
+  <footer class="colophon">
+    <div class="left">
+      <strong>Infosys Consulting · Banking</strong>  ·  Sales enablement — Internal use
+    </div>
+    <div class="right">
+      Full POV deck &amp; primer available on request  ·  May 2026
+    </div>
+  </footer>
+
+</section>
+
+</body>
+</html>

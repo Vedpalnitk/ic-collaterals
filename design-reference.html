@@ -1,0 +1,1410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>IC Design Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap"
+  rel="stylesheet"
+/>
+<!-- Tokens are inlined below so this file works standalone in any preview.
+     Canonical source of truth is still ./tokens.js — keep the two in sync. -->
+<script>
+(function () {
+  const palette = {
+    WHITE:'#FFFFFF', DEEP_BLUE:'#182534', PAVEMENT:'#404040', BLUE:'#007CC3',
+    STONE:'#A7A9AC', SLATE:'#6D6E71', LT_BLUE:'#3699DA',
+    TINT_BLUE_BG:'#E6F2FA', TINT_STONE_BG:'#F2F2F3', RULE:'#E2E4E7',
+  };
+  const status = {
+    RED:'#C0392B', AMBER:'#D89B1F', GREEN:'#2E8B57', GRAY:'#A7A9AC',
+    RED_BG:'#FBEAE7', AMBER_BG:'#FBF1DD', GREEN_BG:'#E4F1EA', GRAY_BG:'#F2F2F3',
+  };
+  const typography = {
+    family: {
+      // SYSTEM family
+      sans: "Arial,'Helvetica Neue',Helvetica,sans-serif",
+      mono: "Consolas,'Courier New',Menlo,monospace",
+      // EDITORIAL family
+      display: "'Fraunces','Times New Roman',serif",
+      bodySerif: "'Newsreader','Georgia',serif",
+      monoEd: "'JetBrains Mono','SF Mono',Consolas,monospace",
+      // TECHNICAL family
+      bodySans: "'IBM Plex Sans','Helvetica Neue',Arial,sans-serif",
+    },
+    weight: { regular:400, medium:500, semibold:600, bold:700 },
+    webSize: { h1:32, h2:22, h3:18, body:15, caption:12, micro:10 },
+  };
+  const layout = {
+    spacing: { xs:4, sm:8, md:12, lg:16, xl:24, xxl:32, xxxl:48 },
+    slide:   { width:1280, height:720, margin:48, gutter:24, titleBandHeight:64 },
+    container: { sm:640, md:840, lg:1080, xl:1280 },
+    radius:    { none:0, sm:2, md:4, lg:8, pill:999 },
+    borderWidth: { hairline:1, rule:1, emphasis:2 },
+  };
+  const darkPalette = {
+    PAGE_DARK:'#0F1924', SURFACE_DARK:'#182534', TITLE_BAND_DARK:'#22384F',
+    TEXT_PRIMARY:'#F2F2F3', TEXT_SECONDARY:'#C8CACD', TEXT_MUTED:'#8A8C8F',
+    RULE_DARK:'#2B3B4F', TINT_BLUE_DARK:'#1E3C57', TINT_GRAY_DARK:'#1F2A36',
+  };
+  window.ICTokens = { palette, status, typography, layout, darkPalette };
+})();
+</script>
+<style>
+  :root {
+    --white:#FFFFFF; --deep:#182534; --pavement:#404040; --blue:#007CC3;
+    --stone:#A7A9AC; --slate:#6D6E71; --lt-blue:#3699DA;
+    --tint-blue:#E6F2FA; --tint-stone:#F2F2F3; --rule:#E2E4E7;
+
+    --display:'Fraunces','Times New Roman',serif;
+    --body-serif:'Newsreader','Georgia',serif;
+    --body-sans:'IBM Plex Sans','Helvetica Neue',Arial,sans-serif;
+    --mono:'JetBrains Mono','SF Mono',Consolas,monospace;
+    --sys-sans:Arial,'Helvetica Neue',Helvetica,sans-serif;
+    --sys-mono:Consolas,'Courier New',Menlo,monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--body-sans);
+    color: var(--pavement);
+    background: var(--white);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 120ms ease, color 120ms ease;
+  }
+  body[data-mode="dark"] { background: #0F1924; color: #F2F2F3; }
+  body[data-mode="dark"] {
+    --rule: #2B3B4F;
+    --tint-blue: #1E3C57;
+    --tint-stone: #1F2A36;
+    --pavement: #F2F2F3;
+    --slate: #C8CACD;
+    --stone: #8A8C8F;
+  }
+  ::selection { background: var(--deep); color: var(--white); }
+
+  /* ─────────── masthead ─────────── */
+  .masthead {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--deep);
+    color: var(--white);
+    padding: 16px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .masthead .mark { font-weight: 600; }
+  .masthead .meta { color: var(--stone); }
+
+  .toggle {
+    display: inline-flex;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    padding: 2px;
+    font-size: 10px;
+  }
+  .toggle button {
+    appearance: none; background: transparent; color: inherit;
+    border: 0; padding: 5px 14px; border-radius: 999px;
+    cursor: pointer;
+    font: inherit;
+    font-family: var(--mono);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  body[data-mode="light"] .toggle button[data-target="light"],
+  body[data-mode="dark"]  .toggle button[data-target="dark"] {
+    background: var(--blue); color: #FFFFFF;
+  }
+  body[data-mode="dark"] .toggle button[data-target="dark"] {
+    background: var(--lt-blue); color: var(--deep);
+  }
+
+  /* ─────────── page hero ─────────── */
+  .hero {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 64px 32px 40px;
+  }
+  .hero .kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 18px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .hero .kicker::before {
+    content: ''; width: 36px; height: 2px; background: var(--blue);
+  }
+  .hero h1 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+    font-weight: 380;
+    font-size: clamp(40px, 6vw, 80px);
+    line-height: 1.0;
+    letter-spacing: -0.022em;
+    color: var(--deep);
+    margin: 0 0 24px;
+    max-width: 16ch;
+  }
+  body[data-mode="dark"] .hero h1 { color: var(--white); }
+  .hero h1 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+    font-weight: 380;
+  }
+  .hero .deck {
+    font-family: var(--body-sans);
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--slate);
+    max-width: 60ch;
+    margin: 0;
+  }
+
+  /* ─────────── content container ─────────── */
+  main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 32px 96px;
+  }
+  section.spec {
+    padding: 56px 0;
+    border-top: 1px solid var(--rule);
+  }
+  section.spec:first-child { border-top: none; padding-top: 24px; }
+  section.spec .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 12px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  section.spec .eyebrow::before {
+    content: ''; width: 28px; height: 3px; background: var(--blue);
+  }
+  section.spec h2 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 72, "SOFT" 0, "WONK" 0;
+    font-weight: 400;
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    color: var(--deep);
+    margin: 0 0 16px;
+  }
+  body[data-mode="dark"] section.spec h2 { color: var(--white); }
+  section.spec h2 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 72, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+    font-weight: 400;
+  }
+  section.spec .deck {
+    font-family: var(--body-sans);
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--slate);
+    max-width: 64ch;
+    margin: 0 0 32px;
+  }
+
+  /* ─────────── hard rules card ─────────── */
+  .rules {
+    background: var(--tint-blue);
+    border-left: 3px solid var(--blue);
+    padding: 24px 28px;
+    border-radius: 0 4px 4px 0;
+    margin: 0 0 12px;
+  }
+  .rules h3 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 22px;
+    color: var(--deep);
+    margin: 0 0 16px;
+  }
+  body[data-mode="dark"] .rules h3 { color: var(--white); }
+  .rules ul { margin: 0; padding-left: 20px; }
+  .rules li {
+    margin: 8px 0;
+    font-family: var(--body-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--pavement);
+  }
+  .rules code {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 1px 6px;
+    background: var(--white);
+    color: var(--blue);
+    border-radius: 2px;
+  }
+  body[data-mode="dark"] .rules code { background: var(--deep); }
+
+  /* ─────────── swatch grid ─────────── */
+  .swatch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .swatch {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .swatch .chip {
+    height: 110px;
+    display: flex; align-items: flex-end; padding: 12px 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+  .swatch .meta {
+    padding: 12px 14px;
+    border-top: 1px solid var(--rule);
+  }
+  .swatch .name {
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--deep);
+    margin: 0 0 4px;
+  }
+  body[data-mode="dark"] .swatch .name { color: var(--white); }
+  .swatch .hex {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--slate);
+    margin: 0 0 8px;
+  }
+  .swatch .note {
+    font-family: var(--body-sans);
+    font-size: 12px;
+    color: var(--slate);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* ─────────── font family showcase ─────────── */
+  .font-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+  }
+  .family {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 24px 26px 26px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .family .name {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0;
+  }
+  .family h3 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+    font-weight: 500;
+    font-size: 24px;
+    color: var(--deep);
+    margin: 0;
+    letter-spacing: -0.008em;
+  }
+  body[data-mode="dark"] .family h3 { color: var(--white); }
+  .family .use {
+    font-family: var(--body-sans);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--slate);
+    margin: 0 0 8px;
+  }
+  .family .specimen {
+    border-top: 1px solid var(--rule);
+    padding-top: 16px;
+    margin-top: auto;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .family .row {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 12px;
+    align-items: baseline;
+  }
+  .family .row .lbl {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--slate);
+    font-weight: 600;
+  }
+  .family .row .sample-display-sys {
+    font-family: var(--sys-sans);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--deep);
+    line-height: 1.15;
+  }
+  body[data-mode="dark"] .family .row .sample-display-sys { color: var(--white); }
+  .family .row .sample-display-ed {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 60, "SOFT" 0, "WONK" 0;
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--deep);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  body[data-mode="dark"] .family .row .sample-display-ed { color: var(--white); }
+  .family .row .sample-display-ed em {
+    font-style: italic;
+    font-variation-settings: "opsz" 60, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+  }
+  .family .row .sample-body-sys {
+    font-family: var(--sys-sans);
+    font-size: 14px;
+    color: var(--pavement);
+    line-height: 1.5;
+  }
+  .family .row .sample-body-serif {
+    font-family: var(--body-serif);
+    font-size: 15px;
+    color: var(--pavement);
+    line-height: 1.5;
+  }
+  .family .row .sample-body-sans {
+    font-family: var(--body-sans);
+    font-size: 14px;
+    color: var(--pavement);
+    line-height: 1.5;
+  }
+  .family .row .sample-mono {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--pavement);
+    line-height: 1.5;
+  }
+  .family .row .sample-mono-sys {
+    font-family: var(--sys-mono);
+    font-size: 12px;
+    color: var(--pavement);
+    line-height: 1.5;
+  }
+
+  /* ─────────── component specimens ─────────── */
+  .components {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 20px;
+  }
+  .component {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .component .head {
+    padding: 14px 18px 12px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--tint-stone);
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 12px;
+  }
+  body[data-mode="dark"] .component .head { background: var(--tint-stone); }
+  .component .head .name {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+  }
+  .component .head .tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  .component .canvas {
+    padding: 28px 24px;
+    background: var(--white);
+    flex: 1;
+    display: flex; flex-direction: column; justify-content: center;
+    min-height: 130px;
+  }
+  body[data-mode="dark"] .component .canvas { background: var(--white); color: var(--pavement); }
+  .component .canvas.dark {
+    background: var(--deep);
+    color: var(--white);
+  }
+  .component .desc {
+    padding: 12px 18px 16px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--body-sans);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--slate);
+  }
+
+  /* ─────────── individual component styling ─────────── */
+  .demo-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .demo-eyebrow::before { content: ''; width: 28px; height: 3px; background: var(--blue); }
+
+  .demo-slab {
+    background: var(--deep);
+    color: var(--white);
+    padding: 24px 28px 22px;
+    position: relative;
+    margin: -28px -24px;
+    min-height: 130px;
+  }
+  .demo-slab::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0;
+    height: 1px; background: var(--blue);
+  }
+  .demo-slab .ch-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--lt-blue);
+    font-weight: 600;
+    margin: 0 0 8px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .demo-slab .ch-num::before {
+    content: ''; width: 22px; height: 1px; background: var(--lt-blue);
+  }
+  .demo-slab .ch-title {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 60, "SOFT" 0, "WONK" 0;
+    font-weight: 380;
+    font-size: 28px;
+    line-height: 1.05;
+    letter-spacing: -0.018em;
+    margin: 0;
+  }
+  .demo-slab .ch-title em {
+    font-style: italic;
+    font-variation-settings: "opsz" 60, "SOFT" 100, "WONK" 1;
+    color: var(--lt-blue);
+  }
+
+  .demo-titleband {
+    background: var(--deep);
+    color: var(--white);
+    height: 50px;
+    margin: -28px -24px;
+    padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .demo-titleband .t {
+    font-family: var(--display);
+    font-size: 16px;
+    font-weight: 500;
+    font-style: italic;
+    font-variation-settings: "opsz" 30, "SOFT" 60, "WONK" 0;
+  }
+  .demo-titleband .r {
+    font-family: var(--mono);
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+
+  .demo-pull {
+    border-left: 2px solid var(--blue);
+    padding: 4px 0 4px 20px;
+    font-family: var(--display);
+    font-variation-settings: "opsz" 60, "SOFT" 60, "WONK" 0;
+    font-style: italic;
+    font-weight: 360;
+    font-size: 22px;
+    line-height: 1.22;
+    color: var(--deep);
+    letter-spacing: -0.01em;
+  }
+  body[data-mode="dark"] .demo-pull { color: var(--deep); }
+
+  .demo-dropcap p {
+    font-family: var(--body-serif);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--pavement);
+    margin: 0;
+  }
+  .demo-dropcap p::first-letter {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1;
+    font-weight: 400;
+    font-size: 56px;
+    line-height: 0.82;
+    float: left;
+    padding: 6px 10px 0 0;
+    color: var(--blue);
+  }
+
+  .demo-note {
+    background: var(--tint-blue);
+    border-left: 2px solid var(--blue);
+    padding: 14px 18px;
+    margin: 0;
+  }
+  .demo-note .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  .demo-note h6 {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--deep);
+    margin: 0 0 4px;
+  }
+  .demo-note p {
+    font-family: var(--body-sans);
+    font-size: 13px;
+    color: var(--pavement);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .demo-code {
+    background: var(--tint-stone);
+    border-left: 3px solid var(--blue);
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--deep);
+    position: relative;
+    margin: 0;
+    white-space: pre;
+  }
+  body[data-mode="dark"] .demo-code { color: var(--deep); }
+  .demo-code .lang {
+    position: absolute; top: 6px; right: 12px;
+    font-family: var(--mono);
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    background: var(--tint-stone);
+    padding: 1px 6px;
+  }
+
+  .demo-stat {
+    display: flex; align-items: baseline; gap: 16px;
+  }
+  .demo-stat .figure {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1;
+    font-weight: 360;
+    font-size: 52px;
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+    color: var(--blue);
+  }
+  .demo-stat .figure small {
+    font-size: 18px;
+    color: var(--pavement);
+    margin-left: 2px;
+    font-variation-settings: "opsz" 72, "SOFT" 0, "WONK" 0;
+  }
+  body[data-mode="dark"] .demo-stat .figure small { color: var(--pavement); }
+  .demo-stat .label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--slate);
+    line-height: 1.5;
+  }
+
+  .demo-byline {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px;
+    width: 100%;
+  }
+  .demo-byline .f .l {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--slate);
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .demo-byline .f .v {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 24, "SOFT" 60, "WONK" 0;
+    font-size: 14px;
+    color: var(--deep);
+  }
+  body[data-mode="dark"] .demo-byline .f .v { color: var(--deep); }
+
+  .demo-romans {
+    display: flex; align-items: baseline; gap: 22px;
+    font-family: var(--display);
+    font-variation-settings: "opsz" 96, "SOFT" 100, "WONK" 1;
+    font-style: italic;
+    font-weight: 360;
+    font-size: 44px;
+    color: var(--blue);
+    letter-spacing: -0.03em;
+  }
+
+  .demo-figure {
+    border: 1px solid var(--rule);
+    padding: 16px 18px;
+    position: relative;
+    background: var(--white);
+  }
+  .demo-figure .fignum {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .demo-figure .figtitle {
+    font-family: var(--display);
+    font-size: 14px;
+    color: var(--deep);
+    margin: 0 0 8px;
+    font-weight: 500;
+  }
+  body[data-mode="dark"] .demo-figure .figtitle { color: var(--deep); }
+  .demo-figure svg { display: block; max-width: 100%; height: auto; }
+
+  .demo-placeholder {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--tint-blue);
+    border-left: 3px solid var(--blue);
+    padding: 4px 10px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+  }
+
+  /* ─────────── layout patterns ─────────── */
+  .layout-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  .layout-card {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .layout-card .head {
+    padding: 14px 18px 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .layout-card .name {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .layout-card .title {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--deep);
+    margin: 0;
+    font-weight: 500;
+  }
+  body[data-mode="dark"] .layout-card .title { color: var(--white); }
+  .layout-card .preview {
+    background: var(--tint-stone);
+    padding: 24px;
+    min-height: 200px;
+  }
+  body[data-mode="dark"] .layout-card .preview { background: var(--tint-stone); }
+  .layout-card .preview .mini {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    height: 170px;
+    display: grid;
+  }
+  .layout-card .preview .mini.single {
+    grid-template-columns: 1fr;
+    padding: 16px 22px 16px 22px;
+  }
+  .layout-card .preview .mini.sidebar {
+    grid-template-columns: 64px 1fr;
+  }
+  .layout-card .preview .mini .sb {
+    background: var(--white);
+    border-right: 1px solid var(--rule);
+    padding: 8px 6px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .layout-card .preview .mini .sb-item {
+    height: 4px;
+    background: var(--rule);
+    border-radius: 1px;
+  }
+  .layout-card .preview .mini .sb-item.active {
+    background: var(--blue);
+  }
+  .layout-card .preview .mini .body {
+    padding: 12px 14px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .layout-card .preview .mini .body .h-band {
+    height: 24px;
+    background: var(--deep);
+    border-radius: 1px;
+  }
+  .layout-card .preview .mini .body .line {
+    height: 3px; background: var(--rule); border-radius: 1px;
+  }
+  .layout-card .preview .mini .body .line.short { width: 60%; }
+  .layout-card .preview .mini .body .line.med { width: 80%; }
+  .layout-card .desc {
+    padding: 12px 18px 16px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--body-sans);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--slate);
+  }
+
+  /* ─────────── spacing scale ─────────── */
+  .spacing-list {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .spacing-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 60px;
+    align-items: center;
+    gap: 16px;
+  }
+  .spacing-row .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--slate);
+    font-weight: 600;
+  }
+  .spacing-row .bar {
+    height: 14px;
+    background: var(--blue);
+    border-radius: 1px;
+  }
+  .spacing-row .px {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--slate);
+    text-align: right;
+  }
+
+  /* ─────────── lessons ─────────── */
+  .lessons {
+    display: grid; gap: 14px;
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 16px;
+    padding: 14px 0;
+    border-top: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  .lesson .x {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 36, "SOFT" 60, "WONK" 1;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--blue);
+    font-weight: 400;
+    line-height: 1;
+  }
+  .lesson .body strong {
+    font-family: var(--body-sans);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--deep);
+    display: block;
+    margin-bottom: 4px;
+  }
+  body[data-mode="dark"] .lesson .body strong { color: var(--white); }
+  .lesson .body p {
+    font-family: var(--body-sans);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--slate);
+    margin: 0;
+  }
+
+  /* ─────────── footer colophon ─────────── */
+  footer.colophon {
+    background: var(--deep);
+    color: var(--stone);
+    padding: 36px 32px;
+    margin-top: 64px;
+  }
+  footer.colophon .inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    line-height: 1.7;
+    display: flex; justify-content: space-between; align-items: baseline;
+    flex-wrap: wrap; gap: 16px;
+  }
+  footer.colophon a { color: var(--blue); }
+</style>
+</head>
+<body data-mode="light">
+
+<header class="masthead">
+  <span class="mark">Infosys Consulting  ·  Design Reference</span>
+  <div class="toggle" role="tablist">
+    <button data-target="light" aria-pressed="true">Light</button>
+    <button data-target="dark"  aria-pressed="false">Dark</button>
+  </div>
+</header>
+
+<section class="hero">
+  <p class="kicker">A working style guide</p>
+  <h1>The IC <em>design system</em>.</h1>
+  <p class="deck">
+    Palette, three font families, named visual components, layout patterns,
+    constraints. Every collateral in this folder should be reproducible
+    from what you find here. If a request can't be served by the system as
+    described, that's a gap — surface it.
+  </p>
+</section>
+
+<main>
+
+  <!-- ════════ HARD RULES ════════ -->
+  <section class="spec">
+    <p class="eyebrow">§ 01  ·  Constraints</p>
+    <h2>Hard rules — <em>non-negotiable</em>.</h2>
+    <p class="deck">These rules must hold from the first turn, before any file is read.</p>
+    <div class="rules">
+      <h3>Four things that cannot vary.</h3>
+      <ul>
+        <li><strong>No burnt orange.</strong> IC is blue-led. Warm accents are not used anywhere.</li>
+        <li><strong>No pure black</strong> (<code>#000000</code>). Use <code>PAVEMENT #404040</code> for every "black" text, line, and outline.</li>
+        <li><strong>Deep Blue is used ONLY in slide title bands and section separators.</strong> Not column headers, table headers, swim-lanes, callout fills, or chart series. The cover masthead/colophon is a controlled exception.</li>
+        <li><strong>BLUE is the working accent.</strong> Use it freely across slides for section heads, accent strokes, chart primary series, callouts, hero figures. <code>LT_BLUE</code> is its softer companion.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════════ PALETTE ════════ -->
+  <section class="spec">
+    <p class="eyebrow">§ 02  ·  Color</p>
+    <h2>Brand <em>palette</em>.</h2>
+    <p class="deck">Seven core colors plus three derived tints. Every IC artifact is built from this set; nothing else is allowed.</p>
+    <div id="palette-grid" class="swatch-grid"></div>
+  </section>
+
+  <section class="spec">
+    <p class="eyebrow">§ 03  ·  Color</p>
+    <h2>Tints &amp; <em>rules</em>.</h2>
+    <p class="deck">Soft fills for cards and callouts; hairline rules for borders. Use sparingly.</p>
+    <div id="tints-grid" class="swatch-grid"></div>
+  </section>
+
+  <section class="spec">
+    <p class="eyebrow">§ 04  ·  Color</p>
+    <h2>Status &amp; <em>RACI</em>.</h2>
+    <p class="deck">Status colors live outside the brand palette so they can be tuned for legibility without dragging the brand around. Pair each solid with its <code>_BG</code> tint for the pill fill.</p>
+    <div id="status-grid" class="swatch-grid"></div>
+  </section>
+
+  <!-- ════════ THREE FONT FAMILIES ════════ -->
+  <section class="spec">
+    <p class="eyebrow">§ 05  ·  Typography</p>
+    <h2>Three <em>font families</em>.</h2>
+    <p class="deck">Pick the family by the artifact type, not by personal preference. SYSTEM for editable corporate files; EDITORIAL for designed publications; TECHNICAL for engineering documentation. Fraunces and JetBrains Mono are shared between Editorial and Technical — the two families read as siblings.</p>
+    <div class="font-grid">
+
+      <div class="family">
+        <p class="name">Family 01</p>
+        <h3>System</h3>
+        <p class="use"><strong>Use for:</strong> editable PPTX, DOCX, anything shared as a working document. Arial ships pre-installed on every OS, so no embedding is required.</p>
+        <div class="specimen">
+          <div class="row">
+            <span class="lbl">DISPLAY</span>
+            <div class="sample-display-sys">The quick brown fox</div>
+          </div>
+          <div class="row">
+            <span class="lbl">BODY</span>
+            <div class="sample-body-sys">Set in Arial — universally installed, neutral, dependable. Renders the same on Windows, macOS, and ChromeOS.</div>
+          </div>
+          <div class="row">
+            <span class="lbl">MONO</span>
+            <div class="sample-mono-sys">consolas / courier · pre-installed</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="family">
+        <p class="name">Family 02</p>
+        <h3>Editorial</h3>
+        <p class="use"><strong>Use for:</strong> POV primers, consulting decks, one-pagers, public-facing PDFs. Anything where the artifact IS the deliverable.</p>
+        <div class="specimen">
+          <div class="row">
+            <span class="lbl">DISPLAY</span>
+            <div class="sample-display-ed">The <em>quick</em> brown fox</div>
+          </div>
+          <div class="row">
+            <span class="lbl">BODY</span>
+            <div class="sample-body-serif">Set in Newsreader — a screen-optimized serif designed by Production Type for long-form reading. Pairs cleanly with Fraunces.</div>
+          </div>
+          <div class="row">
+            <span class="lbl">MONO</span>
+            <div class="sample-mono">JetBrains Mono · embedded</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="family">
+        <p class="name">Family 03</p>
+        <h3>Technical</h3>
+        <p class="use"><strong>Use for:</strong> engineering notes, self-learning guides, anything with code blocks or sustained technical content.</p>
+        <div class="specimen">
+          <div class="row">
+            <span class="lbl">DISPLAY</span>
+            <div class="sample-display-ed">The <em>quick</em> brown fox</div>
+          </div>
+          <div class="row">
+            <span class="lbl">BODY</span>
+            <div class="sample-body-sans">Set in IBM Plex Sans — a distinctive sans-serif designed for technical content. Excellent legibility at small sizes; pairs with serif display and mono.</div>
+          </div>
+          <div class="row">
+            <span class="lbl">MONO</span>
+            <div class="sample-mono">JetBrains Mono · embedded</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════ NAMED COMPONENTS ════════ -->
+  <section class="spec">
+    <p class="eyebrow">§ 06  ·  Vocabulary</p>
+    <h2>Named visual <em>components</em>.</h2>
+    <p class="deck">Each name below refers to a specific recurring component used across IC collaterals. Reuse them by name when building new artifacts rather than reinventing — the system reads as one body of work because of these shared elements.</p>
+
+    <div class="components">
+
+      <!-- Title band -->
+      <div class="component">
+        <div class="head"><span class="name">Title band</span><span class="tag">All decks</span></div>
+        <div class="canvas">
+          <div class="demo-titleband">
+            <span class="t">Why agentic AI in banking is plateauing</span>
+            <span class="r">CHAPTER I  ·  SETUP</span>
+          </div>
+        </div>
+        <div class="desc">Thin DEEP_BLUE strip at the top of every content slide. Title in Fraunces (or Arial, for the system family); mono eyebrow on the right.</div>
+      </div>
+
+      <!-- Chapter slab -->
+      <div class="component">
+        <div class="head"><span class="name">Chapter slab</span><span class="tag">Section separator</span></div>
+        <div class="canvas dark" style="padding: 0;">
+          <div class="demo-slab">
+            <p class="ch-num">§ 03 / Evals</p>
+            <h4 class="ch-title">Why <em>evals</em> matter.</h4>
+          </div>
+        </div>
+        <div class="desc">Full-bleed DEEP_BLUE band between major sections. Chapter number (mono LT_BLUE), Fraunces title with italic BLUE on the emphasis word, optional one-line deck.</div>
+      </div>
+
+      <!-- Eyebrow -->
+      <div class="component">
+        <div class="head"><span class="name">Eyebrow + span bar</span><span class="tag">Universal</span></div>
+        <div class="canvas">
+          <div class="demo-eyebrow">SECTION III  ·  EVALS</div>
+        </div>
+        <div class="desc">Mono uppercase + letter-spacing, BLUE, prefixed with a small horizontal BLUE bar (3px × 28–36px). The bar is the recurring "structural label" motif across IC artifacts.</div>
+      </div>
+
+      <!-- Pull quote -->
+      <div class="component">
+        <div class="head"><span class="name">Pull quote</span><span class="tag">Editorial</span></div>
+        <div class="canvas">
+          <p class="demo-pull">Build evals, not POCs.</p>
+        </div>
+        <div class="desc">Fraunces italic with optical-size 60 and SOFT 60, BLUE left rule. Breaks out of the column on wide layouts.</div>
+      </div>
+
+      <!-- Drop cap -->
+      <div class="component">
+        <div class="head"><span class="name">Drop cap</span><span class="tag">Primer only</span></div>
+        <div class="canvas">
+          <div class="demo-dropcap">
+            <p>Across the largest banks, the same pattern repeats. Forty pilots, sometimes two hundred — and value concentrated in only two or three.</p>
+          </div>
+        </div>
+        <div class="desc">BLUE Fraunces, opsz 144, WONK 1. Use on chapter openers in primer-style artifacts. Don't use in decks or technical notes.</div>
+      </div>
+
+      <!-- Roman numerals -->
+      <div class="component">
+        <div class="head"><span class="name">Roman numerals</span><span class="tag">Lists, pillars</span></div>
+        <div class="canvas">
+          <div class="demo-romans">
+            <span>I</span><span>II</span><span>III</span><span>IV</span>
+          </div>
+        </div>
+        <div class="desc">Fraunces italic, opsz 96, SOFT 100, WONK 1, in BLUE. Used for enumerated pillars, principles, chapters. Lowercase Roman (i, ii, iii) for sub-lists.</div>
+      </div>
+
+      <!-- Stat callout -->
+      <div class="component">
+        <div class="head"><span class="name">Stat callout</span><span class="tag">Universal</span></div>
+        <div class="canvas">
+          <div class="demo-stat">
+            <p class="figure">~85<small>%</small></p>
+            <span class="label">PER-TOKEN COST DECLINE<br>2023 → 2026</span>
+          </div>
+        </div>
+        <div class="desc">Large Fraunces figure (40–84pt) in BLUE with a small suffix in pavement, paired with a mono LABEL beside or below.</div>
+      </div>
+
+      <!-- Note / callout -->
+      <div class="component">
+        <div class="head"><span class="name">Note / callout</span><span class="tag">Inline</span></div>
+        <div class="canvas">
+          <div class="demo-note">
+            <p class="tag">NOTE</p>
+            <h6>The harness is not the agent's intelligence.</h6>
+            <p>The model is. The harness is the rules of the road.</p>
+          </div>
+        </div>
+        <div class="desc">TINT_BLUE_BG fill, 2px BLUE left rule. Mono TAG in BLUE, Fraunces italic head, body in the relevant family's sans or serif.</div>
+      </div>
+
+      <!-- Code block -->
+      <div class="component">
+        <div class="head"><span class="name">Code block</span><span class="tag">Technical only</span></div>
+        <div class="canvas">
+          <pre class="demo-code"><span class="lang">Python</span>def call_llm(prompt):
+    return client.complete(prompt)</pre>
+        </div>
+        <div class="desc">TINT_STONE_BG fill with 3px BLUE left rule. JetBrains Mono body. Small mono LANG tag in the top-right corner.</div>
+      </div>
+
+      <!-- Figure -->
+      <div class="component">
+        <div class="head"><span class="name">Figure</span><span class="tag">Diagrams</span></div>
+        <div class="canvas">
+          <div class="demo-figure">
+            <p class="fignum">FIG. 01</p>
+            <p class="figtitle">Pilot value concentrates in a long tail.</p>
+            <svg viewBox="0 0 280 60" width="280" height="60">
+              <rect x="0" y="20" width="22" height="36" fill="#007CC3"/>
+              <rect x="26" y="28" width="22" height="28" fill="#007CC3"/>
+              <rect x="52" y="40" width="22" height="16" fill="#3699DA"/>
+              <rect x="78" y="46" width="22" height="10" fill="#A7A9AC"/>
+              <rect x="104" y="48" width="22" height="8" fill="#A7A9AC"/>
+              <rect x="130" y="50" width="22" height="6" fill="#A7A9AC"/>
+              <rect x="156" y="52" width="22" height="4" fill="#A7A9AC"/>
+              <rect x="182" y="53" width="22" height="3" fill="#A7A9AC"/>
+              <line x1="0" y1="56" x2="278" y2="56" stroke="#404040" stroke-width="0.5"/>
+            </svg>
+          </div>
+        </div>
+        <div class="desc">Bordered with 1px RULE, white background. Numbered <code style="font-family:var(--mono);font-size:11px;color:var(--blue);">FIG. NN</code> in mono BLUE in the top-left. Title in Fraunces; caption in italic body.</div>
+      </div>
+
+      <!-- Byline grid -->
+      <div class="component">
+        <div class="head"><span class="name">Byline grid</span><span class="tag">Cover only</span></div>
+        <div class="canvas">
+          <div class="demo-byline">
+            <div class="f"><p class="l">PRACTICE</p><p class="v">Banking</p></div>
+            <div class="f"><p class="l">EDITION</p><p class="v">No. 01 · May 2026</p></div>
+            <div class="f"><p class="l">AUDIENCE</p><p class="v">CXO buyers</p></div>
+            <div class="f"><p class="l">DISTRIBUTION</p><p class="v">Internal use</p></div>
+          </div>
+        </div>
+        <div class="desc">Four-column metadata block at the bottom of cover pages. Mono labels in stone; italic Fraunces values in pavement.</div>
+      </div>
+
+      <!-- Placeholder pill -->
+      <div class="component">
+        <div class="head"><span class="name">PLACEHOLDER pill</span><span class="tag">Universal</span></div>
+        <div class="canvas">
+          <span class="demo-placeholder">PLACEHOLDER  ·  Replace with real engagement</span>
+        </div>
+        <div class="desc">Compact TINT_BLUE_BG with 3px BLUE left rule. Mono caps. Use to flag any IC-specific content that the partner must replace before client use.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════ LAYOUT PATTERNS ════════ -->
+  <section class="spec">
+    <p class="eyebrow">§ 07  ·  Layout</p>
+    <h2>Layout <em>patterns</em>.</h2>
+    <p class="deck">Two HTML layout patterns have stabilized. Pick by reading mode, not by topic.</p>
+    <div class="layout-grid">
+
+      <div class="layout-card">
+        <div class="head">
+          <p class="name">Pattern 01</p>
+          <p class="title">Single-column reading</p>
+        </div>
+        <div class="preview">
+          <div class="mini single">
+            <div class="body">
+              <div class="h-band"></div>
+              <div class="line med"></div>
+              <div class="line"></div>
+              <div class="line"></div>
+              <div class="line short"></div>
+              <div class="line"></div>
+              <div class="line med"></div>
+            </div>
+          </div>
+        </div>
+        <div class="desc">Centered column (max ~660–720px), generous side margins. Best for long-form prose read top-to-bottom — POV primers, one-pagers, sales narratives. Optional left gutter for chapter markers and sidenotes.</div>
+      </div>
+
+      <div class="layout-card">
+        <div class="head">
+          <p class="name">Pattern 02</p>
+          <p class="title">Sidebar + content</p>
+        </div>
+        <div class="preview">
+          <div class="mini sidebar">
+            <div class="sb">
+              <div class="sb-item"></div>
+              <div class="sb-item active"></div>
+              <div class="sb-item"></div>
+              <div class="sb-item"></div>
+              <div class="sb-item"></div>
+              <div class="sb-item"></div>
+              <div class="sb-item"></div>
+            </div>
+            <div class="body">
+              <div class="h-band"></div>
+              <div class="line med"></div>
+              <div class="line"></div>
+              <div class="line"></div>
+              <div class="line short"></div>
+              <div class="line"></div>
+            </div>
+          </div>
+        </div>
+        <div class="desc">Sticky 280px sidebar TOC + content column. Active section tracked via IntersectionObserver. Best for reference and learning material — engineering notes, technical docs, anything meant to be jumped around in.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════ SPACING ════════ -->
+  <section class="spec">
+    <p class="eyebrow">§ 08  ·  Layout</p>
+    <h2>Spacing &amp; <em>dimensions</em>.</h2>
+    <p class="deck">A 4-pt base scale. All component spacing snaps to multiples of 4.</p>
+    <div class="spacing-list" id="spacing-list"></div>
+  </section>
+
+  <!-- ════════ LESSONS LEARNED ════════ -->
+  <section class="spec">
+    <p class="eyebrow">§ 09  ·  Practice</p>
+    <h2>Lessons <em>learned</em>.</h2>
+    <p class="deck">Mistakes made in earlier IC collaterals, corrected, documented here so the next artifact doesn't repeat them.</p>
+    <div class="lessons">
+      <div class="lesson">
+        <span class="x">i</span>
+        <div class="body">
+          <strong>Don't double up eyebrows.</strong>
+          <p>If the title-band right side already shows "Reframe · Our point of view," don't add a standalone "OUR POINT OF VIEW" eyebrow underneath. Pick one location for each piece of metadata.</p>
+        </div>
+      </div>
+      <div class="lesson">
+        <span class="x">ii</span>
+        <div class="body">
+          <strong>Don't use TINT_BLUE_BG as a full-width band.</strong>
+          <p>It reads as a banner and fights the hairline aesthetic. Use it as a small left-rule strip or inside a contained note/callout box instead.</p>
+        </div>
+      </div>
+      <div class="lesson">
+        <span class="x">iii</span>
+        <div class="body">
+          <strong>Don't break titles mid-clause with italic emphasis.</strong>
+          <p>A title like <em>The memo is generated</em>, not authored. reads as broken when it wraps. Make the italic portion a complete phrase: <em>The memo is generated, not authored.</em> followed by a normal continuation.</p>
+        </div>
+      </div>
+      <div class="lesson">
+        <span class="x">iv</span>
+        <div class="body">
+          <strong>Don't position rules near large Fraunces text by coordinates.</strong>
+          <p>Fraunces at large sizes has substantial descenders. A BLUE accent rule placed 0.3in below the title may strike through the bottom of letters like 'p', 'g', 'y'. Pad generously, or omit the rule.</p>
+        </div>
+      </div>
+      <div class="lesson">
+        <span class="x">v</span>
+        <div class="body">
+          <strong>Don't anchor chart labels to individual bar heights.</strong>
+          <p>When some bars are very tall (40%) and some very short (2%), per-bar label positioning makes the labels float at inconsistent heights. Use a shared label-row Y above the chart so all percentage labels sit together.</p>
+        </div>
+      </div>
+      <div class="lesson">
+        <span class="x">vi</span>
+        <div class="body">
+          <strong>Don't put an <code style="font-family:var(--mono);font-size:13px;color:var(--blue);">&lt;a&gt;</code> around all grid children inside an <code style="font-family:var(--mono);font-size:13px;color:var(--blue);">&lt;li&gt;</code>.</strong>
+          <p>A grid defined on the list item only applies to its direct children — the anchor collapses into the first column, and its inner spans wrap one word per line. Either move the grid to the anchor, or make the spans direct children of the list item.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="colophon">
+  <div class="inner">
+    <span>Infosys Consulting  ·  Design Reference  ·  May 2026</span>
+    <span>Set in Fraunces &amp; IBM Plex Sans &amp; JetBrains Mono</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  const T = window.ICTokens;
+  const body = document.body;
+  document.querySelectorAll('.toggle button').forEach(btn => {
+    btn.addEventListener('click', () => setMode(btn.dataset.target));
+  });
+  function setMode(mode) {
+    body.dataset.mode = mode;
+    document.querySelectorAll('.toggle button').forEach(b => {
+      b.setAttribute('aria-pressed', b.dataset.target === mode ? 'true' : 'false');
+    });
+  }
+  function contrastText(hex) {
+    const h = hex.replace('#','');
+    const r = parseInt(h.substr(0,2),16);
+    const g = parseInt(h.substr(2,2),16);
+    const b = parseInt(h.substr(4,2),16);
+    const lum = (0.299*r + 0.587*g + 0.114*b) / 255;
+    return lum > 0.6 ? '#404040' : '#FFFFFF';
+  }
+  function swatch(name, hex, note) {
+    return `
+      <div class="swatch">
+        <div class="chip" style="background:${hex}; color:${contrastText(hex)};">${hex.toUpperCase()}</div>
+        <div class="meta">
+          <div class="name">${name.replace(/_/g, ' ')}</div>
+          <div class="hex">${hex.toUpperCase()}</div>
+          ${note ? `<div class="note">${note}</div>` : ''}
+        </div>
+      </div>`;
+  }
+
+  const palette = T.palette;
+  const status = T.status;
+
+  const paletteNotes = {
+    WHITE: 'Slide and page background.',
+    DEEP_BLUE: 'Title bands and section separators only.',
+    PAVEMENT: 'The "black" of IC. Body text, lines, outlines.',
+    BLUE: 'Working accent across every artifact.',
+    STONE: 'Muted gray — captions, secondary labels.',
+    SLATE: 'Mid gray — supporting text, axis labels.',
+    LT_BLUE: 'Secondary accent — hover, fine separators.',
+  };
+  const tintNotes = {
+    TINT_BLUE_BG: 'Callout fills, note backgrounds, soft surfaces.',
+    TINT_STONE_BG: 'Code-block fills, neutral panels.',
+    RULE: 'Hairline borders, table grids, card edges.',
+  };
+  const statusNotes = {
+    RED: 'Critical / blocked.',
+    AMBER: 'At risk / watch.',
+    GREEN: 'On track / healthy.',
+    GRAY: 'Not started / N/A.',
+  };
+
+  const paletteOrder = ['WHITE','DEEP_BLUE','PAVEMENT','BLUE','STONE','SLATE','LT_BLUE'];
+  document.getElementById('palette-grid').innerHTML =
+    paletteOrder.map(k => swatch(k, palette[k], paletteNotes[k])).join('');
+
+  const tintOrder = ['TINT_BLUE_BG','TINT_STONE_BG','RULE'];
+  document.getElementById('tints-grid').innerHTML =
+    tintOrder.map(k => swatch(k, palette[k], tintNotes[k])).join('');
+
+  const statusOrder = ['RED','AMBER','GREEN','GRAY'];
+  document.getElementById('status-grid').innerHTML =
+    statusOrder.flatMap(k => [
+      swatch(k, status[k], statusNotes[k]),
+      swatch(k + '_BG', status[k + '_BG'], 'Pill background — pair with ' + k + '.'),
+    ]).join('');
+
+  const spaces = T.layout.spacing;
+  document.getElementById('spacing-list').innerHTML =
+    Object.entries(spaces).map(([k, v]) => `
+      <div class="spacing-row">
+        <span class="label">${k}</span>
+        <div class="bar" style="width:${Math.min(v * 8, 400)}px;"></div>
+        <span class="px">${v}px</span>
+      </div>`).join('');
+})();
+</script>
+
+</body>
+</html>

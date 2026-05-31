@@ -1,0 +1,21 @@
+# Python virtual environment
+.venv/
+__pycache__/
+*.pyc
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Session state from the local 'remember' hook
+.remember/
+
+# Build artifacts that are large and regeneratable
+decks/agentic-ai-banking-pov/qa-images/
+
+# LibreOffice / Office temp files
+.~lock*
+~$*

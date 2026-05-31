@@ -1,0 +1,1672 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>The Claude Agent SDK — A self-learning guide · Infosys Consulting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,200..900,0..100,0..1;1,9..144,200..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..600;1,300..600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─────────────  IC TOKENS  ───────────── */
+    :root {
+      --white: #FFFFFF;
+      --deep: #182534;
+      --pavement: #404040;
+      --slate: #6D6E71;
+      --stone: #A7A9AC;
+      --blue: #007CC3;
+      --lt-blue: #3699DA;
+      --tint-blue: #E6F2FA;
+      --tint-stone: #F2F2F3;
+      --rule: #E2E4E7;
+
+      --display: "Fraunces", "Times New Roman", serif;
+      --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+      --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+
+      --sidebar-w: 280px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--body);
+      font-size: 17px;
+      line-height: 1.6;
+      color: var(--pavement);
+      background: var(--white);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      font-feature-settings: "kern", "liga";
+    }
+    ::selection { background: var(--deep); color: var(--white); }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    p { margin: 0 0 18px; }
+    ol, ul { margin: 0 0 22px; padding-left: 24px; }
+    li { margin: 6px 0; }
+
+    /* ─────────────  reading-progress bar  ───────────── */
+    .progress {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 2px; background: transparent; z-index: 1000;
+      pointer-events: none;
+    }
+    .progress::before {
+      content: ''; display: block;
+      height: 100%; width: var(--p, 0%);
+      background: var(--blue);
+      transition: width 80ms linear;
+    }
+
+    /* ─────────────  TITLE PAGE (full-bleed DEEP_BLUE)  ───────────── */
+    .title-page {
+      background: var(--deep);
+      color: var(--white);
+      min-height: 100vh;
+      padding: 56px 48px 48px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 32px;
+      position: relative;
+    }
+    .title-page::after {
+      content: ''; position: absolute;
+      left: 0; right: 0; bottom: 0; height: 2px;
+      background: var(--blue);
+    }
+    .title-page .mast {
+      display: flex; justify-content: space-between; align-items: baseline;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .title-page .mast .mark { color: var(--white); font-weight: 600; }
+    .title-page .mast .meta { color: var(--stone); }
+    .title-page .hero {
+      align-self: center;
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .title-page .kicker {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--lt-blue);
+      font-weight: 600;
+      margin: 0 0 24px;
+      display: flex; align-items: center; gap: 16px;
+      animation: fadeUp 700ms cubic-bezier(.2,.7,.2,1) both;
+    }
+    .title-page .kicker::before {
+      content: ''; width: 56px; height: 1px; background: var(--lt-blue);
+    }
+    .title-page h1 {
+      font-family: var(--display);
+      font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+      font-weight: 380;
+      font-size: clamp(48px, 8vw, 120px);
+      line-height: 0.96;
+      letter-spacing: -0.028em;
+      margin: 0 0 36px;
+      color: var(--white);
+      max-width: 16ch;
+      animation: fadeUp 900ms cubic-bezier(.2,.7,.2,1) 100ms both;
+    }
+    .title-page h1 em {
+      font-style: italic;
+      font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+      color: var(--lt-blue);
+      font-weight: 380;
+    }
+    .title-page .deck {
+      font-family: var(--body);
+      font-size: clamp(18px, 1.6vw, 22px);
+      line-height: 1.5;
+      font-weight: 400;
+      color: var(--stone);
+      max-width: 56ch;
+      margin: 0;
+      animation: fadeUp 1000ms cubic-bezier(.2,.7,.2,1) 240ms both;
+    }
+    .title-page .deck em { font-style: italic; color: var(--white); }
+    .title-page .byline {
+      border-top: 1px solid rgba(255,255,255,0.12);
+      padding-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+      animation: fadeUp 1100ms cubic-bezier(.2,.7,.2,1) 420ms both;
+    }
+    @media (max-width: 720px) { .title-page .byline { grid-template-columns: repeat(2, 1fr); } }
+    .title-page .byline .field { display: flex; flex-direction: column; gap: 6px; }
+    .title-page .byline .label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--stone);
+      font-weight: 600;
+    }
+    .title-page .byline .value {
+      font-family: var(--display);
+      font-style: italic;
+      font-variation-settings: "opsz" 30, "SOFT" 60, "WONK" 0;
+      font-size: 17px;
+      color: var(--white);
+      line-height: 1.3;
+    }
+
+    /* ═════════════════════ MAIN LAYOUT ═════════════════════ */
+    .layout {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+      gap: 0;
+      position: relative;
+    }
+    @media (max-width: 920px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    /* ─────────────  SIDEBAR  ───────────── */
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 36px 28px 32px;
+      border-right: 1px solid var(--rule);
+      background: var(--white);
+      scrollbar-width: thin;
+      scrollbar-color: var(--rule) transparent;
+    }
+    .sidebar::-webkit-scrollbar { width: 6px; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+    @media (max-width: 920px) {
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--rule);
+        padding: 28px 24px;
+      }
+    }
+
+    .sidebar .brand {
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 22px;
+    }
+    .sidebar .brand .label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--blue);
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sidebar .brand .label::before {
+      content: ''; width: 22px; height: 2px; background: var(--blue);
+    }
+    .sidebar .brand .doc-title {
+      font-family: var(--display);
+      font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+      font-size: 20px;
+      line-height: 1.18;
+      color: var(--deep);
+      margin: 0 0 6px;
+      letter-spacing: -0.005em;
+    }
+    .sidebar .brand .doc-title em {
+      font-style: italic;
+      font-variation-settings: "opsz" 36, "SOFT" 100, "WONK" 1;
+      color: var(--blue);
+      font-weight: 400;
+    }
+    .sidebar .brand .doc-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--slate);
+      text-transform: uppercase;
+    }
+
+    .sidebar nav .group { margin-bottom: 22px; }
+    .sidebar nav .group-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--slate);
+      font-weight: 600;
+      margin: 0 0 6px;
+      padding-left: 14px;
+    }
+    .sidebar nav ol { list-style: none; margin: 0; padding: 0; }
+    .sidebar nav li { margin: 0; }
+    .sidebar nav a {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: baseline;
+      padding: 7px 12px;
+      border-left: 2px solid transparent;
+      color: var(--pavement);
+      font-family: var(--body);
+      font-size: 14px;
+      line-height: 1.4;
+      text-decoration: none;
+      transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+      font-weight: 400;
+    }
+    .sidebar nav a:hover {
+      color: var(--blue);
+      background: var(--tint-blue);
+      text-decoration: none;
+    }
+    .sidebar nav a.active {
+      color: var(--blue);
+      border-left-color: var(--blue);
+      background: var(--tint-blue);
+      font-weight: 500;
+    }
+    .sidebar nav .num {
+      font-family: var(--display);
+      font-style: italic;
+      font-variation-settings: "opsz" 24, "SOFT" 100, "WONK" 1;
+      font-size: 14px;
+      color: var(--blue);
+      line-height: 1;
+      font-weight: 400;
+    }
+    .sidebar nav a.appendix .num {
+      font-family: var(--mono);
+      font-style: normal;
+      color: var(--stone);
+      font-size: 12px;
+    }
+
+    .sidebar .foot {
+      margin-top: 32px;
+      padding-top: 18px;
+      border-top: 1px solid var(--rule);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--slate);
+      line-height: 1.7;
+    }
+    .sidebar .foot a {
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    /* ─────────────  CONTENT  ───────────── */
+    .content { min-width: 0; }
+
+    /* Section header — tuned so the chapter band reads as a real
+       transition without dominating the viewport in a docs-site layout. */
+    .section-header {
+      background: var(--deep);
+      color: var(--white);
+      padding: 44px 56px;
+      position: relative;
+    }
+    .section-header::after {
+      content: ''; position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 1px; background: var(--blue);
+    }
+    @media (max-width: 720px) { .section-header { padding: 32px 24px; } }
+
+    .section-header .num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--lt-blue);
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section-header .num::before {
+      content: ''; width: 28px; height: 1px; background: var(--lt-blue);
+    }
+    .section-header h2 {
+      font-family: var(--display);
+      font-variation-settings: "opsz" 96, "SOFT" 0, "WONK" 0;
+      font-weight: 380;
+      font-size: clamp(28px, 3.8vw, 44px);
+      line-height: 1.05;
+      letter-spacing: -0.018em;
+      color: var(--white);
+      margin: 0 0 12px;
+      max-width: 22ch;
+    }
+    .section-header h2 em {
+      font-style: italic;
+      font-variation-settings: "opsz" 96, "SOFT" 100, "WONK" 1;
+      color: var(--lt-blue);
+      font-weight: 380;
+    }
+    .section-header .deck {
+      font-family: var(--body);
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--stone);
+      margin: 0;
+      max-width: 60ch;
+    }
+
+    /* Section body — tighter top padding so it reads as a continuation
+       of the section header, not a disconnected block below it. */
+    .section-body {
+      padding: 36px 56px 48px;
+      max-width: 920px;
+    }
+    @media (max-width: 720px) { .section-body { padding: 28px 24px 36px; } }
+
+    .section-body .eyebrow {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--blue);
+      font-weight: 600;
+      margin: 0 0 12px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section-body .eyebrow::before {
+      content: ''; width: 28px; height: 3px; background: var(--blue);
+    }
+    .section-body h3 {
+      font-family: var(--display);
+      font-variation-settings: "opsz" 60, "SOFT" 0, "WONK" 0;
+      font-weight: 400;
+      font-size: clamp(24px, 2.8vw, 32px);
+      line-height: 1.14;
+      letter-spacing: -0.01em;
+      color: var(--deep);
+      margin: 0 0 14px;
+    }
+    .section-body h3 em {
+      font-style: italic;
+      font-variation-settings: "opsz" 60, "SOFT" 100, "WONK" 1;
+      color: var(--blue);
+      font-weight: 400;
+    }
+    .section-body .deck-lead {
+      font-family: var(--body);
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--slate);
+      margin: 0 0 24px;
+      max-width: 60ch;
+      font-weight: 400;
+    }
+    .section-body p {
+      font-family: var(--body);
+      font-size: 17px;
+      line-height: 1.65;
+      color: var(--pavement);
+      font-weight: 400;
+    }
+    .section-body p strong { color: var(--deep); font-weight: 600; }
+    .section-body p em { font-style: italic; color: var(--deep); }
+    .section-body h4 {
+      font-family: var(--display);
+      font-variation-settings: "opsz" 30, "SOFT" 0, "WONK" 0;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--deep);
+      margin: 36px 0 12px;
+      letter-spacing: -0.008em;
+      line-height: 1.25;
+    }
+    .section-body h5 {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--blue);
+      font-weight: 600;
+      margin: 28px 0 10px;
+    }
+    .section-body ul li, .section-body ol li {
+      font-family: var(--body);
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--pavement);
+    }
+    .section-body p .inline-code {
+      font-family: var(--mono);
+      font-size: 0.86em;
+      background: var(--tint-blue);
+      color: var(--blue);
+      padding: 1px 6px;
+      border-radius: 2px;
+      font-weight: 500;
+    }
+
+    /* drop cap on a lead paragraph */
+    .lead.drop-cap {
+      font-family: var(--body);
+      font-weight: 400;
+      font-size: 19px;
+      line-height: 1.6;
+      color: var(--pavement);
+      margin-bottom: 24px;
+    }
+    .lead.drop-cap::first-letter {
+      font-family: var(--display);
+      font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1;
+      font-weight: 400;
+      float: left;
+      font-size: 84px;
+      line-height: 0.82;
+      padding: 8px 14px 0 0;
+      color: var(--blue);
+    }
+
+    /* Pull quote */
+    .pull {
+      margin: 36px 0;
+      padding: 6px 0 6px 24px;
+      border-left: 2px solid var(--blue);
+      font-family: var(--display);
+      font-variation-settings: "opsz" 60, "SOFT" 60, "WONK" 0;
+      font-style: italic;
+      font-weight: 360;
+      font-size: 26px;
+      line-height: 1.22;
+      color: var(--deep);
+      letter-spacing: -0.01em;
+    }
+    .pull em {
+      font-variation-settings: "opsz" 60, "SOFT" 100, "WONK" 1;
+      color: var(--blue);
+    }
+    .pull .src {
+      display: block;
+      margin-top: 12px;
+      font-family: var(--mono);
+      font-style: normal;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--slate);
+      font-weight: 600;
+    }
+
+    /* Note / callout (replaces margin notes) */
+    .note {
+      margin: 28px 0;
+      padding: 20px 24px;
+      background: var(--tint-blue);
+      border-left: 2px solid var(--blue);
+      border-radius: 0 2px 2px 0;
+    }
+    .note .tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--blue);
+      font-weight: 600;
+      margin: 0 0 6px;
+    }
+    .note h6 {
+      font-family: var(--display);
+      font-variation-settings: "opsz" 30, "SOFT" 0, "WONK" 0;
+      font-style: italic;
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--deep);
+      margin: 0 0 6px;
+    }
+    .note p { margin: 0; font-size: 15px; color: var(--pavement); line-height: 1.55; }
+    .note p em { font-style: italic; color: var(--deep); }
+
+    /* ─────────────  STACK DIAGRAM  ───────────── */
+    .stack {
+      background: var(--white);
+      border: 1px solid var(--rule);
+      padding: 40px 36px;
+      position: relative;
+      margin: 28px 0;
+    }
+    .stack .fig-num {
+      position: absolute;
+      top: -10px;
+      left: 24px;
+      background: var(--white);
+      padding: 0 8px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--blue);
+      font-weight: 600;
+    }
+    .stack-grid { display: flex; flex-direction: column; gap: 0; }
+    .stack-layer {
+      display: grid;
+      grid-template-columns: 64px 1fr 1.4fr;
+      padding: 20px 0;
+      border-top: 1px solid var(--rule);
+      align-items: baseline;
+      transition: background 0.25s ease, padding 0.25s ease;
+    }
+    .stack-layer:first-child { border-top: 0; }
+    .stack-layer:hover {
+      background: var(--tint-blue);
+      padding-left: 10px;
+    }
+    .stack-layer .num {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--blue);
+      letter-spacing: 0.16em;
+      font-weight: 600;
+    }
+    .stack-layer .name {
+      font-family: var(--display);
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: -0.008em;
+      color: var(--deep);
+    }
+    .stack-layer .name em {
+      font-style: italic;
+      font-variation-settings: "opsz" 60, "SOFT" 100, "WONK" 1;
+      color: var(--blue);
+      font-weight: 400;
+    }
+    .stack-layer .desc {
+      font-family: var(--body);
+      font-size: 13px;
+      color: var(--slate);
+      line-height: 1.55;
+      padding-left: 18px;
+    }
+    .stack-caption {
+      margin-top: 18px;
+      padding-top: 12px;
+      border-top: 1px solid var(--rule);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--stone);
+      text-align: right;
+    }
+
+    /* ─────────────  LAYERS (Anatomy)  ───────────── */
+    .layers { display: grid; gap: 0; margin: 16px 0 0; }
+    .layer {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      padding: 28px 0;
+      border-top: 1px solid var(--rule);
+      gap: 24px;
+    }
+    .layer:last-child { border-bottom: 1px solid var(--rule); }
+    .layer .roman {
+      font-family: var(--display);
+      font-style: italic;
+      font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+      font-size: 40px;
+      color: var(--blue);
+      line-height: 0.92;
+      font-weight: 340;
+    }
+    .layer h4 { margin: 4px 0 8px; }
+    .layer p {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--pavement);
+      margin: 0;
+    }
+    .layer .tags {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      padding: 4px 12px;
+      background: var(--white);
+      border: 1px solid var(--rule);
+      color: var(--pavement);
+      border-radius: 999px;
+      font-weight: 500;
+    }
+    .tag.tool {
+      background: var(--tint-blue);
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+    .tag.ext {
+      background: var(--white);
+      border-color: var(--lt-blue);
+      color: var(--lt-blue);
+    }
+
+    /* ─────────────  WHEN / NOT  ───────────── */
+    .when-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--rule);
+      margin: 16px 0 0;
+    }
+    .when-col { padding: 24px 24px; }
+    .when-col + .when-col {
+      border-left: 1px solid var(--rule);
+      background: var(--tint-stone);
+    }
+    .when-col h4 {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--blue);
+      font-weight: 600;
+      margin: 0 0 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--rule);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .when-col h4::before {
+      content: ''; width: 22px; height: 3px; background: var(--blue);
+    }
+    .when-col + .when-col h4 { color: var(--slate); }
+    .when-col + .when-col h4::before { background: var(--stone); }
+    .when-col ul { list-style: none; padding: 0; margin: 0; }
+    .when-col li {
+      padding: 10px 0 10px 28px;
+      position: relative;
+      font-family: var(--body);
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--pavement);
+      border-bottom: 1px solid var(--rule);
+      margin: 0;
+    }
+    .when-col li:last-child { border-bottom: 0; }
+    .when-col li::before {
+      content: "+";
+      position: absolute; left: 0; top: 10px;
+      color: var(--blue);
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .when-col + .when-col li::before {
+      content: "—";
+      color: var(--stone);
+      font-weight: 400;
+    }
+    .when-col li em { font-style: italic; color: var(--deep); }
+    @media (max-width: 700px) {
+      .when-grid { grid-template-columns: 1fr; }
+      .when-col + .when-col { border-left: 0; border-top: 1px solid var(--rule); }
+    }
+
+    /* ─────────────  CODE BLOCK  ───────────── */
+    .code-frame {
+      background: var(--tint-stone);
+      border: 1px solid var(--rule);
+      border-left: 3px solid var(--blue);
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.6;
+      overflow: hidden;
+      margin: 24px 0;
+      position: relative;
+    }
+    .code-frame header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--rule);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--slate);
+      font-weight: 600;
+      background: var(--white);
+    }
+    .code-frame header .lang { color: var(--blue); }
+    .code-frame pre {
+      padding: 22px 24px;
+      margin: 0;
+      overflow-x: auto;
+      counter-reset: line;
+      color: var(--pavement);
+    }
+    .code-frame pre code { display: block; white-space: pre; }
+    .ln {
+      counter-increment: line;
+      display: block;
+      padding-left: 36px;
+      position: relative;
+      min-height: 1.6em;
+    }
+    .ln::before {
+      content: counter(line);
+      position: absolute;
+      left: 0;
+      width: 24px;
+      text-align: right;
+      color: var(--stone);
+      font-size: 11px;
+      user-select: none;
+    }
+    .kw  { color: var(--blue); font-weight: 500; }
+    .str { color: #2E8B57; }
+    .com { color: var(--stone); font-style: italic; }
+    .fn  { color: var(--deep); font-weight: 500; }
+    .num { color: #D89B1F; }
+    .var { color: var(--pavement); }
+
+    /* ─────────────  LOOP VISUALIZATION  ───────────── */
+    .loop {
+      background: var(--white);
+      border: 1px solid var(--rule);
+      padding: 28px 32px;
+      margin-top: 20px;
+    }
+    .loop-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 22px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .loop-title {
+      font-family: var(--display);
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: -0.008em;
+      color: var(--deep);
+    }
+    .loop-title em {
+      font-style: italic;
+      font-variation-settings: "opsz" 36, "SOFT" 100, "WONK" 1;
+      color: var(--blue);
+    }
+    .loop-step-counter {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--stone);
+      font-weight: 600;
+    }
+    .loop-step-counter strong {
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .loop-stage {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 18px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--rule);
+      opacity: 0.22;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      transform: translateY(4px);
+    }
+    .loop-stage:last-child { border-bottom: 0; }
+    .loop-stage.active { opacity: 1; transform: translateY(0); }
+    .loop-stage.done { opacity: 0.6; }
+    .loop-stage .who {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding-top: 4px;
+      color: var(--stone);
+      font-weight: 600;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .loop-stage.active .who { color: var(--blue); }
+    .loop-stage .who::before {
+      content: "";
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: var(--stone);
+      border-radius: 50%;
+    }
+    .loop-stage.active .who::before {
+      background: var(--blue);
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0, 124, 195, 0.55); }
+      50%      { box-shadow: 0 0 0 8px rgba(0, 124, 195, 0); }
+    }
+    .loop-stage .body {
+      font-family: var(--body);
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--pavement);
+    }
+    .loop-stage.tool-call .body {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: var(--blue);
+      background: var(--tint-blue);
+      border-left: 2px solid var(--blue);
+      padding: 12px 16px;
+    }
+    .loop-stage.tool-result .body {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--slate);
+      background: var(--tint-stone);
+      border-left: 2px solid var(--stone);
+      padding: 12px 16px;
+      white-space: pre-wrap;
+    }
+    .loop-stage.final .body {
+      font-style: italic;
+      color: var(--blue);
+      font-weight: 500;
+      font-family: var(--display);
+      font-variation-settings: "opsz" 36, "SOFT" 60, "WONK" 0;
+      font-size: 17px;
+    }
+
+    .loop-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 22px;
+      justify-content: flex-end;
+    }
+    .btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      border: 1px solid var(--rule);
+      background: var(--white);
+      color: var(--pavement);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.18s ease;
+    }
+    .btn:hover {
+      background: var(--tint-blue);
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn.primary {
+      background: var(--blue);
+      color: var(--white);
+      border-color: var(--blue);
+    }
+    .btn.primary:hover {
+      background: var(--deep);
+      border-color: var(--deep);
+      color: var(--white);
+    }
+    .btn[disabled] {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* ─────────────  COMPOSE  ───────────── */
+    .compose {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      margin: 24px 0 0;
+    }
+    .compose-card {
+      padding: 26px 22px 22px;
+      background: var(--white);
+      border: 1px solid var(--rule);
+      position: relative;
+    }
+    .compose-card::before {
+      content: attr(data-n);
+      position: absolute;
+      top: -14px;
+      left: 20px;
+      width: 34px; height: 34px;
+      background: var(--blue);
+      color: var(--white);
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    .compose-card h4 {
+      font-family: var(--display);
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: -0.008em;
+      color: var(--deep);
+      margin: 8px 0 10px;
+      line-height: 1.22;
+    }
+    .compose-card h4 em {
+      font-style: italic;
+      font-variation-settings: "opsz" 30, "SOFT" 100, "WONK" 1;
+      color: var(--blue);
+    }
+    .compose-card p {
+      font-family: var(--body);
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--slate);
+      margin: 0;
+    }
+    @media (max-width: 900px) { .compose { grid-template-columns: 1fr; } }
+
+    /* ─────────────  APPENDIX  ───────────── */
+    .appendix-body .group { margin-bottom: 40px; }
+    .appendix-body .group h5 {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--blue);
+      font-weight: 600;
+      margin: 0 0 12px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .appendix-body .group h5::before {
+      content: ''; width: 28px; height: 3px; background: var(--blue);
+    }
+    .appendix-body .group .grouptitle {
+      font-family: var(--display);
+      font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+      font-size: 22px;
+      line-height: 1.15;
+      color: var(--deep);
+      margin: 0 0 18px;
+      letter-spacing: -0.008em;
+    }
+    .ref-list, .docs-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    @media (max-width: 720px) { .ref-list, .docs-list { grid-template-columns: 1fr; } }
+    .ref-list li, .docs-list li {
+      padding: 14px 16px 14px 18px;
+      border: 1px solid var(--rule);
+      border-left: 2px solid var(--blue);
+      font-family: var(--body);
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--slate);
+      margin: 0;
+    }
+    .ref-list li::before, .docs-list li::before { content: none; }
+    .ref-list li strong, .docs-list li strong {
+      color: var(--deep);
+      font-weight: 600;
+      display: block;
+      font-family: var(--display);
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    /* ─────────────  COLOPHON  ───────────── */
+    footer.colophon {
+      background: var(--deep);
+      color: var(--stone);
+      padding: 44px 48px;
+    }
+    footer.colophon .inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 32px;
+    }
+    @media (max-width: 720px) { footer.colophon .inner { grid-template-columns: 1fr; } }
+    footer.colophon .block {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      line-height: 1.7;
+    }
+    footer.colophon .h { color: var(--blue); font-weight: 600; margin-bottom: 10px; }
+    footer.colophon .feature {
+      font-family: var(--display);
+      font-style: italic;
+      font-variation-settings: "opsz" 36, "SOFT" 80, "WONK" 0;
+      font-size: 20px;
+      color: var(--white);
+      letter-spacing: -0.01em;
+      text-transform: none;
+      line-height: 1.3;
+      margin: 6px 0 4px;
+      font-weight: 400;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0ms !important;
+        transition-duration: 0ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress" id="prog"></div>
+
+<!-- ════════════════════ TITLE PAGE ════════════════════ -->
+<section class="title-page" id="top">
+  <div class="mast">
+    <span class="mark">Infosys Consulting</span>
+    <span class="meta">Engineering notes &nbsp;·&nbsp; No. 04 &nbsp;·&nbsp; May 2026</span>
+  </div>
+
+  <div class="hero">
+    <p class="kicker">A self-learning guide</p>
+    <h1>The Claude Agent <em>SDK</em>.</h1>
+    <p class="deck">
+      Anthropic's library for building agents that <em>do things</em> —
+      not just write words. A look at what's inside, when to reach for it,
+      and a working example you can run in fourteen lines.
+    </p>
+  </div>
+
+  <div class="byline">
+    <div class="field"><span class="label">Audience</span><span class="value">Builders &amp; the curious</span></div>
+    <div class="field"><span class="label">Reading time</span><span class="value">~12 minutes</span></div>
+    <div class="field"><span class="label">Practice</span><span class="value">IC AI Engineering</span></div>
+    <div class="field"><span class="label">Edition</span><span class="value">No. 04  ·  Spring 2026</span></div>
+  </div>
+</section>
+
+<!-- ════════════════════ MAIN LAYOUT ════════════════════ -->
+<div class="layout">
+
+  <!-- ─────────────  SIDEBAR / TOC  ───────────── -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="label">Engineering notes · No. 04</div>
+      <div class="doc-title">The Claude Agent <em>SDK</em></div>
+      <div class="doc-meta">May 2026 · ~12 min</div>
+    </div>
+
+    <nav>
+      <div class="group">
+        <p class="group-label">Definition</p>
+        <ol>
+          <li><a href="#s1" data-section="s1"><span class="num">I</span><span>What it is</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Architecture</p>
+        <ol>
+          <li><a href="#s2" data-section="s2"><span class="num">II</span><span>The stack</span></a></li>
+          <li><a href="#s3" data-section="s3"><span class="num">III</span><span>What it constitutes</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Indications</p>
+        <ol>
+          <li><a href="#s4" data-section="s4"><span class="num">IV</span><span>When to reach for it</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Practice</p>
+        <ol>
+          <li><a href="#s5" data-section="s5"><span class="num">V</span><span>A working example</span></a></li>
+          <li><a href="#s6" data-section="s6"><span class="num">VI</span><span>The loop, animated</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Composition</p>
+        <ol>
+          <li><a href="#s7" data-section="s7"><span class="num">VII</span><span>How it composes</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Appendix</p>
+        <ol>
+          <li><a href="#appendix" data-section="appendix" class="appendix"><span class="num">—</span><span>Quick reference &amp; reading</span></a></li>
+        </ol>
+      </div>
+    </nav>
+
+    <div class="foot">
+      <a href="#top">↑ Back to top</a><br>
+      Infosys Consulting<br>
+      Self-learning · Internal use
+    </div>
+  </aside>
+
+  <!-- ─────────────  CONTENT  ───────────── -->
+  <main class="content">
+
+    <!-- SECTION I -->
+    <section id="s1">
+      <div class="section-header">
+        <p class="num">Chapter I · Definition</p>
+        <h2>What it <em>is</em>.</h2>
+        <p class="deck">The runtime that powers Claude Code, packaged as a library you can embed in your own applications.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 01 · Definition</p>
+        <h3>The model is the engine. The <em>SDK</em> is everything else.</h3>
+        <p class="lead drop-cap">The Claude Agent SDK is the runtime that powers Claude Code — packaged as a library you can embed in your own applications. It is the loop, the tools, the permissions, and the plumbing. It is what stands between a single API call and a self-directed program that opens files, runs commands, and decides what to do next.</p>
+
+        <p class="pull">
+          Anthropic SDK lets you <em>talk to Claude once.</em> The Agent SDK lets Claude <em>drive a loop with tools.</em>
+          <span class="src">The one-line mental model</span>
+        </p>
+
+        <p>It ships in Python (<span class="inline-code">pip install claude-agent-sdk</span>) and TypeScript (<span class="inline-code">npm install @anthropic-ai/claude-agent-sdk</span>). Both are thin bindings over the same agent runtime.</p>
+
+        <div class="note">
+          <p class="tag">A note on lineage</p>
+          <h6>Originally released as the Claude Code SDK.</h6>
+          <p>Renamed in late 2025 once people started building research agents, ops agents, and customer-facing bots with it. Same code, broader name.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION II -->
+    <section id="s2">
+      <div class="section-header">
+        <p class="num">Chapter II · Architecture</p>
+        <h2>Three layers, <em>stacked</em>.</h2>
+        <p class="deck">Each layer assumes the one below it and adds a coordination concern. You can stop at any layer that solves your problem.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 02 · Architecture</p>
+        <h3>The <em>stack</em>.</h3>
+        <p class="deck-lead">The Anthropic-built agentic surface is three layers. The Agent SDK sits in the middle: not the raw model, not the multi-agent protocol — the harness that turns a single model into something that can do work.</p>
+
+        <div class="stack">
+          <span class="fig-num">FIG. 01</span>
+          <div class="stack-grid">
+            <div class="stack-layer">
+              <span class="num">L3</span>
+              <span class="name">A2A — <em>inter-agent</em></span>
+              <span class="desc">Wire protocol so independent agents can discover and call each other over HTTP + JSON-RPC. Agnostic to who built them.</span>
+            </div>
+            <div class="stack-layer">
+              <span class="num">L2</span>
+              <span class="name">Agent SDK — <em>the loop</em></span>
+              <span class="desc">Runtime that lets Claude call tools, dispatch subagents, manage context, and follow a plan to completion.</span>
+            </div>
+            <div class="stack-layer">
+              <span class="num">L1</span>
+              <span class="name">Anthropic SDK — <em>the model</em></span>
+              <span class="desc">Raw client. One prompt in, one completion out. Streaming, caching, tool-use schemas. No autonomy.</span>
+            </div>
+          </div>
+          <div class="stack-caption">Each layer solves a different problem  ↑</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION III -->
+    <section id="s3">
+      <div class="section-header">
+        <p class="num">Chapter III · Architecture</p>
+        <h2>What it <em>constitutes</em> of.</h2>
+        <p class="deck">Five layers stacked on top of the raw Claude API. Together they replace the harness you would otherwise build yourself.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 03 · Architecture</p>
+        <h3>The <em>anatomy</em>, in five parts.</h3>
+        <p class="deck-lead">When you import the SDK, here is what shows up. Each part replaces something you would otherwise build yourself — and most of it you would build badly the first time.</p>
+
+        <div class="layers">
+          <div class="layer">
+            <div class="roman">i</div>
+            <div>
+              <h4>The agent loop.</h4>
+              <p>Call Claude → parse tool calls → execute them → feed results back → repeat until the model says "done." Handles context-window management, automatic compaction, retries, and termination. <em>This is the core.</em></p>
+            </div>
+          </div>
+
+          <div class="layer">
+            <div class="roman">ii</div>
+            <div>
+              <h4>Built-in tools.</h4>
+              <p>Ready-made primitives the model can call. Same implementations Claude Code uses.</p>
+              <div class="tags">
+                <span class="tag tool">Read</span><span class="tag tool">Write</span><span class="tag tool">Edit</span>
+                <span class="tag tool">Bash</span><span class="tag tool">Glob</span><span class="tag tool">Grep</span>
+                <span class="tag tool">WebFetch</span><span class="tag tool">WebSearch</span><span class="tag tool">TodoWrite</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="layer">
+            <div class="roman">iii</div>
+            <div>
+              <h4>Extension surfaces.</h4>
+              <p>Where your agent diverges from Claude Code. Define your own tools, attach MCP servers, dispatch subagents with isolated context, install skills that load on demand, and hook into lifecycle events.</p>
+              <div class="tags">
+                <span class="tag ext">Custom tools</span><span class="tag ext">MCP</span>
+                <span class="tag ext">Subagents</span><span class="tag ext">Skills</span>
+                <span class="tag ext">Hooks</span><span class="tag ext">Slash commands</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="layer">
+            <div class="roman">iv</div>
+            <div>
+              <h4>Runtime services.</h4>
+              <p>The plumbing you would re-invent: a granular permission system, session pause/resume/fork, automatic prompt caching, settings hierarchy (global → project → local), and environment-variable inheritance.</p>
+            </div>
+          </div>
+
+          <div class="layer">
+            <div class="roman">v</div>
+            <div>
+              <h4>Deployment helpers.</h4>
+              <p>Not a framework, but enough surface area to wrap the runtime in a CLI, a web service, a Slack bot, or — yes — an A2A server. The loop stays the same; only the I/O changes.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="note">
+          <p class="tag">Inheritance</p>
+          <h6>You inherit a mature toolkit; you do not rebuild it.</h6>
+          <p>Every tool, hook, and skill you see in Claude Code is available to your Agent SDK app. That's the practical advantage of the SDK being the same runtime as the product — the parts that have already been polished are yours for free.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION IV -->
+    <section id="s4">
+      <div class="section-header">
+        <p class="num">Chapter IV · Indications</p>
+        <h2>When to <em>reach</em> for it.</h2>
+        <p class="deck">Indications and counter-indications, side by side. Not every problem needs an agentic loop.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 04 · Indications</p>
+        <h3>Use vs. <em>don't use</em>.</h3>
+        <p class="deck-lead">The Agent SDK is a heavy abstraction. When the problem fits, it saves you weeks of harness-building. When it doesn't, you are carrying weight you don't need.</p>
+
+        <div class="when-grid">
+          <div class="when-col">
+            <h4>Use the Agent SDK when —</h4>
+            <ul>
+              <li>You want an <em>agentic loop</em>, not a single-shot completion</li>
+              <li>The agent needs <em>side effects</em>: files, shell, APIs</li>
+              <li>Tools need to <em>compose</em> — multi-step plans, branching, chains</li>
+              <li>You would rather <em>inherit</em> Claude Code's loop than write your own</li>
+              <li>You want subagent dispatch, MCP, hooks, and skills out of the box</li>
+            </ul>
+          </div>
+          <div class="when-col">
+            <h4>Reach for something else when —</h4>
+            <ul>
+              <li>You need a single prompt → single completion <em>(Anthropic SDK)</em></li>
+              <li>You are building a chat UI with no tool calls <em>(Anthropic SDK + streaming)</em></li>
+              <li>You need provider-agnostic code <em>(LangChain, LlamaIndex)</em></li>
+              <li>You are doing pure RAG with no agentic behavior <em>(Anthropic SDK + vectors)</em></li>
+              <li>The runtime must be in a language Anthropic does not ship a binding for</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION V -->
+    <section id="s5">
+      <div class="section-header">
+        <p class="num">Chapter V · Practice</p>
+        <h2>A <em>minimal</em> Agent SDK app.</h2>
+        <p class="deck">Fourteen lines of Python — fully agentic. Same primitives Claude Code uses internally.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 05 · Practice</p>
+        <h3>A working <em>example</em>.</h3>
+        <p class="deck-lead">The shape of every Agent SDK program is the same: pick the tools you want available, hand the model a goal, let the loop run. The example below reads a codebase, finds every <em>TODO</em> comment, and summarises them in priority order.</p>
+
+        <div class="code-frame">
+          <header>
+            <span>todo_summarizer.py</span>
+            <span class="lang">Python  ·  Agent SDK</span>
+            <span>~ 14 lines</span>
+          </header>
+<pre><code><span class="ln"><span class="com"># pip install claude-agent-sdk</span></span><span class="ln"><span class="kw">from</span> claude_agent_sdk <span class="kw">import</span> query, ClaudeAgentOptions</span><span class="ln"><span class="kw">import</span> asyncio</span><span class="ln"></span><span class="ln"><span class="kw">async def</span> <span class="fn">main</span>():</span><span class="ln">    options = <span class="fn">ClaudeAgentOptions</span>(</span><span class="ln">        system_prompt=<span class="str">"You are a code archaeologist. Be terse."</span>,</span><span class="ln">        allowed_tools=[<span class="str">"Read"</span>, <span class="str">"Grep"</span>, <span class="str">"Glob"</span>],   <span class="com"># read-only — safe</span></span><span class="ln">        permission_mode=<span class="str">"acceptEdits"</span>,</span><span class="ln">        cwd=<span class="str">"./my-project"</span>,</span><span class="ln">    )</span><span class="ln"></span><span class="ln">    prompt = <span class="str">"Find every TODO/FIXME in this repo. "</span> \</span><span class="ln">             <span class="str">"Group by file, rank by apparent severity, return markdown."</span></span><span class="ln"></span><span class="ln">    <span class="kw">async for</span> message <span class="kw">in</span> <span class="fn">query</span>(prompt=prompt, options=options):</span><span class="ln">        <span class="fn">print</span>(message)</span><span class="ln"></span><span class="ln">asyncio.<span class="fn">run</span>(<span class="fn">main</span>())</span></code></pre>
+        </div>
+
+        <p>Behind those fourteen lines: an entire agent loop. Claude inspects the repo with <span class="inline-code">Glob</span>, narrows with <span class="inline-code">Grep</span>, opens individual files with <span class="inline-code">Read</span>, reasons about severity, and emits a markdown report — all without you writing the control flow.</p>
+
+        <div class="note">
+          <p class="tag">What this does</p>
+          <h6>A working agent, not a toy.</h6>
+          <p>Reads a directory, finds every <em>TODO</em> comment in the codebase, and summarises them in priority order. Fully agentic — multi-step, tool-using, with proper permission scoping. Same primitives Claude Code uses internally.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION VI -->
+    <section id="s6">
+      <div class="section-header">
+        <p class="num">Chapter VI · Practice</p>
+        <h2>See it <em>run</em>.</h2>
+        <p class="deck">Step through the loop one stage at a time. Watch how it alternates between thinking, calling tools, and digesting results.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 06 · Practice</p>
+        <h3>The loop, <em>animated</em>.</h3>
+        <p class="deck-lead">Click <em>Step</em> to advance the agent through one turn of the loop. Watch how it alternates between thinking, calling tools, and digesting results — and how it knows when to stop.</p>
+
+        <div class="loop" id="loop">
+          <div class="loop-head">
+            <div class="loop-title">todo_summarizer.py — <em>live trace</em></div>
+            <div class="loop-step-counter">Stage <strong id="step-num">0</strong> / 8</div>
+          </div>
+
+          <div id="stages"></div>
+
+          <div class="loop-controls">
+            <button class="btn" id="reset">Reset</button>
+            <button class="btn primary" id="step">Step →</button>
+            <button class="btn primary" id="play">Auto-play</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION VII -->
+    <section id="s7">
+      <div class="section-header">
+        <p class="num">Chapter VII · Composition</p>
+        <h2>How it <em>composes</em>.</h2>
+        <p class="deck">The Agent SDK builds individual agents. A2A lets agents call each other. Together, you get a fleet.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 07 · Composition</p>
+        <h3>Three patterns for <em>composition</em>.</h3>
+        <p class="deck-lead">Agent SDK and A2A are not competitors. They compose. There are three common patterns for putting them together — pick by where you want the orchestration to live.</p>
+
+        <div class="compose">
+          <div class="compose-card" data-n="1">
+            <h4>SDK agent, exposed via <em>A2A</em></h4>
+            <p>Wrap a Claude Agent SDK app inside an <span class="inline-code">AgentExecutor</span>. Now other agents discover it through its Agent Card and call it like any other A2A service.</p>
+          </div>
+          <div class="compose-card" data-n="2">
+            <h4>SDK agent that <em>consumes</em> A2A</h4>
+            <p>Add a custom tool that calls out to specialist A2A agents. Claude now orchestrates a fleet — picking the right specialist for each subtask.</p>
+          </div>
+          <div class="compose-card" data-n="3">
+            <h4>Pure A2A, <em>no SDK</em></h4>
+            <p>Just the wire protocol — good for understanding the contract, but not what you would ship to production for any non-trivial agent.</p>
+          </div>
+        </div>
+
+        <div class="note">
+          <p class="tag">Orthogonal layers</p>
+          <h6>Not competitors — collaborators.</h6>
+          <p>Agent SDK gives you the runtime for one agent. A2A gives you a way for agents to find and call each other. You can use both, either, or neither. The interesting systems use both.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- APPENDIX -->
+    <section id="appendix">
+      <div class="section-header">
+        <p class="num">— Appendix</p>
+        <h2>Quick <em>reference</em>.</h2>
+        <p class="deck">Install commands, related reading, edition notes.</p>
+      </div>
+      <div class="section-body appendix-body">
+
+        <div class="group">
+          <h5>Quick start</h5>
+          <p class="grouptitle">Get from zero to a working agent in two commands.</p>
+          <div class="code-frame">
+            <header>
+              <span>install.sh</span>
+              <span class="lang">Shell</span>
+              <span>2 lines</span>
+            </header>
+<pre><code><span class="ln"><span class="com"># Python</span></span><span class="ln">pip install claude-agent-sdk</span><span class="ln"></span><span class="ln"><span class="com"># TypeScript</span></span><span class="ln">npm install @anthropic-ai/claude-agent-sdk</span></code></pre>
+          </div>
+        </div>
+
+        <div class="group">
+          <h5>Further reading</h5>
+          <p class="grouptitle">Official docs and adjacent material.</p>
+          <ul class="docs-list">
+            <li><strong>Anthropic · Claude Agent SDK docs</strong>The canonical reference. Start here. Covers query API, options, hooks, and tool authorship.</li>
+            <li><strong>Anthropic · Building Effective Agents</strong>The taxonomy of agent patterns — chains, parallels, routers, evaluator-optimizers. Frames the design space.</li>
+            <li><strong>Claude Code documentation</strong>The Agent SDK <em>is</em> Claude Code's runtime. Reading Claude Code's docs teaches you the SDK's behavior.</li>
+            <li><strong>A2A protocol specification</strong>The wire protocol referenced in §07. Useful when you want agents from different vendors to interoperate.</li>
+            <li><strong>Model Context Protocol (MCP)</strong>The standard for plugging external services into an agent. Tagged under "Extension surfaces" in §03.</li>
+            <li><strong>OpenTelemetry · GenAI semantic conventions</strong>Once you have an agent in production, this is what you instrument it with.</li>
+          </ul>
+        </div>
+
+        <div class="group">
+          <h5>References</h5>
+          <p class="grouptitle">Cited and consulted.</p>
+          <ul class="ref-list">
+            <li><strong>Anthropic engineering blog</strong>Posts on agent design, tool use, and computer-use traces.</li>
+            <li><strong>Claude Code GitHub</strong>Open issues and discussions surface real-world usage patterns.</li>
+            <li><strong>IC AI Engineering practice notes</strong>Internal patterns and lessons from production deployments.</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ════════════════════ COLOPHON FOOTER ════════════════════ -->
+<footer class="colophon">
+  <div class="inner">
+    <div class="block">
+      <div class="h">Document</div>
+      <div class="feature">The Claude Agent SDK.</div>
+      <div>Engineering notes · No. 04 · May 2026</div>
+    </div>
+    <div class="block">
+      <div class="h">Practice</div>
+      <div class="feature">Infosys Consulting · AI Engineering.</div>
+      <div>Self-learning · Internal use</div>
+    </div>
+    <div class="block">
+      <div class="h">Set in</div>
+      <div class="feature">Fraunces &amp; IBM Plex Sans &amp; JetBrains Mono.</div>
+      <div>Designed by IC</div>
+    </div>
+  </div>
+</footer>
+
+<!-- ════════════════════ SCRIPTS ════════════════════ -->
+<script>
+  // ─── Loop animation (preserved verbatim from the original) ───
+  const STAGES = [
+    { who: "User",       cls: "",            body: "Find every TODO/FIXME in this repo. Group by file, rank by apparent severity, return markdown." },
+    { who: "Claude",     cls: "",            body: "I'll start by locating source files, then grep for TODO/FIXME markers across them." },
+    { who: "Tool call",  cls: "tool-call",   body: "Glob(pattern=\"**/*.{ts,tsx,js,py}\")" },
+    { who: "Tool result",cls: "tool-result", body: "→ 47 files matched\n  src/auth/session.ts\n  src/api/billing.py\n  src/components/Modal.tsx\n  … (+ 44 more)" },
+    { who: "Tool call",  cls: "tool-call",   body: "Grep(pattern=\"TODO|FIXME\", path=\"src/\", output_mode=\"content\")" },
+    { who: "Tool result",cls: "tool-result", body: "→ 23 matches across 11 files\n  session.ts:42  FIXME: token refresh races on parallel reqs\n  billing.py:118 TODO: handle partial refunds\n  Modal.tsx:91   TODO: focus trap on open\n  …" },
+    { who: "Claude",     cls: "",            body: "I have enough. Synthesising a markdown report grouped by file with a severity column based on language ('FIXME' and race conditions weighted higher)." },
+    { who: "Final",      cls: "final",       body: "✓ Done. 23 items across 11 files. 4 critical (race conditions, auth), 12 moderate, 7 cosmetic. Report attached." },
+  ];
+
+  const stagesEl = document.getElementById("stages");
+  const stepNum  = document.getElementById("step-num");
+  const stepBtn  = document.getElementById("step");
+  const playBtn  = document.getElementById("play");
+  const resetBtn = document.getElementById("reset");
+
+  let current = 0;
+  let playing = false;
+  let playTimer = null;
+
+  function buildStage(s, i) {
+    const wrap = document.createElement("div");
+    wrap.className = "loop-stage" + (s.cls ? " " + s.cls : "");
+    if (i < current - 1) wrap.classList.add("done");
+    if (i === current - 1) wrap.classList.add("active");
+
+    const who = document.createElement("div");
+    who.className = "who";
+    who.textContent = s.who;
+
+    const body = document.createElement("div");
+    body.className = "body";
+    body.textContent = s.body;
+
+    wrap.appendChild(who);
+    wrap.appendChild(body);
+    return wrap;
+  }
+
+  function render() {
+    while (stagesEl.firstChild) stagesEl.removeChild(stagesEl.firstChild);
+    for (let i = 0; i < STAGES.length; i++) {
+      stagesEl.appendChild(buildStage(STAGES[i], i));
+    }
+
+    stepNum.textContent = current;
+    stepBtn.textContent = current >= STAGES.length ? "Complete ✓" : "Step →";
+    stepBtn.disabled = current >= STAGES.length;
+  }
+
+  function step() {
+    if (current < STAGES.length) {
+      current++;
+      render();
+    } else if (playing) {
+      stopPlay();
+    }
+  }
+
+  function startPlay() {
+    if (current >= STAGES.length) current = 0;
+    playing = true;
+    playBtn.textContent = "Pause";
+    playTimer = setInterval(() => {
+      if (current >= STAGES.length) { stopPlay(); return; }
+      step();
+    }, 1200);
+  }
+
+  function stopPlay() {
+    playing = false;
+    playBtn.textContent = "Auto-play";
+    clearInterval(playTimer);
+  }
+
+  function reset() {
+    stopPlay();
+    current = 0;
+    render();
+  }
+
+  stepBtn.addEventListener("click", () => { if (playing) stopPlay(); step(); });
+  playBtn.addEventListener("click", () => { playing ? stopPlay() : startPlay(); });
+  resetBtn.addEventListener("click", reset);
+
+  render();
+
+  // ─── Reading progress + sidebar active section tracking ───
+  (function () {
+    const prog = document.getElementById('prog');
+    const onScroll = () => {
+      const h = document.documentElement;
+      const scrolled = h.scrollTop;
+      const max = h.scrollHeight - h.clientHeight;
+      const p = max > 0 ? (scrolled / max) * 100 : 0;
+      prog.style.setProperty('--p', p.toFixed(2) + '%');
+    };
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    if ('IntersectionObserver' in window) {
+      const links = document.querySelectorAll('.sidebar nav a[data-section]');
+      const linkMap = {};
+      links.forEach(a => { linkMap[a.dataset.section] = a; });
+
+      const setActive = (id) => {
+        links.forEach(a => a.classList.remove('active'));
+        if (linkMap[id]) linkMap[id].classList.add('active');
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        let best = null;
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            if (!best || e.boundingClientRect.top < best.boundingClientRect.top) {
+              best = e;
+            }
+          }
+        });
+        if (best) setActive(best.target.id);
+      }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+
+      document.querySelectorAll('main.content > section[id]').forEach(s => {
+        observer.observe(s);
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

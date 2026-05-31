@@ -1,0 +1,2021 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agentic Harness, Evals &amp; Traces — A self-learning guide · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  /* ─────────────── IC tokens ─────────────── */
+  :root {
+    --white:      #FFFFFF;
+    --deep:       #182534;
+    --pavement:   #404040;
+    --blue:       #007CC3;
+    --stone:      #A7A9AC;
+    --slate:      #6D6E71;
+    --lt-blue:    #3699DA;
+    --tint-blue:  #E6F2FA;
+    --tint-stone: #F2F2F3;
+    --rule:       #E2E4E7;
+
+    --display: 'Fraunces', 'Times New Roman', serif;
+    --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+    --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+    --sidebar-w: 280px;
+  }
+
+  /* ─────────────── reset / base ─────────────── */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--pavement);
+    background: var(--white);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern", "liga";
+  }
+  ::selection { background: var(--deep); color: var(--white); }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  p { margin: 0 0 18px; }
+  ol, ul { margin: 0 0 22px; padding-left: 24px; }
+  li { margin: 6px 0; }
+
+  /* ─────────────── reading-progress bar ─────────────── */
+  .progress {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 2px; background: transparent; z-index: 1000;
+    pointer-events: none;
+  }
+  .progress::before {
+    content: ''; display: block;
+    height: 100%; width: var(--p, 0%);
+    background: var(--blue);
+    transition: width 80ms linear;
+  }
+
+  /* ─────────────── TITLE PAGE (full-bleed) ─────────────── */
+  .title-page {
+    background: var(--deep);
+    color: var(--white);
+    min-height: 100vh;
+    padding: 56px 48px 48px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 32px;
+    position: relative;
+  }
+  .title-page::after {
+    content: ''; position: absolute;
+    left: 0; right: 0; bottom: 0; height: 2px;
+    background: var(--blue);
+  }
+  .title-page .mast {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .title-page .mast .mark { color: var(--white); font-weight: 600; }
+  .title-page .mast .meta { color: var(--stone); }
+  .title-page .hero {
+    align-self: center;
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .title-page .kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--lt-blue);
+    font-weight: 600;
+    margin: 0 0 24px;
+    display: flex; align-items: center; gap: 16px;
+    animation: fadeUp 700ms cubic-bezier(.2,.7,.2,1) both;
+  }
+  .title-page .kicker::before {
+    content: ''; width: 56px; height: 1px; background: var(--lt-blue);
+  }
+  .title-page h1 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+    font-weight: 380;
+    font-size: clamp(48px, 8vw, 116px);
+    line-height: 0.96;
+    letter-spacing: -0.028em;
+    margin: 0 0 36px;
+    color: var(--white);
+    max-width: 16ch;
+    animation: fadeUp 900ms cubic-bezier(.2,.7,.2,1) 100ms both;
+  }
+  .title-page h1 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+    color: var(--lt-blue);
+    font-weight: 380;
+  }
+  .title-page .deck {
+    font-family: var(--body);
+    font-size: clamp(18px, 1.6vw, 22px);
+    line-height: 1.5;
+    font-weight: 400;
+    color: var(--stone);
+    max-width: 56ch;
+    margin: 0;
+    animation: fadeUp 1000ms cubic-bezier(.2,.7,.2,1) 240ms both;
+  }
+  .title-page .deck em { font-style: italic; color: var(--white); }
+  .title-page .byline {
+    border-top: 1px solid rgba(255,255,255,0.12);
+    padding-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+    animation: fadeUp 1100ms cubic-bezier(.2,.7,.2,1) 420ms both;
+  }
+  @media (max-width: 720px) { .title-page .byline { grid-template-columns: repeat(2, 1fr); } }
+  .title-page .byline .field { display: flex; flex-direction: column; gap: 6px; }
+  .title-page .byline .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--stone);
+    font-weight: 600;
+  }
+  .title-page .byline .value {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 30, "SOFT" 60, "WONK" 0;
+    font-size: 17px;
+    color: var(--white);
+    line-height: 1.3;
+  }
+
+  /* ═════════════════════ MAIN LAYOUT ═════════════════════
+     Two-column docs layout: sticky sidebar + scrollable content. */
+  .layout {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+    gap: 0;
+    position: relative;
+  }
+  @media (max-width: 920px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  /* ─────────────── SIDEBAR (sticky TOC) ─────────────── */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 36px 28px 32px;
+    border-right: 1px solid var(--rule);
+    background: var(--white);
+    /* subtle scrollbar styling */
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule) transparent;
+  }
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+  @media (max-width: 920px) {
+    .sidebar {
+      position: static;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--rule);
+      padding: 28px 24px;
+    }
+  }
+
+  .sidebar .brand {
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 22px;
+  }
+  .sidebar .brand .label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sidebar .brand .label::before {
+    content: ''; width: 22px; height: 2px; background: var(--blue);
+  }
+  .sidebar .brand .doc-title {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+    font-size: 20px;
+    line-height: 1.18;
+    color: var(--deep);
+    margin: 0 0 6px;
+    letter-spacing: -0.005em;
+  }
+  .sidebar .brand .doc-title em {
+    font-style: italic;
+    font-variation-settings: "opsz" 36, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+    font-weight: 400;
+  }
+  .sidebar .brand .doc-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--slate);
+    text-transform: uppercase;
+  }
+
+  .sidebar nav .group {
+    margin-bottom: 22px;
+  }
+  .sidebar nav .group-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 600;
+    margin: 0 0 6px;
+    padding-left: 14px;
+  }
+  .sidebar nav ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sidebar nav li { margin: 0; }
+  .sidebar nav a {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 10px;
+    align-items: baseline;
+    padding: 7px 12px 7px 12px;
+    border-left: 2px solid transparent;
+    color: var(--pavement);
+    font-family: var(--body);
+    font-size: 14px;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+    font-weight: 400;
+  }
+  .sidebar nav a:hover {
+    color: var(--blue);
+    background: var(--tint-blue);
+    text-decoration: none;
+  }
+  .sidebar nav a.active {
+    color: var(--blue);
+    border-left-color: var(--blue);
+    background: var(--tint-blue);
+    font-weight: 500;
+  }
+  .sidebar nav .num {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 24, "SOFT" 100, "WONK" 1;
+    font-size: 14px;
+    color: var(--blue);
+    line-height: 1;
+    font-weight: 400;
+  }
+  .sidebar nav a.appendix .num {
+    font-family: var(--mono);
+    font-style: normal;
+    color: var(--stone);
+    font-size: 12px;
+  }
+
+  .sidebar .foot {
+    margin-top: 32px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--slate);
+    line-height: 1.7;
+  }
+  .sidebar .foot a {
+    color: var(--blue);
+    font-weight: 600;
+  }
+
+  /* ─────────────── CONTENT COLUMN ─────────────── */
+  .content {
+    min-width: 0;
+  }
+
+  /* Section header — DEEP_BLUE band within the content column.
+     Padding tuned to feel like a real section break without dominating
+     the viewport in a docs-site layout. */
+  .section-header {
+    background: var(--deep);
+    color: var(--white);
+    padding: 44px 56px;
+    position: relative;
+  }
+  .section-header::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 1px;
+    background: var(--blue);
+  }
+  @media (max-width: 720px) { .section-header { padding: 32px 24px; } }
+
+  .section-header .num {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--lt-blue);
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-header .num::before {
+    content: ''; width: 28px; height: 1px; background: var(--lt-blue);
+  }
+  .section-header h2 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 96, "SOFT" 0, "WONK" 0;
+    font-weight: 380;
+    font-size: clamp(28px, 3.8vw, 44px);
+    line-height: 1.05;
+    letter-spacing: -0.018em;
+    color: var(--white);
+    margin: 0 0 12px;
+    max-width: 22ch;
+  }
+  .section-header h2 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 96, "SOFT" 100, "WONK" 1;
+    color: var(--lt-blue);
+    font-weight: 380;
+  }
+  .section-header .deck {
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--stone);
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  /* Section body — tighter top padding so the body reads as a continuation
+     of the section header, not a disconnected block below it. */
+  .section-body {
+    padding: 36px 56px 48px;
+    max-width: 820px;
+  }
+  @media (max-width: 720px) { .section-body { padding: 28px 24px 36px; } }
+
+  .section-body .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  /* The "span" bar — visual nod to the trace topic */
+  .section-body .eyebrow::before {
+    content: ''; width: 28px; height: 3px; background: var(--blue);
+  }
+  .section-body h3 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 60, "SOFT" 0, "WONK" 0;
+    font-weight: 400;
+    font-size: clamp(24px, 2.8vw, 32px);
+    line-height: 1.14;
+    letter-spacing: -0.01em;
+    color: var(--deep);
+    margin: 0 0 14px;
+  }
+  .section-body h3 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 60, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+    font-weight: 400;
+  }
+  .section-body .deck {
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--slate);
+    margin: 0 0 24px;
+    max-width: 60ch;
+    font-weight: 400;
+  }
+
+  .section-body p {
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--pavement);
+    font-weight: 400;
+  }
+  .section-body p strong { color: var(--deep); font-weight: 600; }
+  .section-body p em { font-style: italic; color: var(--deep); }
+  .section-body h4 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 30, "SOFT" 0, "WONK" 0;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--deep);
+    margin: 36px 0 12px;
+    letter-spacing: -0.008em;
+    line-height: 1.25;
+  }
+  .section-body h5 {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 28px 0 10px;
+  }
+  .section-body ul, .section-body ol {
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--pavement);
+  }
+  .section-body ul { list-style: none; padding-left: 0; }
+  .section-body ul li {
+    position: relative;
+    padding-left: 24px;
+    margin: 6px 0;
+  }
+  .section-body ul li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0.62em;
+    width: 12px; height: 1px;
+    background: var(--blue);
+  }
+  .section-body ol li { margin: 6px 0; }
+
+  /* Pull quote */
+  .pull {
+    margin: 36px 0;
+    padding: 4px 0 4px 24px;
+    border-left: 2px solid var(--blue);
+    font-family: var(--display);
+    font-variation-settings: "opsz" 60, "SOFT" 60, "WONK" 0;
+    font-style: italic;
+    font-weight: 360;
+    font-size: 26px;
+    line-height: 1.22;
+    color: var(--deep);
+    letter-spacing: -0.01em;
+  }
+  .pull .src {
+    display: block;
+    margin-top: 12px;
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 600;
+  }
+
+  /* Code blocks */
+  pre.code {
+    margin: 24px 0;
+    padding: 22px 24px 22px 28px;
+    background: var(--tint-stone);
+    border-left: 3px solid var(--blue);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--deep);
+    overflow-x: auto;
+    position: relative;
+    white-space: pre;
+  }
+  pre.code .lang {
+    position: absolute;
+    top: 8px; right: 12px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    background: var(--tint-stone);
+    padding: 2px 8px;
+  }
+  code.inline {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: var(--tint-blue);
+    color: var(--blue);
+    padding: 1px 6px;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+
+  /* Notes / callouts */
+  .note {
+    margin: 28px 0;
+    padding: 20px 24px;
+    background: var(--tint-blue);
+    border-left: 2px solid var(--blue);
+    border-radius: 0 2px 2px 0;
+  }
+  .note .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  .note h6 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 30, "SOFT" 0, "WONK" 0;
+    font-style: italic;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--deep);
+    margin: 0 0 6px;
+  }
+  .note p { margin: 0; font-size: 15px; color: var(--pavement); line-height: 1.55; }
+  .note p + p { margin-top: 10px; }
+
+  /* Figures */
+  figure { margin: 32px 0; padding: 0; }
+  figure .fignum {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  figure svg {
+    display: block;
+    width: 100%;
+    max-width: 740px;
+    height: auto;
+    border: 1px solid var(--rule);
+    background: var(--white);
+  }
+  figure figcaption {
+    margin-top: 10px;
+    font-family: var(--body);
+    font-size: 13px;
+    color: var(--slate);
+    line-height: 1.5;
+    font-style: italic;
+    max-width: 60ch;
+  }
+
+  /* Appendix */
+  .appendix-body .group { margin-bottom: 56px; }
+  .appendix-body .group h5 {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 14px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .appendix-body .group h5::before {
+    content: ''; width: 28px; height: 3px; background: var(--blue);
+  }
+  .appendix-body .group .grouptitle {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+    font-size: 26px;
+    line-height: 1.15;
+    color: var(--deep);
+    margin: 0 0 20px;
+    letter-spacing: -0.008em;
+  }
+  .glossary { border-top: 1px solid var(--rule); }
+  .glossary dt {
+    font-family: var(--body);
+    font-weight: 600;
+    color: var(--deep);
+    margin-top: 16px;
+    font-size: 15px;
+  }
+  .glossary dd {
+    margin: 4px 0 0;
+    font-family: var(--body);
+    font-size: 14px;
+    color: var(--pavement);
+    line-height: 1.55;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .tool-grid, .reading-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (max-width: 720px) { .tool-grid, .reading-list { grid-template-columns: 1fr; } }
+  .tool-grid li, .reading-list li {
+    padding: 14px 16px 14px 18px;
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--blue);
+    font-family: var(--body);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--pavement);
+    margin: 0;
+  }
+  .tool-grid li::before, .reading-list li::before { content: none; }
+  .tool-grid li strong, .reading-list li strong {
+    color: var(--deep);
+    font-weight: 600;
+    display: block;
+    font-family: var(--display);
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+
+  /* Colophon */
+  footer.colophon {
+    background: var(--deep);
+    color: var(--stone);
+    padding: 44px 48px;
+  }
+  footer.colophon .inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px;
+  }
+  @media (max-width: 720px) { footer.colophon .inner { grid-template-columns: 1fr; } }
+  footer.colophon .block {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    line-height: 1.7;
+  }
+  footer.colophon .h { color: var(--blue); font-weight: 600; margin-bottom: 10px; }
+  footer.colophon .feature {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 36, "SOFT" 80, "WONK" 0;
+    font-size: 20px;
+    color: var(--white);
+    letter-spacing: -0.01em;
+    text-transform: none;
+    line-height: 1.3;
+    margin: 6px 0 4px;
+    font-weight: 400;
+  }
+
+  /* Footnote markers */
+  sup.fn a {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--blue);
+    font-weight: 700;
+    padding: 0 2px;
+    text-decoration: none;
+  }
+  sup.fn a:hover { background: var(--tint-blue); }
+
+  /* ─────────── INTERACTIVE · LOOP ANIMATION (§ II) ───────────
+     Linear stage-by-stage runner: shows one full iteration of the agent
+     loop. Click Step to advance, Auto-play to watch. */
+  .loop {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    padding: 24px 28px;
+    margin: 24px 0 8px;
+  }
+  .loop-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .loop-title {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--deep);
+    letter-spacing: -0.008em;
+  }
+  .loop-title em {
+    font-style: italic;
+    font-variation-settings: "opsz" 30, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+  }
+  .loop-step-counter {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--stone);
+    font-weight: 600;
+  }
+  .loop-step-counter strong {
+    color: var(--blue);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .loop-stage {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule);
+    opacity: 0.22;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transform: translateY(4px);
+  }
+  .loop-stage:last-child { border-bottom: 0; }
+  .loop-stage.active { opacity: 1; transform: translateY(0); }
+  .loop-stage.done { opacity: 0.6; }
+  .loop-stage .who {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding-top: 4px;
+    color: var(--stone);
+    font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .loop-stage.active .who { color: var(--blue); }
+  .loop-stage .who::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: var(--stone);
+    border-radius: 50%;
+  }
+  .loop-stage.active .who::before {
+    background: var(--blue);
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0, 124, 195, 0.55); }
+    50%      { box-shadow: 0 0 0 8px rgba(0, 124, 195, 0); }
+  }
+  .loop-stage .body {
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--pavement);
+  }
+  .loop-stage.tool-call .body {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--blue);
+    background: var(--tint-blue);
+    border-left: 2px solid var(--blue);
+    padding: 10px 14px;
+  }
+  .loop-stage.tool-result .body {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--slate);
+    background: var(--tint-stone);
+    border-left: 2px solid var(--stone);
+    padding: 10px 14px;
+    white-space: pre-wrap;
+  }
+  .loop-stage.final .body {
+    font-style: italic;
+    color: var(--blue);
+    font-weight: 500;
+    font-family: var(--display);
+    font-size: 17px;
+  }
+  .loop-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+    justify-content: flex-end;
+  }
+  .btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 9px 18px;
+    border: 1px solid var(--rule);
+    background: var(--white);
+    color: var(--pavement);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.18s ease;
+  }
+  .btn:hover {
+    background: var(--tint-blue);
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn.primary {
+    background: var(--blue);
+    color: var(--white);
+    border-color: var(--blue);
+  }
+  .btn.primary:hover {
+    background: var(--deep);
+    border-color: var(--deep);
+    color: var(--white);
+  }
+  .btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+
+  /* ─────────── INTERACTIVE · FEEDBACK CYCLE (§ VII) ───────────
+     Grid-of-cards layout that visibly loops back at the end — a
+     deliberately different visual treatment from the linear loop so the
+     two interactions feel like distinct concepts. */
+  .cycle {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    padding: 24px 28px;
+    margin: 24px 0 8px;
+  }
+  .cycle-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .cycle-title {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--deep);
+    letter-spacing: -0.008em;
+  }
+  .cycle-title em {
+    font-style: italic;
+    font-variation-settings: "opsz" 30, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+  }
+  .cycle-step-counter {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--stone);
+    font-weight: 600;
+  }
+  .cycle-step-counter strong {
+    color: var(--blue);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .cycle-stages {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  @media (max-width: 600px) { .cycle-stages { grid-template-columns: 1fr; } }
+  .cycle-stage {
+    padding: 14px 14px;
+    background: var(--tint-stone);
+    border: 1px solid var(--rule);
+    border-top: 2px solid var(--rule);
+    opacity: 0.4;
+    transition: opacity 0.4s ease, border-top-color 0.4s ease,
+                background 0.4s ease, transform 0.4s ease;
+    display: flex; flex-direction: column;
+  }
+  .cycle-stage.active {
+    opacity: 1;
+    border-top-color: var(--blue);
+    background: var(--tint-blue);
+    transform: translateY(-2px);
+  }
+  .cycle-stage.done {
+    opacity: 0.78;
+    border-top-color: var(--lt-blue);
+    background: var(--white);
+  }
+  .cycle-stage .num {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .cycle-stage .lbl {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 30, "SOFT" 60, "WONK" 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--deep);
+    margin: 0 0 6px;
+    line-height: 1.22;
+    letter-spacing: -0.005em;
+  }
+  .cycle-stage .desc {
+    font-family: var(--body);
+    font-size: 12.5px;
+    color: var(--slate);
+    line-height: 1.45;
+    margin: 0;
+  }
+  .cycle-return {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 0 2px;
+    margin-top: 8px;
+    border-top: 1px dashed var(--rule);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--slate);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    font-weight: 600;
+  }
+  .cycle-return.shown { opacity: 1; }
+  .cycle-return .arrow {
+    font-size: 16px;
+    color: var(--blue);
+    font-weight: 700;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0ms !important;
+      transition-duration: 0ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="prog"></div>
+
+<!-- ════════════════════ TITLE PAGE ════════════════════ -->
+<section class="title-page" id="top">
+  <div class="mast">
+    <span class="mark">Infosys Consulting</span>
+    <span class="meta">Engineering notes &nbsp;·&nbsp; No. 01 &nbsp;·&nbsp; May 2026</span>
+  </div>
+
+  <div class="hero">
+    <p class="kicker">A self-learning guide</p>
+    <h1>Agentic harness, <em>evals</em> &amp; traces.</h1>
+    <p class="deck">
+      The infrastructure around an LLM that turns it into an agent — and the
+      discipline of <em>evals</em> and <em>traces</em> that keeps it honest
+      in production.
+    </p>
+  </div>
+
+  <div class="byline">
+    <div class="field"><span class="label">Audience</span><span class="value">Engineers learning to build agentic systems</span></div>
+    <div class="field"><span class="label">Reading time</span><span class="value">~30 minutes</span></div>
+    <div class="field"><span class="label">Practice</span><span class="value">IC AI Engineering</span></div>
+    <div class="field"><span class="label">Edition</span><span class="value">No. 01  ·  Spring 2026</span></div>
+  </div>
+</section>
+
+<!-- ════════════════════ MAIN LAYOUT (sidebar + content) ════════════════════ -->
+<div class="layout">
+
+  <!-- ─────────────── SIDEBAR / TOC ─────────────── -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="label">Engineering notes · No. 01</div>
+      <div class="doc-title">Agentic harness, <em>evals</em> &amp; traces</div>
+      <div class="doc-meta">May 2026 · ~30 min</div>
+    </div>
+
+    <nav>
+      <div class="group">
+        <p class="group-label">Foundations</p>
+        <ol>
+          <li><a href="#s1" data-section="s1"><span class="num">I</span><span>What is an agentic harness?</span></a></li>
+          <li><a href="#s2" data-section="s2"><span class="num">II</span><span>The agent loop, conceptually</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Evals</p>
+        <ol>
+          <li><a href="#s3" data-section="s3"><span class="num">III</span><span>Why evals matter</span></a></li>
+          <li><a href="#s4" data-section="s4"><span class="num">IV</span><span>Writing your first eval</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Traces</p>
+        <ol>
+          <li><a href="#s5" data-section="s5"><span class="num">V</span><span>Why traces matter</span></a></li>
+          <li><a href="#s6" data-section="s6"><span class="num">VI</span><span>Instrumenting traces</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Practice</p>
+        <ol>
+          <li><a href="#s7" data-section="s7"><span class="num">VII</span><span>The feedback loop</span></a></li>
+          <li><a href="#s8" data-section="s8"><span class="num">VIII</span><span>A reference architecture</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Appendix</p>
+        <ol>
+          <li><a href="#appendix" data-section="appendix" class="appendix"><span class="num">—</span><span>Glossary, tools &amp; reading</span></a></li>
+        </ol>
+      </div>
+    </nav>
+
+    <div class="foot">
+      <a href="#top">↑ Back to top</a><br>
+      Infosys Consulting<br>
+      Internal · Self-learning
+    </div>
+  </aside>
+
+  <!-- ─────────────── CONTENT ─────────────── -->
+  <main class="content">
+
+    <!-- SECTION I -->
+    <section id="s1">
+      <div class="section-header">
+        <p class="num">Chapter I · Foundations</p>
+        <h2>What is an <em>agentic</em> harness?</h2>
+        <p class="deck">A definition. Five responsibilities of the harness. Why the model alone is not the system.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 01 · Foundations</p>
+        <h3>The model is the engine. The harness is everything else.</h3>
+        <p class="deck">A large language model, on its own, is a function: text in, text out. It doesn't take actions, it doesn't iterate, it doesn't recover from mistakes. Turning an LLM into something that can do useful multi-step work in production is the job of a <em>harness</em>.</p>
+
+        <p>If the model is the engine, the harness is the chassis, the steering, the brakes, the instrument panel — everything that lets a competent driver actually take it down a road safely.</p>
+
+        <p>Concretely, a harness owns five things:</p>
+
+        <ul>
+          <li><strong>The loop.</strong> The repeated cycle of reasoning, acting, observing, and continuing. The model produces one thought at a time; the harness keeps the loop going until the goal is reached, the budget is spent, or something breaks.</li>
+          <li><strong>Tool access.</strong> A defined set of operations the agent can call — read a database, send an email, write to a file system, query a vector store. Tools are how the agent touches the world.</li>
+          <li><strong>State.</strong> What the agent remembers between steps — what it sees, what it forgets, what is persisted across sessions, what is scoped to a single run.</li>
+          <li><strong>Control flow.</strong> When to stop. When to retry. When to escalate to a human. When to defer to a fallback. The hard-coded logic that surrounds the soft-coded reasoning.</li>
+          <li><strong>Observability.</strong> Every step the agent takes is logged, replayable, and scoreable. Without this, you have a black box you cannot debug, evaluate, or defend in front of a regulator.</li>
+        </ul>
+
+        <p class="pull">
+          The model is the engine. The harness is the chassis, the steering, the brakes, the instrument panel.
+          <span class="src">A mental model</span>
+        </p>
+
+        <p>The temptation when starting out is to skip the harness — wire a model directly to a chat interface, give it a couple of tools, and call it an agent. This works for demos. It does not survive contact with reality.</p>
+
+        <p>Production-grade systems consistently fail at one of three places: the loop runs away (cost or time), tools fail in unexpected ways (and the agent doesn't recover), or nobody can figure out why the agent did what it did (and the team can't iterate). All three are harness problems, not model problems.</p>
+
+        <div class="note">
+          <p class="tag">Note</p>
+          <h6>What the harness is not.</h6>
+          <p>The harness is <em>not</em> the agent's intelligence. The model is. The harness is the rules of the road — what's allowed, what's not, what to do when something goes sideways. Confusing the two leads to over-engineered control flow that fights the model, or under-engineered systems that crash on the first edge case.</p>
+        </div>
+
+        <figure>
+          <p class="fignum">Figure 1 · The harness around the model</p>
+          <svg viewBox="0 0 720 360" role="img" aria-label="Diagram showing the harness layer surrounding the model">
+            <rect x="20" y="20" width="680" height="320" fill="none" stroke="#007CC3" stroke-width="1" stroke-dasharray="4 3"/>
+            <text x="40" y="44" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#007CC3" letter-spacing="2">HARNESS</text>
+            <rect x="280" y="140" width="160" height="80" fill="#182534" stroke="none"/>
+            <text x="360" y="184" font-family="Fraunces, serif" font-style="italic" font-size="22" fill="#FFFFFF" text-anchor="middle">model</text>
+            <text x="360" y="206" font-family="JetBrains Mono, monospace" font-size="9" fill="#A7A9AC" text-anchor="middle" letter-spacing="2">THE ENGINE</text>
+            <g>
+              <rect x="60" y="80" width="160" height="56" fill="#E6F2FA" stroke="#007CC3" stroke-width="0.5"/>
+              <text x="68" y="100" font-family="JetBrains Mono, monospace" font-size="9" fill="#007CC3" font-weight="600" letter-spacing="1.5">01  THE LOOP</text>
+              <text x="68" y="120" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#404040">reason → act → observe</text>
+              <rect x="500" y="80" width="160" height="56" fill="#E6F2FA" stroke="#007CC3" stroke-width="0.5"/>
+              <text x="508" y="100" font-family="JetBrains Mono, monospace" font-size="9" fill="#007CC3" font-weight="600" letter-spacing="1.5">02  TOOLS</text>
+              <text x="508" y="120" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#404040">read · write · call</text>
+              <rect x="60" y="160" width="160" height="56" fill="#E6F2FA" stroke="#007CC3" stroke-width="0.5"/>
+              <text x="68" y="180" font-family="JetBrains Mono, monospace" font-size="9" fill="#007CC3" font-weight="600" letter-spacing="1.5">03  STATE</text>
+              <text x="68" y="200" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#404040">memory · context · scope</text>
+              <rect x="500" y="160" width="160" height="56" fill="#E6F2FA" stroke="#007CC3" stroke-width="0.5"/>
+              <text x="508" y="180" font-family="JetBrains Mono, monospace" font-size="9" fill="#007CC3" font-weight="600" letter-spacing="1.5">04  CONTROL</text>
+              <text x="508" y="200" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#404040">stop · retry · escalate</text>
+              <rect x="280" y="260" width="160" height="56" fill="#E6F2FA" stroke="#007CC3" stroke-width="0.5"/>
+              <text x="288" y="280" font-family="JetBrains Mono, monospace" font-size="9" fill="#007CC3" font-weight="600" letter-spacing="1.5">05  OBSERVABILITY</text>
+              <text x="288" y="300" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#404040">log · trace · score</text>
+            </g>
+            <g stroke="#3699DA" stroke-width="0.5" fill="none">
+              <line x1="220" y1="108" x2="280" y2="160"/>
+              <line x1="500" y1="108" x2="440" y2="160"/>
+              <line x1="220" y1="188" x2="280" y2="180"/>
+              <line x1="500" y1="188" x2="440" y2="180"/>
+              <line x1="360" y1="260" x2="360" y2="220"/>
+            </g>
+          </svg>
+          <figcaption>The harness wraps the model with the five things that make it usable in production: the loop, tool access, state, control flow, and observability.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- SECTION II -->
+    <section id="s2">
+      <div class="section-header">
+        <p class="num">Chapter II · Foundations</p>
+        <h2>The agent <em>loop</em>, conceptually.</h2>
+        <p class="deck">Prompt → reason → act → observe → repeat. When the loop ends — and why everything depends on it.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 02 · Foundations</p>
+        <h3>Every agent is the same loop, dressed differently.</h3>
+        <p class="deck">Underneath the framework branding — ReAct, Plan-and-Execute, OpenAI Assistants, Anthropic's tool-use loop — the fundamental shape of every agentic system is the same. Once you see it, every "agent framework" reads as a variation on a single theme.</p>
+
+        <p>The shape:</p>
+
+        <pre class="code"><span class="lang">Pseudocode</span>state = initial_state(user_request)
+
+while not done(state):
+    thought, action = model.next_step(state)
+    state.append(thought)
+
+    if action.kind == "final_answer":
+        return action.payload
+
+    observation = tool.execute(action)
+    state.append(observation)
+
+    if exceeded_budget(state):
+        return escalate(state)
+
+raise BudgetExhausted(state)</pre>
+
+        <p>And here is what one full iteration of that loop actually looks like, step by step. Click <em>Step</em> to advance through the stages, or <em>Auto-play</em> to watch it run.</p>
+
+        <div class="loop" id="loop-agent">
+          <div class="loop-head">
+            <div class="loop-title">One iteration — <em>watch it run</em></div>
+            <div class="loop-step-counter">Stage <strong id="loop-step-num">0</strong> / 8</div>
+          </div>
+          <div id="loop-stages"></div>
+          <div class="loop-controls">
+            <button class="btn" id="loop-reset">Reset</button>
+            <button class="btn primary" id="loop-step">Step →</button>
+            <button class="btn primary" id="loop-play">Auto-play</button>
+          </div>
+        </div>
+
+        <p>That is it. Three primitives: the model produces a thought and an action, the harness executes the action, the result feeds back into the next step. The loop ends one of four ways: the model emits a final answer, the agent runs out of budget (steps, time, dollars), an error trips a fallback, or an external stop condition fires.</p>
+
+        <h4>The model owns the reasoning. The harness owns the loop.</h4>
+
+        <p>This separation matters. The model is non-deterministic — give it the same input twice and it might produce different outputs, especially in long-horizon agentic runs. The surrounding logic must be <em>deterministic</em>: when the loop terminates, when retries happen, when a tool result is sanitized before being shown to the model.</p>
+
+        <p>If you let the model drive the loop control (e.g., "decide for yourself when to stop"), you end up with agents that won't stop, agents that loop on themselves, or agents that quietly give up. The control layer must be code, not prompt.</p>
+
+        <p class="pull">
+          The model is non-deterministic. The harness must not be.
+          <span class="src">A principle</span>
+        </p>
+
+        <h4>What gets fed back to the model</h4>
+        <p>Not everything that comes out of a tool should be shown to the model verbatim. A search API might return ten kilobytes of HTML; the agent doesn't need ten kilobytes — it needs the relevant chunk. A database query might return ten thousand rows; the model can't reason about ten thousand rows.</p>
+
+        <p>The harness sits between the world and the model and decides what the model sees. This is one of the highest-leverage parts of an agentic system to get right, and one of the easiest to get wrong by skipping.</p>
+
+        <div class="note">
+          <p class="tag">In practice</p>
+          <h6>The context is a state, not a transcript.</h6>
+          <p>A common early mistake is to feed the model the entire transcript of every step, every observation, every reasoning trace. This works at small scale and breaks at any real size. Mature harnesses summarize, prune, and reshape the state that goes back into the model — keeping only what is necessary for the next step.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION III -->
+    <section id="s3">
+      <div class="section-header">
+        <p class="num">Chapter III · Evals</p>
+        <h2>Why <em>evals</em> matter.</h2>
+        <p class="deck">The demo-to-production gap, and why evals are the only artifact in your stack that survives a model swap.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 03 · Evals</p>
+        <h3>You cannot ship what you cannot measure.</h3>
+        <p class="deck">Demo-to-production is a wide gap in agentic systems — Gartner's 2024 research put the GenAI project-abandonment rate at over thirty percent by end of 2025.<sup class="fn"><a href="#ref1">¹</a></sup> The teams that close the gap are not the ones with better models. They are the ones with better evals.</p>
+
+        <p>Three properties of LLM systems make evaluation non-optional:</p>
+        <ul>
+          <li><strong>Models are non-deterministic.</strong> Identical prompts can produce different outputs. A single happy-path test means nothing.</li>
+          <li><strong>Models drift.</strong> The frontier model you build against today will be deprecated, retrained, or augmented in months. Behavior shifts even when the API stays the same.</li>
+          <li><strong>Edge cases dominate.</strong> The eighty percent you saw in the demo is not the hundred percent you ship.</li>
+        </ul>
+
+        <p>An <strong>eval</strong> is a measurable scorecard for an agent: a set of test cases with expected behaviors, run continuously, scored automatically where possible and by humans where necessary. It is the only artifact in your stack that survives a model swap. The prompt changes; the harness changes; the tools change; the eval set stays — and grows.</p>
+
+        <p class="pull">
+          Build evals, not POCs.
+          <span class="src">A discipline</span>
+        </p>
+
+        <h4>Five kinds of evals — what to use and when</h4>
+
+        <ul>
+          <li><strong>Pass / fail.</strong> The agent produces a deterministic output you can compare exactly. Good for: "did it call this tool?", "did it return this value?", "did it route to this branch?" Cheap, fast, brittle.</li>
+          <li><strong>Rubric.</strong> A checklist of criteria scored independently. Good for long-form output: "was the summary factually accurate? Was it concise? Did it cover the three main points?" More work to set up; more signal.</li>
+          <li><strong>LLM-as-judge.</strong> A separate model scores the output against the rubric. Scalable, surprisingly good, vulnerable to model-specific quirks. Always validate with human eval on a sample.</li>
+          <li><strong>Human eval.</strong> A subject-matter expert scores a sampled batch. Ground truth. Expensive. Use it to calibrate the cheaper evals.</li>
+          <li><strong>Regression.</strong> Compare the current output against a historical baseline. Catches "the model got worse" silently. Cheap if you have the historical traces.</li>
+        </ul>
+
+        <p>The right portfolio for any non-trivial agent is usually all five, weighted toward what is cheapest and most automatable. Pass/fail and regression cover the floor; LLM-as-judge handles the bulk; human eval is the calibration anchor.</p>
+
+        <div class="note">
+          <p class="tag">A rule of thumb</p>
+          <h6>If you cannot put a number on it, you cannot ship it.</h6>
+          <p>For every claim you make about your agent — "it answers correctly 90% of the time", "it doesn't hallucinate citations", "it never exceeds the policy bounds" — there should be an eval that produces a number, run every time the model or the harness changes. Claims without evals are vibes.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION IV -->
+    <section id="s4">
+      <div class="section-header">
+        <p class="num">Chapter IV · Evals</p>
+        <h2>Writing your <em>first</em> eval.</h2>
+        <p class="deck">The anatomy of a test case. A minimal eval harness in twenty lines of Python. Where to grow from there.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 04 · Evals</p>
+        <h3>An eval case is data + an expectation + a scorer.</h3>
+        <p class="deck">Every eval framework — Braintrust, LangSmith, Promptfoo, OpenAI Evals, Anthropic's built-in evals — ships the same three primitives. Understanding the primitives lets you read any of them, and gives you a way to build your own when none of them fit.</p>
+
+        <h5>The three primitives</h5>
+        <pre class="code"><span class="lang">Python</span>from dataclasses import dataclass
+from typing import Callable, Any
+
+@dataclass
+class EvalCase:
+    name: str           # human-readable identifier
+    input: dict         # what you feed the agent
+    expected: dict      # what you expect (output, tool calls, behavior)
+    scorer: Callable    # function that produces a score
+    tags: list[str]     # for slicing dashboards by capability</pre>
+
+        <p>A minimal eval runner — twenty lines, no dependencies:</p>
+
+        <pre class="code"><span class="lang">Python</span>def run_eval(agent, cases: list[EvalCase]) -> dict:
+    results = []
+    for case in cases:
+        try:
+            actual = agent.run(case.input)
+            score = case.scorer(case.expected, actual)
+            results.append({
+                "case": case.name,
+                "tags": case.tags,
+                "score": score,
+                "actual": actual,
+                "passed": score >= 1.0,
+            })
+        except Exception as exc:
+            results.append({
+                "case": case.name,
+                "tags": case.tags,
+                "score": 0.0,
+                "actual": None,
+                "error": str(exc),
+                "passed": False,
+            })
+    return summarise(results)</pre>
+
+        <h4>A first scorer</h4>
+        <p>The scorer is where most of the design work lives. A pass/fail scorer for tool routing:</p>
+
+        <pre class="code"><span class="lang">Python</span>def called_expected_tool(expected: dict, actual: dict) -> float:
+    """Score 1.0 if the agent called the tool we expected, 0.0 otherwise."""
+    expected_tool = expected["tool"]
+    actual_tools = [step.tool for step in actual["trace"]
+                    if step.kind == "tool_call"]
+    return 1.0 if expected_tool in actual_tools else 0.0</pre>
+
+        <p>And a rubric scorer using an LLM-as-judge:</p>
+
+        <pre class="code"><span class="lang">Python</span>RUBRIC_PROMPT = """
+You are evaluating an agent's output. Score each criterion 0-1.
+
+Output: {actual}
+Expected criteria: {criteria}
+
+Return JSON: {{"factual": 0-1, "complete": 0-1, "concise": 0-1}}
+"""
+
+def rubric_judge(expected: dict, actual: dict) -> float:
+    judge_model = anthropic.Client()
+    response = judge_model.messages.create(
+        model="claude-haiku-4-5-20251001",
+        messages=[{"role": "user",
+                   "content": RUBRIC_PROMPT.format(
+                       actual=actual["text"],
+                       criteria=expected["criteria"])}],
+    )
+    scores = json.loads(response.content[0].text)
+    return mean(scores.values())</pre>
+
+        <p>This is sufficient to get started. Once you have a few dozen cases running on every change, you'll feel the difference immediately — broken changes are caught before they ship, regressions become visible, and "did the new model help?" is a number not an opinion.</p>
+
+        <h4>Where to grow</h4>
+        <p>The next steps from a working eval harness, in roughly the right order:</p>
+        <ol>
+          <li><strong>Parallelize.</strong> Eval cases are embarrassingly parallel. Run them concurrently.</li>
+          <li><strong>Persist.</strong> Store results and the full agent trace for every run, indexed by case + commit + model version.</li>
+          <li><strong>Tag.</strong> Categorize cases by capability (tool-use, reasoning, refusal, formatting) so dashboards slice meaningfully.</li>
+          <li><strong>Gate.</strong> No deploy if a critical-tag case is failing. No model swap if the regression set drops below threshold.</li>
+          <li><strong>Adopt a tool.</strong> Once you understand what you need, Braintrust or LangSmith save you a lot of the next steps for free.</li>
+        </ol>
+
+        <div class="note">
+          <p class="tag">Important</p>
+          <h6>Capture failing production runs as eval cases.</h6>
+          <p>The most valuable eval cases are not the ones you imagine ahead of time — they are the ones that show up in production and surprise you. Every failure, every escalation, every user complaint becomes a candidate eval case. Operationalize the move from "trace of a real failure" → "regression test in the eval set." This is how the eval portfolio becomes a real asset.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION V -->
+    <section id="s5">
+      <div class="section-header">
+        <p class="num">Chapter V · Traces</p>
+        <h2>Why <em>traces</em> matter.</h2>
+        <p class="deck">An agent run is a tree, not a line. Without traces you have a black box that returns an answer and tells you nothing about how it got there.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 05 · Traces</p>
+        <h3>If evals are the scorecard, traces are the X-ray.</h3>
+        <p class="deck">In a single-shot LLM application, debugging is easy: you have the prompt, you have the response. In an agentic application, you have a tree. The model reasoned, the harness called a tool, the tool returned, the model reasoned again, called another tool, returned, made a decision, and so on. A single user request can span ten to a hundred model calls and just as many tool invocations.</p>
+
+        <p>Without traces, you see only the final answer. The agent reports: "the booking was confirmed." You do not see that it tried three flights, got rate-limited on the second, timed out on the third, and fell through to the first — which turned out to be the wrong day.</p>
+
+        <p>Things you cannot do without traces:</p>
+        <ul>
+          <li><strong>Debug.</strong> A user complaint about output X has no thread back to the steps that produced X.</li>
+          <li><strong>Measure cost.</strong> You can sum total tokens, but you cannot tell which step of which workflow is the expensive one.</li>
+          <li><strong>Reproduce.</strong> "It worked on my machine" is a phrase that already had a bad reputation; in agentic systems it is fatal.</li>
+          <li><strong>Convert failures to evals.</strong> The trace of a failing production run is what you turn into a new eval case. No trace, no case.</li>
+          <li><strong>Defend the system.</strong> A regulator, a customer, a board member asks "why did the agent do X?" — the answer is in the trace, or there is no answer.</li>
+        </ul>
+
+        <h4>The shape of a trace</h4>
+        <p>A trace is a structured record of every step the agent took. It is a tree (sometimes a DAG): the top-level span is "user request"; nested below are model calls, tool executions, retries, sub-agent invocations, scoring runs. Each span has attributes — model name, token count, latency, cost, output snippet — and parent/child relationships that preserve the structure.</p>
+
+        <p>If you have used distributed tracing for microservices (Jaeger, Zipkin, Honeycomb), this is exactly the same model. The vocabulary is portable; the concepts transfer directly.</p>
+
+        <figure>
+          <p class="fignum">Figure 2 · A typical agent trace</p>
+          <svg viewBox="0 0 720 280" role="img" aria-label="Flame graph showing nested spans in an agent run">
+            <line x1="20" y1="260" x2="700" y2="260" stroke="#404040" stroke-width="0.5"/>
+            <text x="20" y="276" font-family="JetBrains Mono, monospace" font-size="9" fill="#6D6E71" letter-spacing="1.4">TIME →</text>
+            <rect x="20" y="40" width="680" height="22" fill="#007CC3"/>
+            <text x="28" y="56" font-family="JetBrains Mono, monospace" font-size="10" fill="#FFFFFF" font-weight="600">agent.run  ·  user_request_id=abc123</text>
+            <rect x="40" y="78" width="120" height="20" fill="#3699DA"/>
+            <text x="46" y="92" font-family="JetBrains Mono, monospace" font-size="9" fill="#FFFFFF">llm.call (reason)</text>
+            <rect x="170" y="78" width="160" height="20" fill="#6D6E71"/>
+            <text x="176" y="92" font-family="JetBrains Mono, monospace" font-size="9" fill="#FFFFFF">tool.search_db</text>
+            <rect x="340" y="78" width="100" height="20" fill="#3699DA"/>
+            <text x="346" y="92" font-family="JetBrains Mono, monospace" font-size="9" fill="#FFFFFF">llm.call (reason)</text>
+            <rect x="450" y="78" width="80" height="20" fill="#C0392B"/>
+            <text x="456" y="92" font-family="JetBrains Mono, monospace" font-size="9" fill="#FFFFFF">tool.book ✗</text>
+            <rect x="540" y="78" width="80" height="20" fill="#6D6E71"/>
+            <text x="546" y="92" font-family="JetBrains Mono, monospace" font-size="9" fill="#FFFFFF">tool.book (retry)</text>
+            <rect x="630" y="78" width="60" height="20" fill="#3699DA"/>
+            <text x="636" y="92" font-family="JetBrains Mono, monospace" font-size="9" fill="#FFFFFF">llm.call</text>
+            <rect x="180" y="116" width="80" height="18" fill="#A7A9AC"/>
+            <text x="186" y="129" font-family="JetBrains Mono, monospace" font-size="8" fill="#FFFFFF">db.query</text>
+            <rect x="265" y="116" width="60" height="18" fill="#A7A9AC"/>
+            <text x="271" y="129" font-family="JetBrains Mono, monospace" font-size="8" fill="#FFFFFF">db.parse</text>
+            <rect x="545" y="116" width="70" height="18" fill="#A7A9AC"/>
+            <text x="551" y="129" font-family="JetBrains Mono, monospace" font-size="8" fill="#FFFFFF">http.post</text>
+            <text x="20" y="170" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#404040" font-style="italic">A single user request, fanned out across nine spans:</text>
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="#6D6E71">
+              <text x="20" y="192">·  3 model reasoning calls</text>
+              <text x="20" y="210">·  4 tool invocations (one failed, retried successfully)</text>
+              <text x="20" y="228">·  2 nested infrastructure calls (db, http)</text>
+              <text x="280" y="192" fill="#007CC3" font-weight="600">colour key:</text>
+              <rect x="380" y="184" width="12" height="10" fill="#3699DA"/><text x="396" y="193" fill="#404040">llm</text>
+              <rect x="430" y="184" width="12" height="10" fill="#6D6E71"/><text x="446" y="193" fill="#404040">tool</text>
+              <rect x="480" y="184" width="12" height="10" fill="#A7A9AC"/><text x="496" y="193" fill="#404040">infra</text>
+              <rect x="540" y="184" width="12" height="10" fill="#C0392B"/><text x="556" y="193" fill="#404040">error</text>
+            </g>
+          </svg>
+          <figcaption>A flame-graph view of a single agent run: nine spans, three nested levels, one error and its retry. This is what you see in a tracing UI when you click into a single request.</figcaption>
+        </figure>
+
+        <div class="note">
+          <p class="tag">Operationally</p>
+          <h6>The trace is the debugger.</h6>
+          <p>The single most productive workflow change for agentic teams is: every time someone reports a bad output, the first thing they do is open the trace. Not the logs, not the prompt, not the model. The trace. If your team can't find a trace for a given run in under thirty seconds, your tracing setup is the bottleneck.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION VI -->
+    <section id="s6">
+      <div class="section-header">
+        <p class="num">Chapter VI · Traces</p>
+        <h2>Instrumenting <em>traces</em>.</h2>
+        <p class="deck">OpenTelemetry, spans, attributes. What to capture, what to sample, what every production agent stack ends up looking like.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 06 · Traces</p>
+        <h3>OpenTelemetry is the lingua franca. Spans are the unit.</h3>
+        <p class="deck">The current standard for distributed tracing is OpenTelemetry (OTel) — the same observability layer used for microservices. The OTel concept of a <em>span</em> maps cleanly to an agent step. Every major LLM SDK now ships with OTel hooks; every major observability vendor ingests OTel traces.</p>
+
+        <h5>The data model in 30 seconds</h5>
+        <ul>
+          <li><strong>Trace.</strong> One end-to-end agent run, identified by a trace ID.</li>
+          <li><strong>Span.</strong> One unit of work inside the trace: an LLM call, a tool execution, a scoring run.</li>
+          <li><strong>Attributes.</strong> Structured key/value data attached to each span — model name, token counts, latency, prompt fragment, response snippet.</li>
+          <li><strong>Parent/child.</strong> Spans nest. A model call that triggers a tool call has the tool span as its child.</li>
+        </ul>
+
+        <h4>Minimal manual instrumentation</h4>
+        <p>Twenty lines of Python that wrap an LLM call into an OTel span:</p>
+
+        <pre class="code"><span class="lang">Python</span>from opentelemetry import trace
+tracer = trace.get_tracer("agent")
+
+def call_llm(prompt: str, model: str = "claude-opus-4-7") -> str:
+    with tracer.start_as_current_span("llm.call") as span:
+        span.set_attribute("llm.model", model)
+        span.set_attribute("llm.prompt_length", len(prompt))
+        span.set_attribute("llm.prompt_preview", prompt[:200])
+
+        response = llm_client.complete(prompt=prompt, model=model)
+
+        span.set_attribute("llm.response_length", len(response.text))
+        span.set_attribute("llm.input_tokens", response.usage.input_tokens)
+        span.set_attribute("llm.output_tokens", response.usage.output_tokens)
+        span.set_attribute("llm.latency_ms", response.latency_ms)
+        return response.text</pre>
+
+        <p>Do that around every LLM call, every tool call, every scoring run, and you have a complete trace. Nested calls — a model call that triggers a tool that triggers a sub-call — nest automatically because OTel maintains the current span on the context.</p>
+
+        <h4>Automatic instrumentation</h4>
+        <p>You generally do not want to write this by hand. Most LLM SDKs ship OTel instrumentation built in:</p>
+
+        <pre class="code"><span class="lang">Python</span># Anthropic SDK
+from anthropic import Anthropic
+from openinference.instrumentation.anthropic import AnthropicInstrumentor
+
+AnthropicInstrumentor().instrument()
+
+client = Anthropic()
+# Every client.messages.create(...) is now traced automatically.</pre>
+
+        <p>The same exists for OpenAI, LangChain, LlamaIndex, OpenAI Assistants. Enable it once and every call is captured.</p>
+
+        <h4>What attributes to set</h4>
+        <p>OpenTelemetry has published a draft of <em>semantic conventions for GenAI</em> — a standard set of attribute names so traces are interoperable across vendors. Use them. The important ones:</p>
+        <ul>
+          <li><code class="inline">gen_ai.system</code> — provider (anthropic, openai, etc.)</li>
+          <li><code class="inline">gen_ai.request.model</code> — model name</li>
+          <li><code class="inline">gen_ai.usage.input_tokens</code>, <code class="inline">.output_tokens</code></li>
+          <li><code class="inline">gen_ai.response.finish_reasons</code> — why generation stopped</li>
+          <li><code class="inline">gen_ai.prompt</code> and <code class="inline">gen_ai.completion</code> — prompts and responses (consider sampling for cost and privacy)</li>
+        </ul>
+
+        <h4>What to sample and what to capture</h4>
+        <p>Capturing the full prompt and response on every call gets expensive in storage and presents a privacy concern. A reasonable default in production:</p>
+        <ul>
+          <li><strong>Always capture metadata</strong> — model, tokens, latency, cost. Cheap. High signal.</li>
+          <li><strong>Sample prompts and responses</strong> — capture 1-10% of full payloads. Adjust for sensitive flows.</li>
+          <li><strong>Always capture failures.</strong> If an eval fails or a tool errors, the full payload goes to storage regardless of sample rate.</li>
+          <li><strong>Capture everything in dev.</strong> Storage is cheap; debugging time is expensive.</li>
+        </ul>
+
+        <p class="pull">
+          Sample the metadata never; sample the payload always.
+          <span class="src">Tracing rule of thumb</span>
+        </p>
+
+        <div class="note">
+          <p class="tag">Cross-cutting</p>
+          <h6>Connect traces to evals.</h6>
+          <p>Every eval run should produce a trace; every production trace that fails should be capturable as an eval case. The data model on both sides — span IDs, attributes — is the same. The teams that wire this together early get the feedback loop in chapter VII for free; the teams that don't end up rebuilding it twice.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION VII -->
+    <section id="s7">
+      <div class="section-header">
+        <p class="num">Chapter VII · Practice</p>
+        <h2>The <em>feedback</em> loop.</h2>
+        <p class="deck">From a failing trace to a new eval to a green deploy. The discipline that turns "we have AI" into "we ship AI."</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 07 · Practice</p>
+        <h3>Trace fails → eval added → fix → green eval → ship.</h3>
+        <p class="deck">This is where the discipline shows up. Every team that has successfully scaled an agentic system runs some version of this loop. Every team that has stalled is the team that did not.</p>
+
+        <p>The cycle, step by step:</p>
+
+        <ol>
+          <li>A user reports a bad output, or an eval starts failing in CI, or a production monitor flags an anomaly.</li>
+          <li>An engineer opens the trace for the affected run. They find the step where the agent went wrong — a misrouted tool call, a hallucinated citation, a missed escalation, an unsanitized observation that confused the next model call.</li>
+          <li>The engineer captures the failing input as a new eval case in the regression set. Tag it. Attach the trace.</li>
+          <li>They fix the root cause — adjust the prompt, refine the harness, sanitize the tool output, add a guardrail.</li>
+          <li>The new eval case runs and passes. The regression set as a whole still passes.</li>
+          <li>Ship.</li>
+        </ol>
+
+        <p>Visually, the cycle looks like this. Click <em>Advance</em> to walk through one full pass, then again to see it loop back to the start — the cycle never stops.</p>
+
+        <div class="cycle" id="cycle-fb">
+          <div class="cycle-head">
+            <div class="cycle-title">The feedback cycle — <em>step through one pass</em></div>
+            <div class="cycle-step-counter">Stage <strong id="cycle-step-num">0</strong> / 6</div>
+          </div>
+          <div class="cycle-stages" id="cycle-stages"></div>
+          <div class="cycle-return" id="cycle-return">
+            <span class="arrow">↻</span>
+            <span>The next failure starts the cycle again</span>
+          </div>
+          <div class="loop-controls">
+            <button class="btn" id="cycle-reset">Reset</button>
+            <button class="btn primary" id="cycle-step">Advance →</button>
+            <button class="btn primary" id="cycle-play">Auto-play</button>
+          </div>
+        </div>
+
+        <p>The eval set grows monotonically. Every fix adds a regression test. Every model swap is gated on the eval set passing. After six months, the team has an eval portfolio that captures every weird production case they have ever seen — which is exactly the asset you want when the next frontier model arrives and you need to decide whether to switch.</p>
+
+        <p class="pull">
+          The eval set is a durable record of every mistake your agent has ever made — and is therefore the most valuable asset you build.
+          <span class="src">Why this loop matters</span>
+        </p>
+
+        <h4>What goes wrong without the loop</h4>
+        <p>The failure mode is recognizable. The team ships an agent. It works in demo. Production users find edge cases. The team plays whack-a-mole: fix one bug, another appears. There is no regression set, so old bugs come back. Six months in, nobody is sure whether the latest fix made things better or worse. Confidence in the system erodes. The agent gets quietly retired.</p>
+
+        <p>Versus: the team that builds the eval portfolio early. Every weird production case is captured. Every fix is a regression test. The team can answer "is this version better than the last version" with a number, not a feeling. The agent gets <em>better</em> over time, not worse.</p>
+
+        <h4>Tools that close the loop</h4>
+        <p>The platforms that do this best — Braintrust, LangSmith, Arize, Langfuse — all share a feature: <em>turn this trace into an eval case</em>, one click. If your stack does not support this gesture cheaply, the loop will be slow, and the team will skip it under pressure. Make the gesture cheap.</p>
+
+        <div class="note">
+          <p class="tag">A useful litmus test</p>
+          <h6>From production trace to regression test in under 5 minutes.</h6>
+          <p>If a junior engineer can go from "user reported a bad output" to "the failing case is now an eval that will run on every change" in under five minutes, your loop is healthy. If it takes a day, your loop is broken — and your agent will not get reliably better over time.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION VIII -->
+    <section id="s8">
+      <div class="section-header">
+        <p class="num">Chapter VIII · Practice</p>
+        <h2>A <em>reference</em> architecture.</h2>
+        <p class="deck">What a production agentic system looks like end-to-end, with evals and traces threaded through every layer.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 08 · Practice</p>
+        <h3>Evals and traces are not layers — they cross the stack.</h3>
+        <p class="deck">The shape that real production agentic systems converge on is recognizable: a request comes in, an orchestrator runs the agent loop, the agent calls models and tools, results come back, the user gets an answer. What is less obvious until you have built one: the eval pipeline and the trace pipeline are <em>orthogonal</em> to the stack. They cut across every layer.</p>
+
+        <figure>
+          <p class="fignum">Figure 3 · A production agentic system</p>
+          <svg viewBox="0 0 720 400" role="img" aria-label="Layered architecture of a production agentic system">
+            <g>
+              <rect x="40" y="20" width="500" height="40" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="0.5"/>
+              <text x="60" y="44" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#404040" font-weight="500">User / client application</text>
+              <rect x="40" y="80" width="500" height="40" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="0.5"/>
+              <text x="60" y="104" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#404040" font-weight="500">API gateway  ·  auth  ·  rate-limit  ·  request routing</text>
+              <rect x="40" y="140" width="500" height="40" fill="#E6F2FA" stroke="#3699DA" stroke-width="0.5"/>
+              <text x="60" y="164" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#182534" font-weight="500">Orchestrator (the harness)  ·  control loop  ·  state  ·  budgets</text>
+              <rect x="40" y="200" width="500" height="60" fill="#007CC3" stroke="none"/>
+              <text x="60" y="224" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#FFFFFF" font-weight="600">Agent  ·  model + tools + memory</text>
+              <text x="60" y="244" font-family="JetBrains Mono, monospace" font-size="10" fill="#E6F2FA">claude-opus-4-7  ·  6 tools  ·  short-term memory  ·  long-term memory</text>
+              <rect x="40" y="280" width="500" height="40" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="0.5"/>
+              <text x="60" y="304" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#404040" font-weight="500">External systems  ·  databases  ·  APIs  ·  vector stores  ·  files</text>
+              <rect x="40" y="340" width="500" height="40" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="0.5"/>
+              <text x="60" y="364" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#404040" font-weight="500">Storage  ·  audit log  ·  conversation history  ·  user context</text>
+            </g>
+            <g>
+              <rect x="560" y="20" width="140" height="170" fill="#E6F2FA" stroke="#007CC3" stroke-width="0.75" stroke-dasharray="3 3"/>
+              <text x="570" y="40" font-family="JetBrains Mono, monospace" font-size="9" fill="#007CC3" font-weight="700" letter-spacing="1.5">TRACE PIPELINE</text>
+              <text x="570" y="62" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#404040">OTel collector</text>
+              <text x="570" y="78" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#404040">Sampling rules</text>
+              <text x="570" y="94" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#404040">Trace store</text>
+              <text x="570" y="110" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#404040">Visualizer UI</text>
+              <text x="570" y="126" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#404040">Cost dashboards</text>
+              <text x="570" y="142" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#404040">Alerting</text>
+              <text x="570" y="158" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#404040">Replay</text>
+              <text x="570" y="174" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#404040">→ to evals</text>
+              <rect x="560" y="210" width="140" height="170" fill="#E6F2FA" stroke="#007CC3" stroke-width="0.75" stroke-dasharray="3 3"/>
+              <text x="570" y="230" font-family="JetBrains Mono, monospace" font-size="9" fill="#007CC3" font-weight="700" letter-spacing="1.5">EVAL PIPELINE</text>
+              <text x="570" y="252" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#404040">Eval cases</text>
+              <text x="570" y="268" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#404040">Scorers</text>
+              <text x="570" y="284" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#404040">CI runner</text>
+              <text x="570" y="300" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#404040">Regression set</text>
+              <text x="570" y="316" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#404040">Rubric library</text>
+              <text x="570" y="332" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#404040">LLM-as-judge</text>
+              <text x="570" y="348" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#404040">Gates / deploys</text>
+              <text x="570" y="364" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#404040">Production canary</text>
+            </g>
+            <g stroke="#007CC3" stroke-width="0.5" fill="none" stroke-dasharray="2 2">
+              <line x1="540" y1="40" x2="560" y2="40"/>
+              <line x1="540" y1="100" x2="560" y2="100"/>
+              <line x1="540" y1="160" x2="560" y2="160"/>
+              <line x1="540" y1="230" x2="560" y2="230"/>
+              <line x1="540" y1="300" x2="560" y2="300"/>
+              <line x1="540" y1="360" x2="560" y2="360"/>
+            </g>
+          </svg>
+          <figcaption>The user-facing stack on the left, the cross-cutting trace and eval pipelines on the right. Every layer in the stack feeds traces; every trace is candidate input for an eval case.</figcaption>
+        </figure>
+
+        <h4>What this diagram is meant to argue</h4>
+        <p>If you put the eval and trace pipelines on the left — as a layer in the stack — you get a system where observability and evaluation are an afterthought, scoped to one team or one component. If you put them on the right — as cross-cutting infrastructure — you get a system where every layer emits traces and every output is a candidate eval, and the discipline lives in the architecture rather than in someone's head.</p>
+
+        <p>The trace pipeline and the eval pipeline are organizationally different (one is "observability"; the other is "quality"), but technically they share a model — a span, attributes, a trace ID. Most real teams end up with the same vendor or the same in-house tooling for both.</p>
+
+        <h4>The minimum production setup</h4>
+        <ul>
+          <li><strong>Tracing:</strong> OTel auto-instrumentation on every LLM SDK + one trace backend (LangSmith, Arize, Langfuse, or Honeycomb). Sample 100% of failures, 1-10% of successes.</li>
+          <li><strong>Evals:</strong> A regression set running on every commit, gating deploys. A small rubric-based eval set running on every model change. A "convert this trace into a case" workflow that takes thirty seconds.</li>
+          <li><strong>Dashboards:</strong> Per-capability eval pass-rates over time. Cost-per-request. Latency P50/P95/P99. Error rate per tool.</li>
+          <li><strong>Alerting:</strong> Page when the regression set drops below threshold. Page when error rate on a critical tool spikes.</li>
+        </ul>
+
+        <p>That is the floor. It is also the ceiling for many teams — because once this is in place, building the next agentic capability becomes a normal engineering exercise rather than a research project.</p>
+      </div>
+    </section>
+
+    <!-- APPENDIX -->
+    <section id="appendix">
+      <div class="section-header">
+        <p class="num">— Appendix</p>
+        <h2><em>Glossary</em>, tools &amp; reading.</h2>
+        <p class="deck">A working glossary, a recommended toolset, and a reading list to take this further.</p>
+      </div>
+      <div class="section-body appendix-body">
+
+        <div class="group">
+          <h5>Glossary</h5>
+          <p class="grouptitle">The vocabulary used in this guide.</p>
+          <dl class="glossary">
+            <dt>Agent</dt>
+            <dd>An LLM-based system that takes actions over multiple steps to achieve a goal. Distinguished from a single-shot LLM application by having state, tool access, and a control loop.</dd>
+
+            <dt>Harness</dt>
+            <dd>The runtime infrastructure around an LLM that turns it into an agent — the loop, tool access, state, control flow, and observability.</dd>
+
+            <dt>Loop</dt>
+            <dd>The repeated cycle of reasoning, acting, and observing that defines every agentic system. The model produces one step at a time; the harness keeps the loop going.</dd>
+
+            <dt>Tool</dt>
+            <dd>An external operation an agent can invoke. Concretely, a function the harness exposes to the model with a description, a schema, and an implementation.</dd>
+
+            <dt>Eval</dt>
+            <dd>A measurable test case for an agent's behavior. An eval consists of an input, an expected output or behavior, and a scorer that produces a number.</dd>
+
+            <dt>Eval portfolio / eval set</dt>
+            <dd>The full collection of eval cases for an agent, accumulated over time. Functions as the regression suite for the system and is the most durable artifact across model changes.</dd>
+
+            <dt>Scorer</dt>
+            <dd>The function that decides whether an eval case passes. Ranges from a simple equality check to a multi-criterion LLM-as-judge rubric.</dd>
+
+            <dt>LLM-as-judge</dt>
+            <dd>An evaluation technique where a (typically smaller, cheaper) model scores the output of the primary model against a rubric. Scales human-style judgment but requires periodic human calibration.</dd>
+
+            <dt>Trace</dt>
+            <dd>A structured record of every step an agent took during a single run, captured as a tree of spans with attributes and parent/child relationships.</dd>
+
+            <dt>Span</dt>
+            <dd>A single unit of work within a trace — typically a model call, a tool execution, or a scoring run. The OpenTelemetry concept of a span maps cleanly to an agent step.</dd>
+
+            <dt>OpenTelemetry (OTel)</dt>
+            <dd>The vendor-neutral standard for distributed tracing. The same data model that powers microservices observability now powers LLM observability.</dd>
+
+            <dt>Control plane</dt>
+            <dd>The orchestration layer that owns the agent loop, the routing between agents, the budget enforcement, and the escalation paths.</dd>
+
+            <dt>Feedback loop (in this guide)</dt>
+            <dd>The discipline of converting production failures into eval cases, which become regression tests, which gate future deploys.</dd>
+          </dl>
+        </div>
+
+        <div class="group">
+          <h5>Recommended tools</h5>
+          <p class="grouptitle">What teams actually use in 2026.</p>
+          <ul class="tool-grid">
+            <li><strong>Anthropic Claude Agent SDK</strong>The reference SDK for Claude-based agents. Tool use, control loop, message handling.</li>
+            <li><strong>OpenAI Assistants API</strong>The reference SDK for GPT-based agents. Higher-level abstractions; less control.</li>
+            <li><strong>LangGraph</strong>Graph-based agent orchestration. Good for complex multi-agent workflows.</li>
+            <li><strong>Braintrust</strong>Eval-first platform. Cases, scorers, dashboards, CI integration.</li>
+            <li><strong>LangSmith</strong>End-to-end: traces + evals + datasets. Tightly integrated with LangChain.</li>
+            <li><strong>Promptfoo</strong>CLI-first eval framework. Open source. Great for prompt regression tests.</li>
+            <li><strong>OpenAI Evals</strong>Open-source eval framework. Many built-in scorers; opinionated.</li>
+            <li><strong>Arize Phoenix</strong>Open-source LLM observability. Self-hosted option.</li>
+            <li><strong>Langfuse</strong>Open-source tracing + analytics + datasets. Self-host or SaaS.</li>
+            <li><strong>OpenTelemetry GenAI</strong>The standard. Use the semantic conventions when you instrument.</li>
+          </ul>
+        </div>
+
+        <div class="group">
+          <h5>Further reading</h5>
+          <p class="grouptitle">Where to go from here.</p>
+          <ul class="reading-list">
+            <li><strong>Anthropic · Building Effective Agents</strong>The clearest published taxonomy of agent patterns — chains, parallels, routers, evaluator-optimizers.</li>
+            <li><strong>OpenAI · Practices for Governing Agentic AI Systems</strong>The policy-side companion to the engineering guides. Read after you ship.</li>
+            <li><strong>OpenTelemetry · GenAI Semantic Conventions</strong>The reference for what attributes to put on your spans. Bookmark it.</li>
+            <li><strong>LangChain Docs · Tracing &amp; Evaluation</strong>Practical guides with code, even if you don't use LangChain itself.</li>
+            <li><strong>Eugene Yan · LLM-as-Judge Patterns</strong>Long-form writeup of when LLM-as-judge works, when it doesn't, and how to calibrate.</li>
+            <li><strong>Hamel Husain · Field Notes on Evals</strong>Practitioner essays on what real production eval portfolios look like.</li>
+            <li><strong>Honeycomb · LLM Observability with OTel</strong>The most concrete walkthrough of OTel-for-LLM I've seen.</li>
+            <li><strong>Anthropic Engineering Blog · Computer Use Traces</strong>An example of what high-quality production traces look like in a complex tool-use system.</li>
+          </ul>
+        </div>
+
+        <div class="group">
+          <h5>References cited</h5>
+          <p class="grouptitle">Where the numbers and quotes come from.</p>
+          <dl class="glossary">
+            <dt id="ref1">¹ Gartner. <em>GenAI Implementation Survey, 2024.</em></dt>
+            <dd>Forecast that 30%+ of generative AI projects would be abandoned by end-2025 after proof-of-concept, due to poor data quality, inadequate risk controls, escalating costs, or unclear business value.</dd>
+          </dl>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ════════════════════ COLOPHON FOOTER ════════════════════ -->
+<footer class="colophon">
+  <div class="inner">
+    <div class="block">
+      <div class="h">Document</div>
+      <div class="feature">Agentic harness, evals &amp; traces.</div>
+      <div>Engineering notes · No. 01 · May 2026</div>
+    </div>
+    <div class="block">
+      <div class="h">Practice</div>
+      <div class="feature">Infosys Consulting · AI Engineering.</div>
+      <div>Self-learning · Internal use</div>
+    </div>
+    <div class="block">
+      <div class="h">Set in</div>
+      <div class="feature">Fraunces &amp; IBM Plex Sans &amp; JetBrains Mono.</div>
+      <div>Designed by IC</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    // Reading-progress bar
+    const prog = document.getElementById('prog');
+    const onScroll = () => {
+      const h = document.documentElement;
+      const scrolled = h.scrollTop;
+      const max = h.scrollHeight - h.clientHeight;
+      const p = max > 0 ? (scrolled / max) * 100 : 0;
+      prog.style.setProperty('--p', p.toFixed(2) + '%');
+    };
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Active-section tracking in the sidebar via IntersectionObserver.
+    // Whichever section's header is closest to the top of the viewport gets
+    // the "active" treatment in the TOC.
+    if ('IntersectionObserver' in window) {
+      const links = document.querySelectorAll('.sidebar nav a[data-section]');
+      const linkMap = {};
+      links.forEach(a => { linkMap[a.dataset.section] = a; });
+
+      const setActive = (id) => {
+        links.forEach(a => a.classList.remove('active'));
+        if (linkMap[id]) linkMap[id].classList.add('active');
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        // Find the entry closest to the top of the viewport that is intersecting
+        let best = null;
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            if (!best || e.boundingClientRect.top < best.boundingClientRect.top) {
+              best = e;
+            }
+          }
+        });
+        if (best) setActive(best.target.id);
+      }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+
+      document.querySelectorAll('main.content > section[id]').forEach(s => {
+        observer.observe(s);
+      });
+    }
+  })();
+
+  // ─── Agent loop animation (§ II) ────────────────────────────
+  (function () {
+    const STAGES = [
+      { who: "User",        cls: "",            body: "Which database tables grew most this week?" },
+      { who: "Claude",      cls: "",            body: "I'll start by pulling recent table-size data, then check write patterns to confirm what's driving the growth." },
+      { who: "Tool call",   cls: "tool-call",   body: "db.query(\"SELECT table, size, date FROM table_stats WHERE date > NOW() - INTERVAL '7 days'\")" },
+      { who: "Tool result", cls: "tool-result", body: "→ 47 tables · growth from -3% to +34%\n  top three: users, events, audit_log" },
+      { who: "Claude",      cls: "",            body: "Three tables grew >20%. Confirming with write-volume data before I report." },
+      { who: "Tool call",   cls: "tool-call",   body: "db.query(\"SELECT table, COUNT(*) FROM writes WHERE ts > NOW() - 7d GROUP BY table\")" },
+      { who: "Tool result", cls: "tool-result", body: "→ users 2.1× baseline · events 3.4× baseline · audit_log 2.8× baseline" },
+      { who: "Final",       cls: "final",       body: "✓ Three tables grew most this week: users (+34%), events (+28%), audit_log (+22%). All write-driven; no schema changes." },
+    ];
+
+    const stagesEl = document.getElementById("loop-stages");
+    if (!stagesEl) return;
+    const stepNum  = document.getElementById("loop-step-num");
+    const stepBtn  = document.getElementById("loop-step");
+    const playBtn  = document.getElementById("loop-play");
+    const resetBtn = document.getElementById("loop-reset");
+
+    let current = 0;
+    let playing = false;
+    let playTimer = null;
+
+    function buildStage(s, i) {
+      const wrap = document.createElement("div");
+      wrap.className = "loop-stage" + (s.cls ? " " + s.cls : "");
+      if (i < current - 1) wrap.classList.add("done");
+      if (i === current - 1) wrap.classList.add("active");
+      const who = document.createElement("div");
+      who.className = "who";
+      who.textContent = s.who;
+      const body = document.createElement("div");
+      body.className = "body";
+      body.textContent = s.body;
+      wrap.appendChild(who);
+      wrap.appendChild(body);
+      return wrap;
+    }
+    function render() {
+      while (stagesEl.firstChild) stagesEl.removeChild(stagesEl.firstChild);
+      for (let i = 0; i < STAGES.length; i++) stagesEl.appendChild(buildStage(STAGES[i], i));
+      stepNum.textContent = current;
+      stepBtn.textContent = current >= STAGES.length ? "Complete ✓" : "Step →";
+      stepBtn.disabled = current >= STAGES.length;
+    }
+    function step() {
+      if (current < STAGES.length) { current++; render(); }
+      else if (playing) { stopPlay(); }
+    }
+    function startPlay() {
+      if (current >= STAGES.length) current = 0;
+      playing = true;
+      playBtn.textContent = "Pause";
+      playTimer = setInterval(() => {
+        if (current >= STAGES.length) { stopPlay(); return; }
+        step();
+      }, 1200);
+    }
+    function stopPlay() {
+      playing = false;
+      playBtn.textContent = "Auto-play";
+      clearInterval(playTimer);
+    }
+    function reset() { stopPlay(); current = 0; render(); }
+
+    stepBtn.addEventListener("click", () => { if (playing) stopPlay(); step(); });
+    playBtn.addEventListener("click", () => { playing ? stopPlay() : startPlay(); });
+    resetBtn.addEventListener("click", reset);
+    render();
+  })();
+
+  // ─── Feedback cycle animation (§ VII) ───────────────────────
+  (function () {
+    const CYCLE = [
+      { lbl: "Trace fails",     desc: "A production run produces an output that fails the eval set, or a user reports it." },
+      { lbl: "Open the trace",  desc: "Engineer finds the exact step where the agent's reasoning went wrong." },
+      { lbl: "Capture as eval", desc: "Failing input is added to the regression set with a clear pass criterion." },
+      { lbl: "Fix the cause",   desc: "Adjust the prompt, harness, or tool to address what went wrong." },
+      { lbl: "Eval runs green", desc: "The new case passes; the rest of the regression set still holds." },
+      { lbl: "Ship",            desc: "Deploy goes out. The eval set is one case bigger than yesterday." },
+    ];
+
+    const stagesEl = document.getElementById("cycle-stages");
+    if (!stagesEl) return;
+    const stepNum  = document.getElementById("cycle-step-num");
+    const stepBtn  = document.getElementById("cycle-step");
+    const playBtn  = document.getElementById("cycle-play");
+    const resetBtn = document.getElementById("cycle-reset");
+    const returnEl = document.getElementById("cycle-return");
+
+    let current = 0;
+    let playing = false;
+    let playTimer = null;
+
+    function buildStage(s, i) {
+      const wrap = document.createElement("div");
+      wrap.className = "cycle-stage";
+      if (current >= CYCLE.length) wrap.classList.add("done");
+      else if (i < current - 1) wrap.classList.add("done");
+      else if (i === current - 1) wrap.classList.add("active");
+      const num = document.createElement("div");
+      num.className = "num";
+      num.textContent = String(i + 1).padStart(2, "0");
+      const lbl = document.createElement("div");
+      lbl.className = "lbl";
+      lbl.textContent = s.lbl + ".";
+      const desc = document.createElement("p");
+      desc.className = "desc";
+      desc.textContent = s.desc;
+      wrap.appendChild(num);
+      wrap.appendChild(lbl);
+      wrap.appendChild(desc);
+      return wrap;
+    }
+    function render() {
+      while (stagesEl.firstChild) stagesEl.removeChild(stagesEl.firstChild);
+      for (let i = 0; i < CYCLE.length; i++) stagesEl.appendChild(buildStage(CYCLE[i], i));
+      stepNum.textContent = Math.min(current, CYCLE.length);
+      stepBtn.textContent = current >= CYCLE.length ? "Restart cycle ↻" : "Advance →";
+      if (returnEl) returnEl.classList.toggle("shown", current >= CYCLE.length);
+    }
+    function step() {
+      if (current < CYCLE.length) { current++; }
+      else { current = 0; }      // loop back — that's the point
+      render();
+    }
+    function startPlay() {
+      if (current >= CYCLE.length) current = 0;
+      playing = true;
+      playBtn.textContent = "Pause";
+      playTimer = setInterval(() => {
+        if (current >= CYCLE.length) { current = 0; render(); return; }
+        step();
+      }, 1400);
+    }
+    function stopPlay() {
+      playing = false;
+      playBtn.textContent = "Auto-play";
+      clearInterval(playTimer);
+    }
+    function reset() { stopPlay(); current = 0; render(); }
+
+    stepBtn.addEventListener("click", () => { if (playing) stopPlay(); step(); });
+    playBtn.addEventListener("click", () => { playing ? stopPlay() : startPlay(); });
+    resetBtn.addEventListener("click", reset);
+    render();
+  })();
+</script>
+
+</body>
+</html>

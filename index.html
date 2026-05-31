@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>IC Collaterals — A library of Infosys Consulting artifacts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,200..900,0..100,0..1;1,9..144,200..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..600;1,300..600&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  :root {
+    --white: #FFFFFF;
+    --deep: #182534;
+    --pavement: #404040;
+    --slate: #6D6E71;
+    --stone: #A7A9AC;
+    --blue: #007CC3;
+    --lt-blue: #3699DA;
+    --tint-blue: #E6F2FA;
+    --tint-stone: #F2F2F3;
+    --rule: #E2E4E7;
+
+    --display: 'Fraunces', 'Times New Roman', serif;
+    --body: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--pavement);
+    background: var(--white);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern", "liga";
+  }
+  ::selection { background: var(--deep); color: var(--white); }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+
+  /* ─────────── HERO ─────────── */
+  .hero {
+    background: var(--deep);
+    color: var(--white);
+    padding: 56px 48px 64px;
+    position: relative;
+  }
+  .hero::after {
+    content: ''; position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 2px; background: var(--blue);
+  }
+  .hero-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .hero .mast {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 56px;
+  }
+  .hero .mast .mark { color: var(--white); font-weight: 600; }
+  .hero .mast .meta { color: var(--stone); }
+  .hero .kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--lt-blue);
+    font-weight: 600;
+    margin: 0 0 22px;
+    display: flex; align-items: center; gap: 14px;
+    animation: fadeUp 700ms cubic-bezier(.2,.7,.2,1) both;
+  }
+  .hero .kicker::before {
+    content: ''; width: 56px; height: 1px; background: var(--lt-blue);
+  }
+  .hero h1 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+    font-weight: 380;
+    font-size: clamp(40px, 6.5vw, 88px);
+    line-height: 0.98;
+    letter-spacing: -0.024em;
+    color: var(--white);
+    margin: 0 0 28px;
+    max-width: 20ch;
+    animation: fadeUp 900ms cubic-bezier(.2,.7,.2,1) 100ms both;
+  }
+  .hero h1 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+    color: var(--lt-blue);
+    font-weight: 380;
+  }
+  .hero .deck {
+    font-family: var(--body);
+    font-size: clamp(17px, 1.5vw, 20px);
+    line-height: 1.55;
+    color: var(--stone);
+    max-width: 64ch;
+    margin: 0 0 36px;
+    animation: fadeUp 1000ms cubic-bezier(.2,.7,.2,1) 240ms both;
+  }
+  .hero .deck em { font-style: italic; color: var(--white); }
+  .hero .meta-row {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    gap: 40px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    padding-top: 22px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    animation: fadeUp 1100ms cubic-bezier(.2,.7,.2,1) 420ms both;
+  }
+  @media (max-width: 720px) { .hero .meta-row { grid-template-columns: 1fr 1fr; gap: 20px; } }
+  .hero .meta-row .field { display: flex; flex-direction: column; gap: 5px; }
+  .hero .meta-row .label { color: var(--stone); font-weight: 600; }
+  .hero .meta-row .value {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 16px;
+    color: var(--white);
+    letter-spacing: -0.005em;
+    text-transform: none;
+    font-weight: 400;
+  }
+
+  /* ─────────── MAIN ─────────── */
+  main {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 64px 40px 80px;
+  }
+  @media (max-width: 720px) { main { padding: 40px 24px 64px; } }
+
+  section.group { margin-bottom: 56px; }
+  section.group:last-of-type { margin-bottom: 0; }
+
+  .group-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 24px; flex-wrap: wrap;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 20px;
+  }
+  .group-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .group-eyebrow::before {
+    content: ''; width: 28px; height: 3px; background: var(--blue);
+  }
+  .group-eyebrow .count {
+    color: var(--stone);
+    font-weight: 500;
+  }
+  .group-title {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 30, "SOFT" 60, "WONK" 0;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--slate);
+    font-weight: 400;
+    letter-spacing: -0.005em;
+  }
+
+  /* ─────────── CARDS ─────────── */
+  .cards { display: grid; gap: 14px; }
+  .cards.two-col {
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (max-width: 720px) {
+    .cards.two-col { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    padding: 22px 24px;
+    border: 1px solid var(--rule);
+    background: var(--white);
+    color: var(--pavement);
+    text-decoration: none;
+    transition: background 180ms ease, border-color 180ms ease,
+                transform 180ms ease;
+    position: relative;
+    align-items: start;
+  }
+  .card:hover {
+    background: var(--tint-blue);
+    border-color: var(--blue);
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+  .card:hover .card-cta {
+    color: var(--blue);
+    transform: translateX(2px);
+  }
+  .card .card-body {
+    min-width: 0;
+  }
+  .card .card-chip {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card .card-chip::before {
+    content: ''; width: 20px; height: 2px; background: var(--blue);
+  }
+  .card .card-title {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 48, "SOFT" 0, "WONK" 0;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.18;
+    letter-spacing: -0.008em;
+    color: var(--deep);
+    margin: 0 0 8px;
+  }
+  .card .card-title em {
+    font-style: italic;
+    font-variation-settings: "opsz" 48, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+    font-weight: 400;
+  }
+  .card .card-desc {
+    font-family: var(--body);
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--slate);
+    margin: 0 0 12px;
+    max-width: 64ch;
+  }
+  .card .card-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--stone);
+    font-weight: 600;
+  }
+  .card .card-meta span + span::before {
+    content: '·'; margin: 0 8px; color: var(--rule);
+  }
+  .card .card-cta {
+    align-self: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--stone);
+    font-weight: 600;
+    transition: color 180ms ease, transform 180ms ease;
+    white-space: nowrap;
+  }
+
+  /* extra links underneath a card */
+  .extra-links {
+    margin-top: 8px;
+    display: flex; gap: 16px; flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--slate);
+  }
+  .extra-links a {
+    color: var(--blue);
+    font-weight: 600;
+  }
+
+  /* ─────────── DESIGN-SYSTEM CALLOUT ─────────── */
+  .ds-extra {
+    margin-top: 16px;
+    padding: 18px 22px;
+    background: var(--tint-stone);
+    border-left: 2px solid var(--blue);
+    font-family: var(--body);
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--slate);
+  }
+  .ds-extra .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .ds-extra a {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--blue);
+    font-weight: 500;
+  }
+  .ds-extra code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--blue);
+    background: var(--white);
+    padding: 1px 6px;
+    border-radius: 2px;
+    border: 1px solid var(--rule);
+  }
+
+  /* ─────────── ABOUT ─────────── */
+  .about {
+    margin-top: 80px;
+    padding-top: 48px;
+    border-top: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 48px;
+  }
+  @media (max-width: 720px) { .about { grid-template-columns: 1fr; gap: 16px; } }
+  .about-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    display: flex; align-items: center; gap: 14px;
+    align-self: start;
+  }
+  .about-label::before {
+    content: ''; width: 28px; height: 3px; background: var(--blue);
+  }
+  .about-body {
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--pavement);
+    max-width: 60ch;
+  }
+  .about-body p { margin: 0 0 14px; }
+  .about-body p:last-child { margin-bottom: 0; }
+  .about-body em { font-style: italic; color: var(--deep); }
+
+  /* ─────────── COLOPHON ─────────── */
+  footer.colophon {
+    background: var(--deep);
+    color: var(--stone);
+    padding: 44px 48px;
+    margin-top: 72px;
+  }
+  footer.colophon .inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px;
+  }
+  @media (max-width: 720px) { footer.colophon .inner { grid-template-columns: 1fr; } }
+  footer.colophon .block {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    line-height: 1.7;
+  }
+  footer.colophon .h { color: var(--blue); font-weight: 600; margin-bottom: 10px; }
+  footer.colophon .feature {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 36, "SOFT" 80, "WONK" 0;
+    font-size: 20px;
+    color: var(--white);
+    letter-spacing: -0.01em;
+    text-transform: none;
+    line-height: 1.3;
+    margin: 6px 0 4px;
+    font-weight: 400;
+  }
+  footer.colophon .feature a { color: var(--white); }
+  footer.colophon .feature a:hover { color: var(--lt-blue); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0ms !important;
+      transition-duration: 0ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════ HERO ════════════ -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="mast">
+      <span class="mark">Infosys Consulting</span>
+      <span class="meta">Collaterals library &nbsp;·&nbsp; May 2026</span>
+    </div>
+
+    <p class="kicker">A working library of IC artifacts</p>
+    <h1>One <em>design system</em>, many collaterals.</h1>
+    <p class="deck">
+      A growing library of decks, primers, one-pagers, and engineering notes
+      — all built from a shared set of <em>tokens</em>, three font families,
+      and a named visual vocabulary. Every artifact below is built from the
+      same system; the system itself is open to read at the bottom of this page.
+    </p>
+
+    <div class="meta-row">
+      <div class="field"><span class="label">Practice</span><span class="value">Infosys Consulting</span></div>
+      <div class="field"><span class="label">Edition</span><span class="value">Spring 2026</span></div>
+      <div class="field"><span class="label">Status</span><span class="value">Working library</span></div>
+      <div class="field"><span class="label">Artifacts</span><span class="value">6 and counting</span></div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ════════════ DECKS ════════════ -->
+  <section class="group">
+    <div class="group-head">
+      <span class="group-eyebrow">Decks <span class="count">· 1</span></span>
+      <span class="group-title">Sales-enablement &amp; POV decks</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="./decks/agentic-ai-banking-pov/agentic-ai-banking-pov.pdf">
+        <div class="card-body">
+          <div class="card-chip">DECK · BANKING POV</div>
+          <h3 class="card-title">Agents that change the <em>work</em>, not just the worker.</h3>
+          <p class="card-desc">A 25-slide point-of-view deck on agentic AI in banking — the pilot plateau, the operating-model reframe, three redesigned processes, the path forward, sales tools for the partner in the room.</p>
+          <div class="card-meta">
+            <span>PDF · 25 slides</span><span>~30 min readout</span><span>Sales enablement</span>
+          </div>
+          <div class="extra-links">
+            <a href="./decks/agentic-ai-banking-pov/agentic-ai-banking-pov.pptx">↓ Download PPTX</a>
+            <a href="./decks/agentic-ai-banking-pov/spec.md">View spec</a>
+          </div>
+        </div>
+        <span class="card-cta">Open →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ════════════ PRIMERS ════════════ -->
+  <section class="group">
+    <div class="group-head">
+      <span class="group-eyebrow">Primers <span class="count">· 1</span></span>
+      <span class="group-title">Long-form POV reads</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="./primers/agentic-ai-banking-primer.html">
+        <div class="card-body">
+          <div class="card-chip">PRIMER · BANKING POV</div>
+          <h3 class="card-title">Agents that change the <em>work</em>, not just the worker.</h3>
+          <p class="card-desc">The long-form HTML companion to the deck — same thesis, expanded with the reasoning, the principles behind each redesigned process, and the regulatory context. Editorial broadsheet style with drop caps, pull quotes, and inline sidebars.</p>
+          <div class="card-meta">
+            <span>HTML</span><span>~25 min read</span><span>Banking POV</span>
+          </div>
+        </div>
+        <span class="card-cta">Read →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ════════════ ONE-PAGERS ════════════ -->
+  <section class="group">
+    <div class="group-head">
+      <span class="group-eyebrow">One-pagers <span class="count">· 1</span></span>
+      <span class="group-title">Single-sheet exec summaries</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="./one-pagers/agentic-ai-banking-one-pager.html">
+        <div class="card-body">
+          <div class="card-chip">ONE-PAGER · A4</div>
+          <h3 class="card-title">Agents that change the <em>work</em>, not just the worker.</h3>
+          <p class="card-desc">A single A4 sheet — designed to print to one page and read in 90 seconds. The thesis, three hero stats, three takeaways, and the five no-regret moves in one printable view.</p>
+          <div class="card-meta">
+            <span>HTML · A4 print</span><span>~90 sec read</span><span>Executive brief</span>
+          </div>
+        </div>
+        <span class="card-cta">Open →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ════════════ ENGINEERING NOTES ════════════ -->
+  <section class="group">
+    <div class="group-head">
+      <span class="group-eyebrow">Engineering notes <span class="count">· 2</span></span>
+      <span class="group-title">Self-learning &amp; technical explainers</span>
+    </div>
+    <div class="cards two-col">
+      <a class="card" href="./engineering-notes/agentic-harness-evals-traces.html">
+        <div class="card-body">
+          <div class="card-chip">NOTE №01 · FOUNDATIONS</div>
+          <h3 class="card-title">Agentic harness, <em>evals</em> &amp; traces.</h3>
+          <p class="card-desc">A self-learning guide to the infrastructure around an LLM that turns it into an agent — and the discipline of evals and traces that keeps it honest in production. Interactive loop &amp; feedback-cycle animations.</p>
+          <div class="card-meta">
+            <span>HTML</span><span>~30 min</span><span>Technical</span>
+          </div>
+        </div>
+        <span class="card-cta">Read →</span>
+      </a>
+      <a class="card" href="./engineering-notes/claude-agent-sdk-ic.html">
+        <div class="card-body">
+          <div class="card-chip">NOTE №04 · AGENTIC LAYER</div>
+          <h3 class="card-title">The Claude Agent <em>SDK</em>.</h3>
+          <p class="card-desc">An annotated explainer on Anthropic's library for building agents that do things — not just write words. What's inside, when to reach for it, a working example, and an animated loop visualization.</p>
+          <div class="card-meta">
+            <span>HTML</span><span>~12 min</span><span>Technical</span>
+          </div>
+        </div>
+        <span class="card-cta">Read →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ════════════ DESIGN SYSTEM ════════════ -->
+  <section class="group">
+    <div class="group-head">
+      <span class="group-eyebrow">Design system <span class="count">· the source</span></span>
+      <span class="group-title">Palette, three font families, named components</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="./design-reference.html">
+        <div class="card-body">
+          <div class="card-chip">STYLE GUIDE</div>
+          <h3 class="card-title">The IC <em>design system</em>.</h3>
+          <p class="card-desc">A working style guide — palette, three font families (System / Editorial / Technical), named visual components (chapter slab, eyebrow, pull quote, the seam, more), layout patterns, and the lessons learned from building the artifacts above. Light/dark toggle.</p>
+          <div class="card-meta">
+            <span>HTML</span><span>Reference</span><span>Living document</span>
+          </div>
+        </div>
+        <span class="card-cta">Browse →</span>
+      </a>
+    </div>
+
+    <div class="ds-extra">
+      <span class="label">Source files</span>
+      The machine-readable source of truth is <a href="./tokens.js"><code>tokens.js</code></a> (canonical palette, fonts, layout). The rule book is <a href="./CLAUDE.md"><code>CLAUDE.md</code></a> (auto-loaded into every Claude Code session in this folder; defines what to do and what to avoid when building new collaterals).
+    </div>
+  </section>
+
+  <!-- ════════════ ABOUT ════════════ -->
+  <section class="about">
+    <span class="about-label">About</span>
+    <div class="about-body">
+      <p>This is a working library — built incrementally as each new collateral type stress-tests the design system and surfaces what needs to be added to it. The artifacts and the system co-evolve.</p>
+      <p>Built with <em>Fraunces</em> (display, with optical-size and WONK axes), <em>IBM Plex Sans</em> (technical body), <em>Newsreader</em> (editorial body), and <em>JetBrains Mono</em> (utility). The visual vocabulary &mdash; the seam, chapter slabs, eyebrow span bars, drop caps, named callouts &mdash; is documented in the design reference.</p>
+      <p>The current visual identity is the third iteration; earlier attempts at "consulting bland" were rejected in favor of the editorial-broadsheet feel that runs across the library now.</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ════════════ COLOPHON ════════════ -->
+<footer class="colophon">
+  <div class="inner">
+    <div class="block">
+      <div class="h">Library</div>
+      <div class="feature">IC Collaterals.</div>
+      <div>6 artifacts · Spring 2026 · Working library</div>
+    </div>
+    <div class="block">
+      <div class="h">Practice</div>
+      <div class="feature">Infosys Consulting.</div>
+      <div>Built on a shared design system</div>
+    </div>
+    <div class="block">
+      <div class="h">Set in</div>
+      <div class="feature">Fraunces, IBM Plex Sans, Newsreader &amp; JetBrains Mono.</div>
+      <div>Source on <a href="https://github.com/Vedpalnitk/ic-collaterals">GitHub</a></div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

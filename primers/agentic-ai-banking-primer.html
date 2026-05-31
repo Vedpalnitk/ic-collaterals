@@ -1,0 +1,1684 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agents that change the work — A primer on agentic AI in banking · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  /* ───────────────────── TOKENS ───────────────────── */
+  :root {
+    /* IC palette — the only colors used in this document */
+    --white:      #FFFFFF;
+    --deep:       #182534;
+    --pavement:   #404040;
+    --blue:       #007CC3;
+    --stone:      #A7A9AC;
+    --slate:      #6D6E71;
+    --lt-blue:    #3699DA;
+    --tint-blue:  #E6F2FA;
+    --tint-stone: #F2F2F3;
+    --rule:       #E2E4E7;
+
+    /* Type */
+    --display: 'Fraunces', 'Times New Roman', serif;
+    --body:    'Newsreader', 'Georgia', serif;
+    --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+
+  /* ───────────────────── RESET / BASE ───────────────────── */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--body);
+    font-feature-settings: "kern", "liga", "onum";
+    color: var(--pavement);
+    background: var(--white);
+    font-size: 19px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection { background: var(--deep); color: var(--white); }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ───────────────────── READING PROGRESS BAR ───────────────────── */
+  .progress {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 2px; background: transparent; z-index: 1000;
+    pointer-events: none;
+  }
+  .progress::before {
+    content: ''; display: block;
+    height: 100%; width: var(--p, 0%);
+    background: var(--blue);
+    transition: width 80ms linear;
+  }
+
+  /* ───────────────────── MASTHEAD ───────────────────── */
+  .masthead {
+    border-bottom: 1px solid var(--rule);
+    padding: 18px 40px 16px;
+    display: flex; align-items: baseline; justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--slate);
+  }
+  .masthead .mark { color: var(--deep); font-weight: 600; }
+  .masthead .meta { display: flex; gap: 24px; }
+  .masthead .meta span:not(:last-child)::after {
+    content: '·'; margin-left: 24px; color: var(--stone);
+  }
+
+  /* ───────────────────── HERO ───────────────────── */
+  .hero {
+    position: relative;
+    padding: 120px 40px 110px;
+    border-bottom: 1px solid var(--rule);
+    overflow: hidden;
+  }
+  .hero-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .hero .kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin: 0 0 36px;
+    display: flex; align-items: center; gap: 16px;
+    animation: fadeUp 700ms cubic-bezier(.2,.7,.2,1) both;
+  }
+  .hero .kicker::before {
+    content: ''; width: 56px; height: 1px; background: var(--blue);
+  }
+  .hero h1 {
+    font-family: var(--display);
+    font-optical-sizing: auto;
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+    font-weight: 380;
+    font-size: clamp(48px, 7.5vw, 116px);
+    line-height: 0.96;
+    letter-spacing: -0.028em;
+    color: var(--deep);
+    margin: 0 0 44px;
+    max-width: 16ch;
+    animation: fadeUp 900ms cubic-bezier(.2,.7,.2,1) 80ms both;
+  }
+  .hero h1 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+    font-weight: 380;
+  }
+  .hero .deck {
+    font-family: var(--body);
+    font-size: clamp(20px, 1.7vw, 26px);
+    line-height: 1.42;
+    font-weight: 360;
+    color: var(--pavement);
+    max-width: 56ch;
+    margin: 0 0 56px;
+    animation: fadeUp 1000ms cubic-bezier(.2,.7,.2,1) 240ms both;
+  }
+  .hero .deck em {
+    font-style: italic; color: var(--deep);
+  }
+  .hero .meta-row {
+    display: flex; flex-wrap: wrap; gap: 56px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--slate);
+    animation: fadeUp 1100ms cubic-bezier(.2,.7,.2,1) 420ms both;
+  }
+  .hero .meta-row .field {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .hero .meta-row .label { color: var(--stone); }
+  .hero .meta-row .value { color: var(--deep); font-weight: 600; }
+
+  /* Vertical "seam" line on the right of the hero — the motif */
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; right: 40px;
+    width: 1px;
+    background: linear-gradient(180deg, transparent 0%, var(--blue) 12%, var(--blue) 88%, transparent 100%);
+    animation: drawV 1400ms cubic-bezier(.2,.7,.2,1) 200ms both;
+    transform-origin: top;
+  }
+  @media (max-width: 700px) { .hero::after { display: none; } }
+
+  /* ───────────────────── CHAPTER SLAB (full-bleed DEEP_BLUE separator) ───────────────────── */
+  .slab {
+    background: var(--deep);
+    color: var(--white);
+    padding: 88px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .slab-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 200px 1fr 200px;
+    gap: 48px;
+    align-items: end;
+  }
+  @media (max-width: 900px) { .slab-inner { grid-template-columns: 1fr; gap: 24px; } }
+  .slab .ch-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--lt-blue);
+  }
+  .slab .ch-title {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 120, "SOFT" 0, "WONK" 0;
+    font-weight: 380;
+    font-size: clamp(40px, 5.6vw, 84px);
+    line-height: 0.98;
+    letter-spacing: -0.022em;
+    color: var(--white);
+    margin: 0;
+  }
+  .slab .ch-title em {
+    font-style: italic;
+    font-variation-settings: "opsz" 120, "SOFT" 100, "WONK" 1;
+    color: var(--lt-blue);
+    font-weight: 380;
+  }
+  .slab .ch-deck {
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--stone);
+    margin: 0;
+    max-width: 28ch;
+  }
+  /* The seam line within the slab */
+  .slab::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 1px;
+    background: var(--blue);
+  }
+
+  /* ───────────────────── ARTICLE ───────────────────── */
+  article {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 110px 40px 80px;
+    display: grid;
+    grid-template-columns: 220px minmax(0, 660px) 1fr;
+    gap: 56px;
+    position: relative;
+  }
+  @media (max-width: 1050px) { article { grid-template-columns: 1fr; padding: 64px 24px; } }
+
+  .gutter {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--stone);
+    line-height: 1.6;
+    padding-top: 12px;
+  }
+  @media (max-width: 1050px) {
+    .gutter {
+      display: flex; gap: 16px; align-items: baseline; padding-top: 0; margin-bottom: 24px;
+    }
+    .gutter::before { content: ''; flex: 0 0 28px; height: 1px; background: var(--blue); }
+  }
+  .gutter .seam {
+    display: block; width: 28px; height: 1px;
+    background: var(--blue); margin-bottom: 14px;
+  }
+  @media (max-width: 1050px) { .gutter .seam { display: none; } }
+  .gutter .marker {
+    color: var(--deep); font-weight: 600;
+  }
+  .gutter .note {
+    color: var(--slate); margin-top: 12px; display: block;
+    text-transform: none; letter-spacing: 0.04em; font-size: 11px;
+  }
+  @media (max-width: 1050px) { .gutter .note { display: none; } }
+
+  /* Reading column */
+  .col {
+    max-width: 660px;
+  }
+  .col > * + * { margin-top: 22px; }
+
+  /* Section heading — appears inside the article column */
+  .col h2.heading {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 96, "SOFT" 0, "WONK" 0;
+    font-weight: 400;
+    font-size: clamp(36px, 4.2vw, 56px);
+    line-height: 1.04;
+    letter-spacing: -0.018em;
+    color: var(--deep);
+    margin: 0 0 36px;
+  }
+  .col h2.heading em {
+    font-style: italic;
+    font-variation-settings: "opsz" 96, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+    font-weight: 400;
+  }
+
+  .col h3.sub {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin: 56px 0 18px;
+  }
+  .col h3.sub::before {
+    content: ''; display: inline-block; width: 20px; height: 1px;
+    background: var(--blue); vertical-align: middle; margin-right: 12px;
+    margin-bottom: 3px;
+  }
+  .col h4.minor {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+    font-weight: 500;
+    font-size: 26px;
+    line-height: 1.22;
+    letter-spacing: -0.012em;
+    color: var(--deep);
+    margin: 48px 0 14px;
+  }
+  .col p {
+    margin: 0;
+    font-family: var(--body);
+    font-weight: 380;
+    font-size: 19px;
+    line-height: 1.65;
+    color: var(--pavement);
+  }
+  .col p em { font-style: italic; color: var(--deep); }
+  .col p strong { font-weight: 600; color: var(--deep); }
+  .col p .hl { color: var(--blue); font-weight: 500; }
+
+  /* Drop cap — chapter openers */
+  .col p.opener::first-letter {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1;
+    font-weight: 400;
+    font-size: 92px;
+    line-height: 0.82;
+    float: left;
+    padding: 9px 14px 0 0;
+    color: var(--blue);
+  }
+
+  /* Pull quote — breaks out toward the right */
+  .col .pull {
+    margin: 56px -120px 56px -20px;
+    padding: 4px 0 4px 32px;
+    border-left: 1px solid var(--blue);
+    font-family: var(--display);
+    font-variation-settings: "opsz" 96, "SOFT" 60, "WONK" 0;
+    font-style: italic;
+    font-weight: 320;
+    font-size: 38px;
+    line-height: 1.16;
+    letter-spacing: -0.016em;
+    color: var(--deep);
+  }
+  @media (max-width: 1050px) { .col .pull { margin-right: 0; font-size: 30px; } }
+  .col .pull .src {
+    display: block; margin-top: 18px;
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 400;
+  }
+
+  /* In-flow stat callout */
+  .col .stat {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 28px;
+    align-items: baseline;
+    margin: 40px 0;
+    padding: 26px 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .col .stat .figure {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1;
+    font-weight: 360;
+    font-size: 84px;
+    line-height: 0.84;
+    letter-spacing: -0.04em;
+    color: var(--blue);
+  }
+  .col .stat .figure small {
+    font-size: 32px; color: var(--pavement); margin-left: 4px;
+    font-variation-settings: "opsz" 96, "SOFT" 0, "WONK" 0;
+  }
+  .col .stat .copy {
+    font-family: var(--body);
+    font-size: 15px; line-height: 1.55; color: var(--slate);
+  }
+  .col .stat .copy strong { color: var(--deep); font-weight: 600; }
+
+  /* ───────────────────── LONG-TAIL FIGURE ───────────────────── */
+  .figure-block {
+    margin: 56px -120px 56px -20px;
+    padding: 32px 28px 24px;
+    border: 1px solid var(--rule);
+    background: var(--white);
+    position: relative;
+  }
+  @media (max-width: 1050px) { .figure-block { margin: 40px 0; } }
+  .figure-block .fig-num {
+    position: absolute; top: -10px; left: 28px;
+    background: var(--white); padding: 0 8px;
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--blue); font-weight: 600;
+  }
+  .figure-block .fig-title {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 24, "SOFT" 0, "WONK" 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--deep);
+    margin: 0 0 4px;
+  }
+  .figure-block .fig-deck {
+    font-family: var(--body);
+    font-size: 13px; line-height: 1.5;
+    color: var(--slate);
+    margin: 0 0 18px;
+    max-width: 60ch;
+  }
+  .figure-block .fig-source {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  svg.fig { display: block; width: 100%; height: auto; }
+
+  /* ───────────────────── BEFORE / AFTER (the seam diagram) ───────────────────── */
+  .ba {
+    margin: 48px -120px 48px -20px;
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    border: 1px solid var(--rule);
+    background: var(--white);
+    overflow: hidden;
+  }
+  @media (max-width: 1050px) {
+    .ba { margin: 40px 0; grid-template-columns: 1fr; grid-template-rows: auto 1px auto; }
+  }
+  .ba .seam-rule {
+    background: var(--blue);
+    position: relative;
+  }
+  .ba .seam-rule::after {
+    content: 'SEAM';
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-90deg);
+    background: var(--white);
+    padding: 6px 0;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.24em;
+    color: var(--blue);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  @media (max-width: 1050px) {
+    .ba .seam-rule::after { transform: translate(-50%, -50%); }
+  }
+  .ba .pane {
+    padding: 28px 28px 32px;
+  }
+  .ba .pane.today { background: var(--tint-stone); }
+  .ba .pane.redesigned { background: var(--white); }
+  .ba .pane .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .ba .pane.today .tag { color: var(--slate); }
+  .ba .pane.redesigned .tag { color: var(--blue); }
+  .ba .pane .tag::after {
+    content: ''; flex: 1; height: 1px; background: currentColor; opacity: 0.3;
+  }
+  .ba .pane h6 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+    font-size: 22px; font-weight: 500; line-height: 1.2;
+    color: var(--deep);
+    margin: 0 0 18px;
+  }
+  .ba .pane ul {
+    list-style: none;
+    padding: 0; margin: 0;
+    font-family: var(--body);
+    font-size: 15px; line-height: 1.55;
+    color: var(--pavement);
+  }
+  .ba .pane ul li {
+    padding: 8px 0;
+    border-top: 1px solid var(--rule);
+  }
+  .ba .pane.today ul li::before {
+    content: '— '; color: var(--stone);
+  }
+  .ba .pane.redesigned ul li::before {
+    content: '+ '; color: var(--blue); font-weight: 600;
+  }
+
+  /* ───────────────────── PILLARS (chapter III) ───────────────────── */
+  .pillars {
+    margin: 48px 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    border-top: 1px solid var(--rule);
+  }
+  .pillars .pillar {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 24px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  .pillars .pillar .n {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--blue);
+    font-weight: 600;
+  }
+  .pillars .pillar h6 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+    font-size: 22px; font-weight: 500; line-height: 1.25;
+    color: var(--deep);
+    margin: 0 0 8px;
+  }
+  .pillars .pillar p {
+    font-family: var(--body);
+    font-size: 16px; line-height: 1.55;
+    color: var(--slate);
+    margin: 0;
+  }
+  .pillars .pillar p em { color: var(--pavement); font-style: italic; }
+
+  /* ───────────────────── COMMANDMENTS (chapter V, 5 principles) ───────────────────── */
+  .commandments {
+    margin: 56px -120px 56px -20px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  @media (max-width: 1050px) { .commandments { margin: 40px 0; } }
+  .commandments .c {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 32px;
+    padding: 40px 32px;
+    border-top: 1px solid var(--rule);
+    align-items: start;
+    transition: background 200ms ease;
+  }
+  .commandments .c:last-child { border-bottom: 1px solid var(--rule); }
+  .commandments .c:hover { background: var(--tint-blue); }
+  .commandments .c .roman {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+    font-style: italic;
+    font-weight: 320;
+    font-size: 96px;
+    line-height: 0.82;
+    color: var(--blue);
+    letter-spacing: -0.04em;
+  }
+  .commandments .c h6 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 48, "SOFT" 0, "WONK" 0;
+    font-size: 28px; font-weight: 500; line-height: 1.22;
+    color: var(--deep);
+    margin: 6px 0 10px;
+  }
+  .commandments .c p {
+    font-family: var(--body);
+    font-size: 17px; line-height: 1.55;
+    color: var(--pavement);
+    margin: 0;
+  }
+
+  /* ───────────────────── MATURITY LADDER ───────────────────── */
+  .ladder {
+    margin: 64px -120px 64px -20px;
+    padding: 24px 28px 0;
+    position: relative;
+  }
+  @media (max-width: 1050px) { .ladder { margin: 40px 0; padding: 24px 0 0; } }
+  .ladder .axis {
+    height: 1px;
+    background: var(--blue);
+    position: relative;
+    margin: 64px 8px 0;
+  }
+  .ladder .axis::before, .ladder .axis::after {
+    content: '';
+    position: absolute;
+    width: 1px; height: 12px;
+    background: var(--blue);
+    top: -5px;
+  }
+  .ladder .axis::before { left: -1px; }
+  .ladder .axis::after  { right: -1px; }
+
+  .ladder .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: -16px;
+    position: relative;
+  }
+  @media (max-width: 1050px) { .ladder .steps { grid-template-columns: 1fr; gap: 24px; } }
+  .ladder .step {
+    position: relative;
+    padding: 36px 12px 0;
+    text-align: left;
+  }
+  .ladder .step::before {
+    content: '';
+    position: absolute; top: -8px; left: 12px;
+    width: 12px; height: 12px;
+    background: var(--blue);
+    border-radius: 50%;
+  }
+  .ladder .step.future::before {
+    background: var(--white);
+    border: 1px solid var(--blue);
+  }
+  @media (max-width: 1050px) { .ladder .step::before { display: none; } }
+  .ladder .step .n {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .ladder .step .future-tag { color: var(--stone); }
+  .ladder .step h6 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 30, "SOFT" 0, "WONK" 0;
+    font-size: 19px; font-weight: 500; line-height: 1.22;
+    color: var(--deep);
+    margin: 0 0 6px;
+  }
+  .ladder .step p {
+    font-family: var(--body);
+    font-size: 13px; line-height: 1.5;
+    color: var(--slate);
+    margin: 0;
+  }
+
+  /* ───────────────────── PATH (24-month horizons) ───────────────────── */
+  .path {
+    margin: 48px 0;
+    border-top: 1px solid var(--rule);
+  }
+  .path .h {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 32px;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  .path .h .when {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--blue);
+    font-weight: 600;
+  }
+  .path .h .when .verb {
+    display: block;
+    margin-top: 6px;
+    font-family: var(--display);
+    font-variation-settings: "opsz" 30, "SOFT" 0, "WONK" 1;
+    font-style: italic;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+    color: var(--deep);
+    font-weight: 500;
+    text-transform: none;
+  }
+  .path .h p {
+    font-family: var(--body);
+    font-size: 17px; line-height: 1.55;
+    color: var(--pavement);
+    margin: 0;
+  }
+
+  /* ───────────────────── SIDEBAR (sales tools) ───────────────────── */
+  .toolbox {
+    margin: 56px -120px 56px -20px;
+    border: 1px solid var(--rule);
+    background: var(--white);
+    padding: 0;
+    overflow: hidden;
+  }
+  @media (max-width: 1050px) { .toolbox { margin: 40px 0; } }
+  .toolbox .tb-head {
+    padding: 22px 28px;
+    border-bottom: 1px solid var(--rule);
+    display: flex; align-items: baseline; justify-content: space-between;
+    background: var(--tint-blue);
+  }
+  .toolbox .tb-head .tag {
+    font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--blue);
+    font-weight: 600;
+  }
+  .toolbox .tb-head h6 {
+    margin: 0;
+    font-family: var(--display);
+    font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+    font-style: italic;
+    font-size: 22px; font-weight: 400;
+    color: var(--deep);
+  }
+  .toolbox .tb-body { padding: 12px 28px 28px; }
+  .toolbox .group {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .toolbox .group:last-child { border-bottom: none; }
+  .toolbox .group .gname {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin-bottom: 12px;
+  }
+  .toolbox .group .q {
+    font-family: var(--body);
+    font-size: 16px; line-height: 1.5;
+    color: var(--pavement);
+    padding: 6px 0 6px 28px;
+    position: relative;
+    font-style: italic;
+  }
+  .toolbox .group .q::before {
+    content: 'Q.';
+    position: absolute; left: 0; top: 6px;
+    font-family: var(--mono);
+    font-style: normal;
+    color: var(--blue);
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+  }
+
+  .obj-list {
+    margin: 0; padding: 12px 28px 24px;
+  }
+  .obj-list .ob {
+    padding: 22px 0;
+    border-bottom: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .obj-list .ob:last-child { border-bottom: none; }
+  .obj-list .ob .said {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 36, "SOFT" 60, "WONK" 0;
+    font-style: italic;
+    font-size: 22px; line-height: 1.22;
+    color: var(--deep);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .obj-list .ob .said::before {
+    content: '“'; color: var(--blue); margin-right: 2px;
+  }
+  .obj-list .ob .said::after {
+    content: '”'; color: var(--blue); margin-left: 2px;
+  }
+  .obj-list .ob .resp {
+    font-family: var(--body);
+    font-size: 16px; line-height: 1.55;
+    color: var(--pavement);
+    margin: 4px 0 0;
+  }
+  .obj-list .ob .resp::before {
+    content: '↳ ';
+    color: var(--blue);
+    font-family: var(--mono);
+    font-weight: 700;
+    margin-right: 6px;
+  }
+
+  /* ───────────────────── TAKEAWAYS / BOTTOM LINE ───────────────────── */
+  .takeaways {
+    margin: 48px 0;
+    counter-reset: ta;
+  }
+  .takeaways .ta {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 24px;
+    padding: 26px 0;
+    border-top: 1px solid var(--rule);
+    counter-increment: ta;
+  }
+  .takeaways .ta:last-child { border-bottom: 1px solid var(--rule); }
+  .takeaways .ta::before {
+    content: counter(ta, decimal-leading-zero);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--blue);
+    font-weight: 600;
+    padding-top: 4px;
+  }
+  .takeaways .ta p {
+    font-family: var(--body);
+    font-size: 18px; line-height: 1.5;
+    color: var(--pavement);
+    margin: 0;
+  }
+  .takeaways .ta p strong { color: var(--deep); font-weight: 600; }
+
+  /* ───────────────────── REFERENCES ───────────────────── */
+  .refs-block {
+    grid-column: 1 / -1;
+    margin-top: 96px;
+    padding-top: 32px;
+    border-top: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 56px;
+  }
+  @media (max-width: 1050px) { .refs-block { grid-template-columns: 1fr; gap: 16px; } }
+  .refs-block .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--slate);
+  }
+  .refs-block ol {
+    margin: 0; padding-left: 22px;
+    font-family: var(--body);
+    font-size: 13px; line-height: 1.55;
+    color: var(--slate);
+  }
+  .refs-block ol li { margin: 4px 0; }
+  .refs-block ol li em { color: var(--pavement); font-style: italic; }
+
+  /* Footnote markers */
+  sup.fn a {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--blue);
+    font-weight: 600;
+    padding: 0 1px;
+  }
+  sup.fn a:hover { background: var(--tint-blue); }
+
+  /* ───────────────────── COLOPHON FOOTER ───────────────────── */
+  .colophon {
+    background: var(--deep);
+    color: var(--stone);
+    padding: 48px 40px 56px;
+  }
+  .colophon-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  @media (max-width: 700px) { .colophon-inner { grid-template-columns: 1fr; } }
+  .colophon .block {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    line-height: 1.7;
+  }
+  .colophon .block .h {
+    color: var(--blue); font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .colophon .block p, .colophon .block div {
+    color: var(--stone); margin: 0;
+  }
+  .colophon .block .feature {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 36, "SOFT" 80, "WONK" 0;
+    font-size: 22px;
+    color: var(--white);
+    letter-spacing: -0.01em;
+    text-transform: none;
+    line-height: 1.3;
+    margin: 6px 0 4px;
+    font-weight: 400;
+  }
+
+  /* ───────────────────── ANIMATIONS ───────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes drawV {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
+  }
+  @keyframes drawH {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 700ms cubic-bezier(.2,.7,.2,1), transform 700ms cubic-bezier(.2,.7,.2,1);
+  }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0ms !important;
+      transition-duration: 0ms !important;
+    }
+    .reveal { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ───────────────────── READING PROGRESS BAR ───────────────────── -->
+<div class="progress" id="prog"></div>
+
+<!-- ───────────────────── MASTHEAD ───────────────────── -->
+<header class="masthead">
+  <span class="mark">Infosys Consulting</span>
+  <div class="meta">
+    <span>Point of view</span>
+    <span>Banking</span>
+    <span>No. 01</span>
+    <span>May 2026</span>
+  </div>
+</header>
+
+<!-- ───────────────────── HERO ───────────────────── -->
+<section class="hero">
+  <div class="hero-inner">
+    <p class="kicker">A primer · Agentic AI in banking</p>
+    <h1>Agents that change the <em>work</em>, not just the worker.</h1>
+    <p class="deck">
+      Banks have spent two years bolting generative AI onto existing processes and have learned an uncomfortable lesson: <em>pilots plateau.</em> The next decade of value will not come from better assistants. It will come from rebuilding the process — and the operating model — around what an agent can actually do.
+    </p>
+    <div class="meta-row">
+      <div class="field"><span class="label">Audience</span><span class="value">Banking executives</span></div>
+      <div class="field"><span class="label">Length</span><span class="value">~25 min read</span></div>
+      <div class="field"><span class="label">Practice</span><span class="value">IC Banking</span></div>
+      <div class="field"><span class="label">Edition</span><span class="value">Spring 2026</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     CHAPTER I — Setup: The pilot plateau
+     ═══════════════════════════════════════════════════════════════════ -->
+<section class="slab reveal">
+  <div class="slab-inner">
+    <div class="ch-num">Chapter&nbsp;I — Setup</div>
+    <h2 class="ch-title">The <em>pilot</em> plateau.</h2>
+    <p class="ch-deck">A pattern that repeats across every major bank: forty pilots running, value in two.</p>
+  </div>
+</section>
+
+<article>
+  <aside class="gutter">
+    <span class="seam"></span>
+    <span class="marker">§ 01</span>
+    <span class="note">A diagnosis of the first two years of bank generative-AI investment, and why the curve flattened.</span>
+  </aside>
+
+  <div class="col">
+    <h2 class="heading">Forty pilots. <em>Two</em> that work.</h2>
+
+    <p class="opener">Across the largest banks, the same pattern repeats. A list of forty, sometimes two hundred, generative-AI initiatives. A small group near the top that has clearly worked. A long tail that is busy, expensive, and quietly going nowhere.</p>
+
+    <p>The first wave of bank AI investment looked successful by its own measures: more pilots, more partnerships, more pages in the annual report. By 2025, however, leadership teams had started to notice that the curve had flattened. The pilot count kept climbing, but the value it created did not. Most of the realized productivity came from two or three use cases per bank — a contact-center assistant, a developer copilot, a document-summarizer. Everything else was an investment looking for a return.</p>
+
+    <!-- Fig. 1 — Long-tail chart, editorial research-paper style -->
+    <div class="figure-block">
+      <span class="fig-num">Fig. 1</span>
+      <h6 class="fig-title">Pilot value concentrates in a long tail.</h6>
+      <p class="fig-deck">Per-bank distribution of realized value across active generative-AI initiatives. The top two use cases carry the majority of returns; the remaining thirty-plus return single-digit cents on every dollar.</p>
+      <svg class="fig" viewBox="0 0 720 240" role="img" aria-label="Long-tail distribution of pilot value">
+        <!-- baseline -->
+        <line x1="32" y1="200" x2="704" y2="200" stroke="#404040" stroke-width="1"/>
+
+        <!-- bars -->
+        <g>
+          <rect x="42"  y="36"  width="20" height="164" fill="#007CC3"/>
+          <rect x="68"  y="62"  width="20" height="138" fill="#007CC3"/>
+          <rect x="94"  y="124" width="20" height="76"  fill="#3699DA"/>
+          <rect x="120" y="156" width="20" height="44"  fill="#A7A9AC"/>
+          <rect x="146" y="168" width="20" height="32"  fill="#A7A9AC"/>
+          <rect x="172" y="176" width="20" height="24"  fill="#A7A9AC"/>
+          <rect x="198" y="180" width="20" height="20"  fill="#A7A9AC"/>
+          <rect x="224" y="184" width="20" height="16"  fill="#A7A9AC"/>
+          <rect x="250" y="187" width="20" height="13"  fill="#A7A9AC"/>
+          <rect x="276" y="189" width="20" height="11"  fill="#A7A9AC"/>
+          <rect x="302" y="191" width="20" height="9"   fill="#A7A9AC"/>
+          <rect x="328" y="192" width="20" height="8"   fill="#A7A9AC"/>
+          <rect x="354" y="193" width="20" height="7"   fill="#A7A9AC"/>
+          <rect x="380" y="194" width="20" height="6"   fill="#A7A9AC"/>
+          <rect x="406" y="195" width="20" height="5"   fill="#A7A9AC"/>
+          <rect x="432" y="196" width="20" height="4"   fill="#A7A9AC"/>
+          <rect x="458" y="196.5" width="20" height="3.5" fill="#A7A9AC"/>
+          <rect x="484" y="197" width="20" height="3"   fill="#A7A9AC"/>
+          <rect x="510" y="197.5" width="20" height="2.5" fill="#A7A9AC"/>
+          <rect x="536" y="198" width="20" height="2"   fill="#A7A9AC"/>
+          <rect x="562" y="198.3" width="20" height="1.7" fill="#A7A9AC"/>
+          <rect x="588" y="198.6" width="20" height="1.4" fill="#A7A9AC"/>
+          <rect x="614" y="198.8" width="20" height="1.2" fill="#A7A9AC"/>
+          <rect x="640" y="199" width="20" height="1"   fill="#A7A9AC"/>
+          <rect x="666" y="199.2" width="20" height="0.8" fill="#A7A9AC"/>
+        </g>
+
+        <!-- annotations -->
+        <line x1="52" y1="20" x2="52" y2="32" stroke="#007CC3" stroke-width="1"/>
+        <text x="62" y="24" fill="#007CC3" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" letter-spacing="1.2">
+          ↘ ~2 USE CASES CARRY THE VALUE
+        </text>
+
+        <line x1="300" y1="148" x2="300" y2="160" stroke="#6D6E71" stroke-width="0.5"/>
+        <text x="310" y="152" fill="#6D6E71" font-family="Newsreader, serif" font-style="italic" font-size="13">
+          the long tail — busy, expensive, ineffective
+        </text>
+
+        <!-- axis label -->
+        <text x="32" y="222" fill="#6D6E71" font-family="JetBrains Mono, monospace" font-size="9" letter-spacing="1.4">
+          PILOTS, RANKED BY REALIZED VALUE
+        </text>
+        <text x="704" y="222" fill="#6D6E71" font-family="JetBrains Mono, monospace" font-size="9" text-anchor="end" letter-spacing="1.4">
+          N = ~40 PER BANK
+        </text>
+      </svg>
+      <div class="fig-source">Source · BCG Build for the Future 2024 <sup class="fn"><a href="#ref1">¹</a></sup> · Illustrative shape, IC analysis.</div>
+    </div>
+
+    <p>The frustration is not that AI didn't deliver. The frustration is that AI delivered, and then stopped — and nobody could quite explain why the next ten pilots gave back so much less than the first two. Some teams blamed the model. Some blamed the data. The bolder ones started blaming the process. They were right.</p>
+
+    <p class="pull">
+      The pilot plateau is a design problem, not a model problem.
+      <span class="src">A diagnosis</span>
+    </p>
+
+    <p>The reason most pilots stall is structural. A generative agent dropped into a legacy workflow inherits everything that was wrong with that workflow: the system silos, the document handoffs, the compliance gates, the human approvals built for an era when the work itself was slower. The agent does its share faster than a human would, but the surrounding friction is unchanged — and it is the friction, not the agent's speed, that bounds the outcome.</p>
+
+    <p>The two or three use cases that escape this trap have a quiet thing in common. They were not bolted onto an existing process. They were processes redesigned around what an agent could do, with the human work and the controls reshaped to match. The teams that built them stopped asking <em>where can we put an agent?</em> and started asking <em>what would this process look like if we'd designed it for agents from the start?</em></p>
+  </div>
+</article>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     CHAPTER II — Why now
+     ═══════════════════════════════════════════════════════════════════ -->
+<section class="slab reveal">
+  <div class="slab-inner">
+    <div class="ch-num">Chapter&nbsp;II — Why now</div>
+    <h2 class="ch-title">The <em>window</em> opened.</h2>
+    <p class="ch-deck">Three forces hit production maturity within eighteen months of each other. The reframe is now actionable.</p>
+  </div>
+</section>
+
+<article>
+  <aside class="gutter">
+    <span class="seam"></span>
+    <span class="marker">§ 02</span>
+    <span class="note">Capability, tooling, and bank maturity each crossed a threshold. None was dramatic alone; together they were a phase change.</span>
+  </aside>
+
+  <div class="col">
+    <h2 class="heading">A phase change, not a <em>headline</em>.</h2>
+
+    <p class="opener">The reframe described in this primer would not have been actionable two years ago. It is actionable now because three independent forces reached production maturity at roughly the same time. None of them was dramatic on its own. Together, they crossed a threshold.</p>
+
+    <h3 class="sub">i. Capability</h3>
+    <h4 class="minor">Frontier models can plan, use tools, and verify their own work.</h4>
+    <p>Reasoning-capable models can now decompose a multi-step task, choose tools, call them in the right order, and review their own work before handing off. Per-token costs have fallen roughly 85 percent since 2023, putting capable models in reach of bulk operational workloads.<sup class="fn"><a href="#ref2">²</a></sup> A use case that was an expensive demo in 2023 is a routine production workload by 2026.</p>
+
+    <div class="stat">
+      <div class="figure">~85<small>%</small></div>
+      <div class="copy"><strong>Per-token cost decline</strong> for frontier-class reasoning models between 2023 and early 2026 — moving agentic workloads from demo budgets to operational budgets.</div>
+    </div>
+
+    <h3 class="sub">ii. Tooling</h3>
+    <h4 class="minor">The agent stack stopped being an experiment.</h4>
+    <p>Orchestration frameworks (LangGraph, OpenAI Assistants, Anthropic Computer Use), evaluation harnesses (Braintrust, LangSmith, OpenAI Evals), and observability tools (Arize, Helicone) have moved from "research interesting" to "production engineering." A bank's platform team can buy or self-host an agent stack the same way it buys an analytics stack. The question shifted from <em>is this possible?</em> to <em>what should we run on it?</em></p>
+
+    <h3 class="sub">iii. Maturity</h3>
+    <h4 class="minor">Banks are no longer pre-pilot.</h4>
+    <p>JPMorgan reports more than $17 billion in annual technology spend, with AI as a named line item across its public disclosures.<sup class="fn"><a href="#ref3">³</a></sup> Bank of America has logged more than 2 billion cumulative client interactions with Erica.<sup class="fn"><a href="#ref4">⁴</a></sup> Citi, Goldman, Wells, and every European universal bank have made public commitments to agentic deployments. The infrastructure investments of the last 24 months are now in place; what's missing is the design discipline to make them pay off.</p>
+  </div>
+</article>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     CHAPTER III — The reframe
+     ═══════════════════════════════════════════════════════════════════ -->
+<section class="slab reveal">
+  <div class="slab-inner">
+    <div class="ch-num">Chapter&nbsp;III — Reframe</div>
+    <h2 class="ch-title">The <em>unit</em> of work changed.</h2>
+    <p class="ch-deck">From agent-augmented to agent-native. The operating model has to follow.</p>
+  </div>
+</section>
+
+<article>
+  <aside class="gutter">
+    <span class="seam"></span>
+    <span class="marker">§ 03</span>
+    <span class="note">A new atomic action — "achieve this outcome" — replaces the old one — "fill this screen." Six pillars define what agent-native means.</span>
+  </aside>
+
+  <div class="col">
+    <h2 class="heading">An agent isn't a faster human. <em>It's a different unit of work.</em></h2>
+
+    <p class="opener">Every wave of automation in banking has started with the same instinct: take the current work and make it faster. Card processing, statement printing, branch transactions, robotic process automation — each wave saved hours, then plateaued, because the underlying process was still a thing-people-do, dressed in new infrastructure.</p>
+
+    <p>Generative agents are different in a specific and important way: they change the <em>unit of work.</em> The smallest atomic action in a traditional process is something like "fill this screen" or "review this document." The smallest atomic action available to an agent is "achieve this outcome" — gather the context, call the systems, read the documents, generate the artifact, flag the exception. That is not a faster version of the old unit. It is a different unit.</p>
+
+    <p class="pull">
+      Banks have been adding agents to processes. The next decade is about redesigning processes around agents.
+      <span class="src">The thesis</span>
+    </p>
+
+    <p>Processes designed around the old unit don't get more efficient when you swap in the new unit; they get marginally faster and structurally unchanged. The handoffs are still there. The screen-shifting is still there. The compliance gate at step seven still exists, even though the agent could have surfaced the risk at step two. The agent inherits the friction it was meant to remove.</p>
+
+    <p>To get past the plateau, banks have to do something more uncomfortable than buy more tools: they have to redesign the process around what an agent can actually do, and reshape the operating model — controls, risk, talent — to match. We call the outcome an <span class="hl">agent-native</span> process. It is defined less by which tasks the agent performs and more by what the rest of the organization stops doing around it.</p>
+
+    <h3 class="sub">The six pillars</h3>
+
+    <div class="pillars">
+      <div class="pillar">
+        <div class="n">i.</div>
+        <div>
+          <h6>Control plane.</h6>
+          <p>The agent's orchestration, routing, retries, and escalation paths are a first-class system, not a hidden script. The bank can see and steer how work flows between agents and people.</p>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="n">ii.</div>
+        <div>
+          <h6>Agent roles.</h6>
+          <p>Each agent has one clear job — research, decide, act, or review. Capability composes from small specialized roles, not from one large general-purpose agent that knows everything.</p>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="n">iii.</div>
+        <div>
+          <h6>Human-in-the-loop.</h6>
+          <p>Humans handle exceptions and decisions of consequence. They sit at the <em>seam</em> of the process, not at the start. The default flow runs without them; their attention is reserved for the moments that need it.</p>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="n">iv.</div>
+        <div>
+          <h6>Observability.</h6>
+          <p>Every step the agent takes is logged, replayable, and scoreable. You cannot improve what you cannot measure, and you cannot defend a regulatory inquiry on a system you cannot replay.</p>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="n">v.</div>
+        <div>
+          <h6>Governance.</h6>
+          <p>Model risk, audit trail, and regulator-readable explanations are designed in before the first agent runs. SR 11-7 was not written for agents, but its principles translate directly.<sup class="fn"><a href="#ref5">⁵</a></sup></p>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="n">vi.</div>
+        <div>
+          <h6>Talent.</h6>
+          <p>The org chart shifts. Three roles consistently emerge: <em>agent designer</em> (closer to a product designer than an engineer), <em>agent-ops</em> (runs agents in production, intervenes when drift happens), and <em>agent product manager</em> (owns a category of agent-driven processes as a P&amp;L line).</p>
+        </div>
+      </div>
+    </div>
+
+    <p>The pillars are deceptively simple individually. The work is in doing all six at once, on the same process, with the same operating model — not picking the easy ones and skipping the rest.</p>
+  </div>
+</article>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     CHAPTER IV — Three patterns
+     ═══════════════════════════════════════════════════════════════════ -->
+<section class="slab reveal">
+  <div class="slab-inner">
+    <div class="ch-num">Chapter&nbsp;IV — Proof</div>
+    <h2 class="ch-title">Three banking processes, <em>redrawn</em>.</h2>
+    <p class="ch-deck">Onboarding, underwriting, and disputes — each one a long history of bolt-on automation. Each one redesigned in a recognizable shape.</p>
+  </div>
+</section>
+
+<article>
+  <aside class="gutter">
+    <span class="seam"></span>
+    <span class="marker">§ 04</span>
+    <span class="note">Three recurring redesign candidates. The "seam" between today and the agent-native version sits at the centre of each.</span>
+  </aside>
+
+  <div class="col">
+    <h2 class="heading">What redesign looks like <em>in practice</em>.</h2>
+
+    <p class="opener">Three processes show up again and again as the right starting candidates for agent-native redesign in banking: onboarding and KYC, credit underwriting, and dispute handling. They are not the only candidates, but they are instructive: each one has a long history of bolt-on automation, each one has hit a ceiling, and each one shows what changes when the process is redrawn from scratch.</p>
+
+    <h3 class="sub">Pattern 01 · Onboarding &amp; KYC</h3>
+    <h4 class="minor">14 systems, 11 handoffs, 9 days. The analyst spent most of it moving documents.</h4>
+    <p>A commercial onboarding journey at a large bank typically touches around fourteen systems, eleven team handoffs, and a median turnaround of nine days.<sup class="fn"><a href="#ref6">⁶</a></sup> Drop-off between eight and twelve percent of customers abandon the process before it closes. The analyst doing the work spends most of it moving documents between systems and reconciling fields, not making judgments about risk.</p>
+
+    <div class="ba">
+      <div class="pane today">
+        <div class="tag">Today</div>
+        <h6>Legacy onboarding</h6>
+        <ul>
+          <li>~14 systems, 11 handoffs</li>
+          <li>9-day median TAT for commercial</li>
+          <li>8–12% customer drop-off</li>
+          <li>Analyst-led, document-by-document review</li>
+          <li>Control sits in the screens</li>
+        </ul>
+      </div>
+      <div class="seam-rule"></div>
+      <div class="pane redesigned">
+        <div class="tag">Redesigned</div>
+        <h6>Agent-native onboarding</h6>
+        <ul>
+          <li>Single orchestrated agent flow</li>
+          <li>Documents read, profiles drafted, risk tiered by agent</li>
+          <li>Humans approve only mid/high-risk cases</li>
+          <li>Audit trail generated continuously</li>
+          <li>Control sits in the orchestration layer</li>
+        </ul>
+      </div>
+    </div>
+
+    <p>The redesign moves three things at once. First, the customer enters the system <em>once</em>: a single intake surface, with the joining between systems done by the orchestration layer instead of by the analyst. Second, documents go to an agent first and an analyst second — the agent reads them, drafts the profile, tiers the risk, and only the cases that exceed a defined threshold escalate. Third, and most importantly, control moves from the screens to the orchestration layer: the audit trail, the policy checks, and the explanations are properties of the system rather than artifacts of the analyst's clicks.</p>
+
+    <h3 class="sub">Pattern 02 · Credit underwriting</h3>
+    <h4 class="minor">The memo is generated, not authored. The reviewer sees the working.</h4>
+    <p>In a typical commercial credit cycle, an analyst pulls financial statements, builds the spread, runs two or three scenarios, drafts a memo, and routes it for review. The cycle takes weeks. Reviewers see the answer, rarely the working. The scenario count is bounded not by the bank's risk appetite but by the analyst's hours.</p>
+
+    <div class="ba">
+      <div class="pane today">
+        <div class="tag">Today</div>
+        <h6>Analyst-led memo cycle</h6>
+        <ul>
+          <li>Statements, spreads, market data pulled manually</li>
+          <li>Memo drafted over weeks</li>
+          <li>2–3 scenarios per deal</li>
+          <li>Reviewer sees the answer, not the working</li>
+        </ul>
+      </div>
+      <div class="seam-rule"></div>
+      <div class="pane redesigned">
+        <div class="tag">Redesigned</div>
+        <h6>Agent-led underwriting</h6>
+        <ul>
+          <li>Research agent ingests filings + market data</li>
+          <li>Decision-support agent runs spread + scenarios</li>
+          <li>Memo generated from the agent's working</li>
+          <li>Reviewer sees the working, not just the answer</li>
+        </ul>
+      </div>
+    </div>
+
+    <p>The redesign is not "let the model write the memo." It is a sequence of role-bounded agents — one for research, one for decision support, one for memo generation — with a human reviewer at the seam of consequence. Two effects fall out. First, the <em>scenarios are cheap</em>: when the cost of running a scenario drops by an order of magnitude, the bank can run twenty, not two, and risk gets a better-informed picture. Second, <em>the memo is generated, not authored</em>: the reviewer now reads the trail of the working, including which sources were checked and which hypotheses were ruled out, and challenges the working rather than auditing the prose.</p>
+
+    <h3 class="sub">Pattern 03 · Dispute handling</h3>
+    <h4 class="minor">The agent owns the case. The human owns the exception.</h4>
+    <p>The dispute experience in retail and commercial banking has been famously bad for a long time. The customer re-tells the story to two or three teams. The ledger lags the case state. Communications are reactive — the customer asks for an update, then waits. Median cycle time runs around 25 days, depending on the channel and the dispute type.<sup class="fn"><a href="#ref7">⁷</a></sup></p>
+
+    <div class="ba">
+      <div class="pane today">
+        <div class="tag">Today</div>
+        <h6>Reactive dispute handling</h6>
+        <ul>
+          <li>25-day median resolution cycle</li>
+          <li>Customer re-tells story to 2–3 teams</li>
+          <li>Ledger entries lag case state</li>
+          <li>Communications are ticket-driven</li>
+        </ul>
+      </div>
+      <div class="seam-rule"></div>
+      <div class="pane redesigned">
+        <div class="tag">Redesigned</div>
+        <h6>Agent-owned case</h6>
+        <ul>
+          <li>One agent owns the case end-to-end</li>
+          <li>Ledger is the source of truth; screens are the lens</li>
+          <li>Humans handle exceptions only</li>
+          <li>Communications generated proactively</li>
+        </ul>
+      </div>
+    </div>
+
+    <p>Three inversions matter here. <em>The agent owns the case, the human owns the exception</em>: the default flow runs without intervention; humans are reserved for ambiguous calls or customer-facing moments where empathy is the work. <em>The ledger is the truth, the screen is the lens</em>: the system of record drives the experience rather than the experience driving entries into the system of record. <em>Communications are continuous, not on request</em>: state changes generate customer-facing language automatically, with the agent reading the tone and channel preferences of the relationship.</p>
+  </div>
+</article>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     CHAPTER V — Synthesis
+     ═══════════════════════════════════════════════════════════════════ -->
+<section class="slab reveal">
+  <div class="slab-inner">
+    <div class="ch-num">Chapter&nbsp;V — Synthesis</div>
+    <h2 class="ch-title">Five <em>principles</em>.</h2>
+    <p class="ch-deck">A common shape recurs in every successful agent-native redesign we have studied. These are the five principles.</p>
+  </div>
+</section>
+
+<article>
+  <aside class="gutter">
+    <span class="seam"></span>
+    <span class="marker">§ 05</span>
+    <span class="note">A diagnostic, not a checklist. The fastest way to unstick a stuck redesign is to walk these in order and find the first one that breaks.</span>
+  </aside>
+
+  <div class="col">
+    <h2 class="heading">What every agent-native redesign <em>has in common</em>.</h2>
+
+    <p class="opener">The three patterns are different processes, but the redesigns share a common shape. Five recurring principles describe what agent-native banking actually looks like, regardless of which process you start with. We have not yet seen a successful redesign that ignores any of them.</p>
+
+    <div class="commandments">
+      <div class="c">
+        <div class="roman">I</div>
+        <div>
+          <h6>Events, not handoffs.</h6>
+          <p>The process becomes an event stream. State is shared, not passed between teams. There is no baton; there is a ledger that everyone reads.</p>
+        </div>
+      </div>
+      <div class="c">
+        <div class="roman">II</div>
+        <div>
+          <h6>Verify, don't trust.</h6>
+          <p>Every agent output is scored against an evaluation before it advances. No agent promotion without an eval. No eval, no deployment.</p>
+        </div>
+      </div>
+      <div class="c">
+        <div class="roman">III</div>
+        <div>
+          <h6>Humans at the seam.</h6>
+          <p>Humans handle exceptions and decisions of consequence. They are not on the conveyor belt; they are at the moments where the conveyor belt forks.</p>
+        </div>
+      </div>
+      <div class="c">
+        <div class="roman">IV</div>
+        <div>
+          <h6>Ledger first, screen second.</h6>
+          <p>The system of record drives the experience. The screen is a view of the truth, not a place where truth is entered.</p>
+        </div>
+      </div>
+      <div class="c">
+        <div class="roman">V</div>
+        <div>
+          <h6>One agent, many tools.</h6>
+          <p>Agents specialize by role, not by screen. Capability composes from small bounded agents. The temptation to build one large general-purpose agent is the temptation to build a system you cannot govern.</p>
+        </div>
+      </div>
+    </div>
+
+    <p>These principles are not a checklist. They are the diagnostic. When a redesign is failing — when the agent is faster but the process isn't, when the customer experience hasn't moved, when the analyst is busier — at least one of the five is being violated, and usually more than one. The fastest way to unstick a stuck redesign is to walk the principles in order and find the first one that breaks.</p>
+  </div>
+</article>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     CHAPTER VI — Maturity & path
+     ═══════════════════════════════════════════════════════════════════ -->
+<section class="slab reveal">
+  <div class="slab-inner">
+    <div class="ch-num">Chapter&nbsp;VI — Path</div>
+    <h2 class="ch-title">Four stages, <em>twenty-four</em> months.</h2>
+    <p class="ch-deck">Maturity is not a model-capability question. It is an operating-model question.</p>
+  </div>
+</section>
+
+<article>
+  <aside class="gutter">
+    <span class="seam"></span>
+    <span class="marker">§ 06</span>
+    <span class="note">Where banks sit on the curve, the gap that decides the next decade, and the five moves that pay back in every plausible future.</span>
+  </aside>
+
+  <div class="col">
+    <h2 class="heading">Most banks sit between stages one and two. <em>The gap to stage three is where the decade is decided.</em></h2>
+
+    <p class="opener">Maturity in agent-native banking is not a model-capability question. It is an operating-model question. The stage a bank is at is not determined by which models it has access to (everyone has access to the same frontier) — it is determined by how much of the operating model around the agent has been reshaped to match.</p>
+
+    <div class="ladder">
+      <div class="axis"></div>
+      <div class="steps">
+        <div class="step">
+          <div class="n">Stage I · Today</div>
+          <h6>Pilots</h6>
+          <p>One-off use cases. Manual scaling. Value rarely attributed back to a P&amp;L.</p>
+        </div>
+        <div class="step">
+          <div class="n">Stage II · Today</div>
+          <h6>Patterned</h6>
+          <p>Templates emerge. Platform investments begin. Evals are introduced.</p>
+        </div>
+        <div class="step future">
+          <div class="n future-tag">Stage III · The prize</div>
+          <h6>Agent-native processes</h6>
+          <p>Workflows redesigned end-to-end. KPIs rewritten. Operating model adjusted.</p>
+        </div>
+        <div class="step future">
+          <div class="n future-tag">Stage IV · The future</div>
+          <h6>Agent-native bank</h6>
+          <p>Roles, P&amp;L, and controls are built around agents. Org chart reflects it.</p>
+        </div>
+      </div>
+    </div>
+
+    <p>Most major banks are currently between stages one and two. A small group — single digits worldwide — is genuinely operating between stages two and three. We are not aware of any bank in production at stage four. The gap between stages two and three is where the next decade of competitive advantage is decided, and it is also the hardest gap to cross: it requires the bank to stop running pilots and start changing how the work is organized.</p>
+
+    <h3 class="sub">The 24-month path</h3>
+
+    <div class="path">
+      <div class="h">
+        <div class="when">0 – 3 mo<span class="verb">Build the case</span></div>
+        <p>Pick one or two candidate processes for redesign. Stand up the eval harness and the governance pattern. Quantify the value at stake and secure an executive sponsor with the authority to change KPIs.</p>
+      </div>
+      <div class="h">
+        <div class="when">3 – 12 mo<span class="verb">Ship one process</span></div>
+        <p>Redesign and deliver one process end-to-end. Capture and attribute the savings. Codify the reusable patterns — control plane, eval template, governance approach. Begin shifting the KPIs around the new process.</p>
+      </div>
+      <div class="h">
+        <div class="when">12 – 24 mo<span class="verb">Scale the model</span></div>
+        <p>Roll the patterns across the function. Restructure operations around agent-native flows. Rewrite productivity and risk KPIs. Stand up agent-ops as a permanent capability.</p>
+      </div>
+    </div>
+
+    <h3 class="sub">Five no-regret moves to start now</h3>
+
+    <p>Regardless of where the bank lands on the maturity curve, five moves pay back in every plausible future state of the technology. They are infrastructural, not speculative — the bet is not that agents will work, but that whichever agents end up working will need these foundations.</p>
+
+    <div class="commandments">
+      <div class="c">
+        <div class="roman">i</div>
+        <div>
+          <h6>Establish an agent control plane.</h6>
+          <p>Pick one orchestration stack and standardize. Multiple stacks fragment evals, controls, and talent. Tooling has converged enough to commit.</p>
+        </div>
+      </div>
+      <div class="c">
+        <div class="roman">ii</div>
+        <div>
+          <h6>Build the eval discipline.</h6>
+          <p>Every agentic capability ships with a measurable scorecard. No eval, no promotion. Evals are the only durable artifact when the underlying models change every six months.</p>
+        </div>
+      </div>
+      <div class="c">
+        <div class="roman">iii</div>
+        <div>
+          <h6>Pick a redesign, not a copilot.</h6>
+          <p>Choose a process worth redrawing — not just augmenting. Copilots have well-known ceilings; redesigns don't.</p>
+        </div>
+      </div>
+      <div class="c">
+        <div class="roman">iv</div>
+        <div>
+          <h6>Get the governance ready early.</h6>
+          <p>Model risk, audit trail, and regulator-readable explanations from day one. Regulators are publishing positions now; first-movers shape the precedent.</p>
+        </div>
+      </div>
+      <div class="c">
+        <div class="roman">v</div>
+        <div>
+          <h6>Reshape the talent contract.</h6>
+          <p>Hire and train agent designers, agent-ops, and agent product managers. The role gap is solvable in six to twelve months; it is more like three years if you wait.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     CHAPTER VII — Conversation
+     ═══════════════════════════════════════════════════════════════════ -->
+<section class="slab reveal">
+  <div class="slab-inner">
+    <div class="ch-num">Chapter&nbsp;VII — Tools</div>
+    <h2 class="ch-title">In the <em>room</em>.</h2>
+    <p class="ch-deck">For the partner sitting across from a CXO buyer in the first thirty minutes.</p>
+  </div>
+</section>
+
+<article>
+  <aside class="gutter">
+    <span class="seam"></span>
+    <span class="marker">§ 07</span>
+    <span class="note">Two working tools. The questions reveal maturity. The objections will be said within thirty minutes of any honest conversation.</span>
+  </aside>
+
+  <div class="col">
+    <h2 class="heading">Questions that <em>open</em> the conversation.</h2>
+
+    <p class="opener">This primer is also a working tool. The two panels below are meant to be used in the room with a CXO buyer. The questions reveal where the client sits on the maturity curve and where IC opens; the objections are the things that will be said within the first thirty minutes of any honest conversation, with how to answer each one.</p>
+
+    <div class="toolbox">
+      <div class="tb-head">
+        <span class="tag">Tool · 01</span>
+        <h6>Qualifying questions</h6>
+      </div>
+      <div class="tb-body">
+        <div class="group">
+          <div class="gname">Ambition</div>
+          <p class="q">What process would you redesign if you could start over today?</p>
+          <p class="q">If agents become 50% cheaper next year, what changes in your operating model?</p>
+        </div>
+        <div class="group">
+          <div class="gname">Current state</div>
+          <p class="q">How many of your pilots have measurable value attribution today?</p>
+          <p class="q">Which use cases are in production with daily users?</p>
+          <p class="q">Which use cases were quietly retired in the last twelve months?</p>
+        </div>
+        <div class="group">
+          <div class="gname">Risk appetite</div>
+          <p class="q">What level of agent autonomy is your regulator comfortable with today?</p>
+          <p class="q">Which decisions must always have a human reviewer — and why?</p>
+        </div>
+        <div class="group">
+          <div class="gname">Operating-model readiness</div>
+          <p class="q">Who owns "agent ops" in your organization?</p>
+          <p class="q">How will you measure productivity in an agent-native team?</p>
+          <p class="q">Where will the savings show up — and who is accountable for them?</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="toolbox">
+      <div class="tb-head">
+        <span class="tag">Tool · 02</span>
+        <h6>Common objections — and how to answer them</h6>
+      </div>
+      <div class="obj-list">
+        <div class="ob">
+          <div class="said">Our regulator will never allow autonomous agents.</div>
+          <p class="resp">Start with agent-assisted, not autonomous. Design the audit trail before the agent. Regulators react to surprises, not to readable explanations. SR 11-7's principles translate cleanly to agent governance — the bank that publishes a working framework first shapes the precedent.</p>
+        </div>
+        <div class="ob">
+          <div class="said">We need to wait for the tech to stabilize.</div>
+          <p class="resp">The agent layer changes; the redesign value is durable. The control plane, the eval discipline, and the process redesign survive every model swap. Build patterns, not POCs.</p>
+        </div>
+        <div class="ob">
+          <div class="said">We've tried — pilots don't scale.</div>
+          <p class="resp">Pilots fail because the process is unchanged. Redesign the process, then scale. The plateau is a design problem, not a model problem.</p>
+        </div>
+        <div class="ob">
+          <div class="said">Our data isn't ready.</div>
+          <p class="resp">Agents tolerate messier data than traditional ML. Start with read-mostly use cases. Data quality investment can run in parallel with the first redesigned process.</p>
+        </div>
+        <div class="ob">
+          <div class="said">We don't have the talent.</div>
+          <p class="resp">Talent reshapes faster than tech. The role gap is solvable in six to twelve months with a mix of selective hires and re-skilling of existing product/engineering leaders.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     CHAPTER VIII — Close
+     ═══════════════════════════════════════════════════════════════════ -->
+<section class="slab reveal">
+  <div class="slab-inner">
+    <div class="ch-num">Chapter&nbsp;VIII — Close</div>
+    <h2 class="ch-title">Stop adding agents. <em>Start redesigning around them.</em></h2>
+    <p class="ch-deck">The 24-month window is open. Stage three is decided inside it.</p>
+  </div>
+</section>
+
+<article>
+  <aside class="gutter">
+    <span class="seam"></span>
+    <span class="marker">§ 08</span>
+    <span class="note">Three things to walk away with, and the one question worth asking next.</span>
+  </aside>
+
+  <div class="col">
+    <h2 class="heading">The bottom line.</h2>
+
+    <p class="opener">Banks have spent two years adding agents to processes. The teams that escape the pilot plateau will not do so by buying better agents. They will do so by redrawing the processes around what an agent can actually do, and rebuilding the operating model — controls, risk, talent — to match.</p>
+
+    <p>Three things to walk away with.</p>
+
+    <div class="takeaways">
+      <div class="ta"><p><strong>The pilot plateau is a design problem, not a model problem.</strong> Better models will not break the ceiling. Redesign will.</p></div>
+      <div class="ta"><p><strong>Value lives in process redesign and operating-model change</strong> — not in better assistants. The copilot is a ceiling; the agent-native process is not.</p></div>
+      <div class="ta"><p><strong>The next 24 months will separate banks that "use AI" from banks that are agent-native.</strong> Stage three is decided in this window.</p></div>
+    </div>
+
+    <p>Infosys Consulting is built to support each step of that move: from the maturity assessment, to the first redesigned process, to the operating-model shift around it. If your team is sitting between stages one and two, the next conversation worth having is about <em>which process you would redesign if you could start over today.</em></p>
+
+    <!-- References -->
+    <div class="refs-block">
+      <div class="label">References &amp; sources</div>
+      <ol>
+        <li id="ref1">Boston Consulting Group. <em>Build for the Future 2024</em>. Pilot-to-value distribution data.</li>
+        <li id="ref2">Anthropic, OpenAI, Google. Public pricing pages and benchmark publications, 2023 – 2026. Cost-decline figure is approximate and varies by capability tier.</li>
+        <li id="ref3">JPMorgan Chase &amp; Co. <em>2024 Annual Report and 10-K filings</em>. Technology spend and AI use-case disclosures.</li>
+        <li id="ref4">Bank of America. Investor day disclosures, Erica cumulative client interactions.</li>
+        <li id="ref5">Board of Governors of the Federal Reserve System. <em>SR 11-7 · Guidance on Model Risk Management.</em></li>
+        <li id="ref6">Celent, Forrester, Aite-Novarica. KYC and commercial onboarding benchmark research.</li>
+        <li id="ref7">Javelin Strategy &amp; Research. Dispute-handling industry benchmarks. Figures vary by channel and dispute type.</li>
+        <li>McKinsey &amp; Company. <em>The economic potential of generative AI: The next productivity frontier</em>, June 2023; <em>The state of AI in early 2024.</em></li>
+        <li>Gartner. GenAI implementation survey 2024 — pilot abandonment forecast.</li>
+        <li>European Union. <em>Artificial Intelligence Act</em>, in force 2024. US Office of the Comptroller of the Currency, Heightened Standards. UK Financial Conduct Authority AI principles.</li>
+      </ol>
+    </div>
+  </div>
+</article>
+
+<!-- ───────────────────── COLOPHON / FOOTER ───────────────────── -->
+<footer class="colophon">
+  <div class="colophon-inner">
+    <div class="block">
+      <div class="h">Document</div>
+      <div class="feature">A primer on agentic AI in banking.</div>
+      <div>Edition · Spring 2026 · No. 01</div>
+    </div>
+    <div class="block">
+      <div class="h">Practice</div>
+      <div class="feature">Infosys Consulting · Banking.</div>
+      <div>Sales enablement · Internal use</div>
+    </div>
+    <div class="block">
+      <div class="h">Set in</div>
+      <div class="feature">Fraunces &amp; Newsreader &amp; JetBrains Mono.</div>
+      <div>Designed and authored by IC Banking</div>
+    </div>
+  </div>
+</footer>
+
+<!-- ───────────────────── JS: progress + reveals ───────────────────── -->
+<script>
+  (function () {
+    // Reading-progress bar
+    const prog = document.getElementById('prog');
+    const onScroll = () => {
+      const h = document.documentElement;
+      const scrolled = h.scrollTop;
+      const max = h.scrollHeight - h.clientHeight;
+      const p = max > 0 ? (scrolled / max) * 100 : 0;
+      prog.style.setProperty('--p', p.toFixed(2) + '%');
+    };
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Reveal-on-scroll for chapter slabs
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    } else {
+      document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+    }
+  })();
+</script>
+
+</body>
+</html>
