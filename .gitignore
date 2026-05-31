@@ -14,7 +14,8 @@ Thumbs.db
 .remember/
 
 # Build artifacts that are large and regeneratable
-decks/agentic-ai-banking-pov/qa-images/
+src/decks/agentic-ai-banking-pov/qa-images/
+docs/decks/agentic-ai-banking-pov/qa-images/
 
 # LibreOffice / Office temp files
 .~lock*

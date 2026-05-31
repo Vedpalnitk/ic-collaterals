@@ -1680,10 +1680,21 @@ footer(s, 25)
 
 # ─────────────────────────────────────────────────────────────────────
 # Save
+#
+# Repo layout (after the docs/ + src/ split):
+#   src/decks/<slug>/build.py     ← this file
+#   docs/decks/<slug>/<file>.pptx ← what we write (served by GitHub Pages)
+#
+# The build always writes into docs/ so the published site has the latest
+# PPTX without a copy step.
 # ─────────────────────────────────────────────────────────────────────
 import os
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                  "agentic-ai-banking-pov.pptx")
+THIS = os.path.dirname(os.path.abspath(__file__))
+out_dir = os.path.abspath(
+    os.path.join(THIS, "..", "..", "..", "docs", "decks",
+                 "agentic-ai-banking-pov"))
+os.makedirs(out_dir, exist_ok=True)
+out = os.path.join(out_dir, "agentic-ai-banking-pov.pptx")
 prs.save(out)
 print(f"Saved {out}")
 print(f"Slides: {len(prs.slides)}")

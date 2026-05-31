@@ -10,10 +10,11 @@ book for what to do (and what not to do) when adding the next collateral.
 
 - **[tokens.js](tokens.js)** — machine-readable source of truth: color
   palette, three font families, layout scale. Reference tokens by semantic
-  name (`light.text.accent`), not by raw hex.
-- **[design-reference.html](design-reference.html)** — visual reference for
-  the palette, type scales, and named visual components (chapter slab,
-  eyebrow, pull quote, the seam, etc.). Open in a browser.
+  name (`light.text.accent`), not by raw hex. Lives at the repo root.
+- **[docs/design-reference.html](docs/design-reference.html)** — visual
+  reference for the palette, type scales, and named visual components
+  (chapter slab, eyebrow, pull quote, the seam, etc.). Lives under `docs/`
+  because it's a published artifact that GitHub Pages serves.
 
 If a request can't be served by the current tokens or vocabulary, surface
 the gap before drifting from the system.
@@ -133,23 +134,43 @@ patterns above don't apply — but the same visual vocabulary does.
 
 ## Producing collaterals
 
+### Folder layout
+
+The repo splits **source** from **published output**:
+
+- `docs/` is the entire published site (served by GitHub Pages). HTML
+  artifacts (primers, one-pagers, engineering notes, the landing page,
+  the design reference) live here directly — the source IS the output.
+- `src/` is dev material that produces output but doesn't ship — e.g.
+  `src/decks/<slug>/build.py` (python-pptx script) and `spec.md` (design
+  spec). The build script writes the generated PPTX/PDF into
+  `docs/decks/<slug>/`.
+- Root-level files (`tokens.js`, `CLAUDE.md`, `README.md`) are the
+  rule-book + token source; not served by Pages.
+
 ### By output format
 
 - **Editable deck (PPTX)** → use the `pptx` skill with `python-pptx`. Use
   the SYSTEM font family. Drive all colors from `tokens.js`. Slide canvas
   is 1280×720 (16:9), 0.7in margins, 0.5in title band, RULE-color hairline
-  footer at the bottom.
+  footer at the bottom. Source lives in `src/decks/<slug>/`; output writes
+  into `docs/decks/<slug>/`.
 - **High-design deck (PPTX)** → same canvas and tooling, but switch to the
   EDITORIAL family (Fraunces / Newsreader / JetBrains Mono) and embed the
-  fonts. The deck at `decks/agentic-ai-banking-pov/` is the reference.
+  fonts. The deck at `src/decks/agentic-ai-banking-pov/` (with output at
+  `docs/decks/agentic-ai-banking-pov/`) is the reference.
 - **Long-form primer / POV (HTML)** → EDITORIAL family, single-column
-  layout. The primer at `primers/agentic-ai-banking-primer.html` is the
-  reference.
+  layout. Write directly under `docs/primers/`. The primer at
+  `docs/primers/agentic-ai-banking-primer.html` is the reference.
 - **One-pager (HTML, prints to A4)** → EDITORIAL family, single A4 sheet.
-  See `one-pagers/agentic-ai-banking-one-pager.html`.
+  Write directly under `docs/one-pagers/`. See
+  `docs/one-pagers/agentic-ai-banking-one-pager.html`.
 - **Engineering note / learning doc (HTML)** → TECHNICAL family, sidebar +
-  content layout. See
-  `engineering-notes/agentic-harness-evals-traces.html`.
+  content layout. Write directly under `docs/engineering-notes/`. See
+  `docs/engineering-notes/agentic-harness-evals-traces.html`.
+
+After adding any new artifact, update `docs/index.html` (the landing page)
+to add a card so the published library reflects it.
 
 ### Cross-cutting
 
