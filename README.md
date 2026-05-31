@@ -1,6 +1,6 @@
 # IC Collaterals
 
-A working library of Infosys Consulting branded collaterals — decks, primers,
+A working library of banking &amp; financial-services collaterals — decks, primers,
 one-pagers, and engineering notes — all built from a shared design system.
 
 **Live site:** [vedpalnitk.github.io/ic-collaterals](https://vedpalnitk.github.io/ic-collaterals/)
@@ -163,8 +163,8 @@ the system; gaps get folded back into the rule book.
 
 ## License
 
-Internal use within Infosys Consulting. Content references public figures
+Internal / educational use. Content references public figures
 (JPMorgan, Bank of America, Citi, Goldman, BCG, McKinsey, etc.) only via
-publicly available disclosures and research. IC-specific blocks in each
+publicly available disclosures and research. Firm-specific blocks in each
 artifact are marked `[PLACEHOLDER]` and intended to be replaced before
 external use.
