@@ -1,0 +1,2436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Customer Due Diligence (CDD/KYC) — A self-learning primer · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  /* ─────────────── IC tokens ─────────────── */
+  :root {
+    --white:      #FFFFFF;
+    --deep:       #182534;
+    --pavement:   #404040;
+    --blue:       #007CC3;
+    --stone:      #A7A9AC;
+    --slate:      #6D6E71;
+    --lt-blue:    #3699DA;
+    --tint-blue:  #E6F2FA;
+    --tint-stone: #F2F2F3;
+    --rule:       #E2E4E7;
+
+    --display: 'Fraunces', 'Times New Roman', serif;
+    --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+    --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+    --sidebar-w: 280px;
+  }
+
+  /* ─────────────── reset / base ─────────────── */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--pavement);
+    background: var(--white);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern", "liga";
+  }
+  ::selection { background: var(--deep); color: var(--white); }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  p { margin: 0 0 18px; }
+  ol, ul { margin: 0 0 22px; padding-left: 24px; }
+  li { margin: 6px 0; }
+
+  /* ─────────────── reading-progress bar ─────────────── */
+  .progress {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 2px; background: transparent; z-index: 1000;
+    pointer-events: none;
+  }
+  .progress::before {
+    content: ''; display: block;
+    height: 100%; width: var(--p, 0%);
+    background: var(--blue);
+    transition: width 80ms linear;
+  }
+
+  /* ─────────────── TITLE PAGE (full-bleed) ─────────────── */
+  .title-page {
+    background: var(--deep);
+    color: var(--white);
+    min-height: 100vh;
+    padding: 56px 48px 48px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 32px;
+    position: relative;
+  }
+  .title-page::after {
+    content: ''; position: absolute;
+    left: 0; right: 0; bottom: 0; height: 2px;
+    background: var(--blue);
+  }
+  .title-page .mast {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .title-page .mast .mark { color: var(--white); font-weight: 600; }
+  .title-page .mast .meta { color: var(--stone); }
+  .title-page .hero {
+    align-self: center;
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .title-page .kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--lt-blue);
+    font-weight: 600;
+    margin: 0 0 24px;
+    display: flex; align-items: center; gap: 16px;
+    animation: fadeUp 700ms cubic-bezier(.2,.7,.2,1) both;
+  }
+  .title-page .kicker::before {
+    content: ''; width: 56px; height: 1px; background: var(--lt-blue);
+  }
+  .title-page h1 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+    font-weight: 380;
+    font-size: clamp(48px, 8vw, 112px);
+    line-height: 0.96;
+    letter-spacing: -0.028em;
+    margin: 0 0 36px;
+    color: var(--white);
+    max-width: 16ch;
+    animation: fadeUp 900ms cubic-bezier(.2,.7,.2,1) 100ms both;
+  }
+  .title-page h1 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+    color: var(--lt-blue);
+    font-weight: 380;
+  }
+  .title-page .deck {
+    font-family: var(--body);
+    font-size: clamp(18px, 1.6vw, 22px);
+    line-height: 1.5;
+    font-weight: 400;
+    color: var(--stone);
+    max-width: 56ch;
+    margin: 0;
+    animation: fadeUp 1000ms cubic-bezier(.2,.7,.2,1) 240ms both;
+  }
+  .title-page .deck em { font-style: italic; color: var(--white); }
+  .title-page .byline {
+    border-top: 1px solid rgba(255,255,255,0.12);
+    padding-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+    animation: fadeUp 1100ms cubic-bezier(.2,.7,.2,1) 420ms both;
+  }
+  @media (max-width: 720px) { .title-page .byline { grid-template-columns: repeat(2, 1fr); } }
+  .title-page .byline .field { display: flex; flex-direction: column; gap: 6px; }
+  .title-page .byline .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--stone);
+    font-weight: 600;
+  }
+  .title-page .byline .value {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 30, "SOFT" 60, "WONK" 0;
+    font-size: 17px;
+    color: var(--white);
+    line-height: 1.3;
+  }
+
+  /* ═════════════════════ MAIN LAYOUT ═════════════════════ */
+  .layout {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+    gap: 0;
+    position: relative;
+  }
+  @media (max-width: 920px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  /* ─────────────── SIDEBAR ─────────────── */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 36px 28px 32px;
+    border-right: 1px solid var(--rule);
+    background: var(--white);
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule) transparent;
+  }
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+  @media (max-width: 920px) {
+    .sidebar {
+      position: static;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--rule);
+      padding: 28px 24px;
+    }
+  }
+  .sidebar .brand {
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 22px;
+  }
+  .sidebar .brand .label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sidebar .brand .label::before {
+    content: ''; width: 22px; height: 2px; background: var(--blue);
+  }
+  .sidebar .brand .doc-title {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+    font-size: 20px;
+    line-height: 1.18;
+    color: var(--deep);
+    margin: 0 0 6px;
+    letter-spacing: -0.005em;
+  }
+  .sidebar .brand .doc-title em {
+    font-style: italic;
+    font-variation-settings: "opsz" 36, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+    font-weight: 400;
+  }
+  .sidebar .brand .doc-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--slate);
+    text-transform: uppercase;
+  }
+  .sidebar nav .group { margin-bottom: 22px; }
+  .sidebar nav .group-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 600;
+    margin: 0 0 6px;
+    padding-left: 14px;
+  }
+  .sidebar nav ol { list-style: none; margin: 0; padding: 0; }
+  .sidebar nav li { margin: 0; }
+  .sidebar nav a {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 10px;
+    align-items: baseline;
+    padding: 7px 12px 7px 12px;
+    border-left: 2px solid transparent;
+    color: var(--pavement);
+    font-family: var(--body);
+    font-size: 14px;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+    font-weight: 400;
+  }
+  .sidebar nav a:hover {
+    color: var(--blue);
+    background: var(--tint-blue);
+    text-decoration: none;
+  }
+  .sidebar nav a.active {
+    color: var(--blue);
+    border-left-color: var(--blue);
+    background: var(--tint-blue);
+    font-weight: 500;
+  }
+  .sidebar nav .num {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 24, "SOFT" 100, "WONK" 1;
+    font-size: 14px;
+    color: var(--blue);
+    line-height: 1;
+    font-weight: 400;
+  }
+  .sidebar nav a.appendix .num {
+    font-family: var(--mono);
+    font-style: normal;
+    color: var(--stone);
+    font-size: 11px;
+  }
+  .sidebar .foot {
+    margin-top: 32px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--slate);
+    line-height: 1.7;
+  }
+  .sidebar .foot a { color: var(--blue); font-weight: 600; }
+
+  /* ─────────────── CONTENT COLUMN ─────────────── */
+  .content { min-width: 0; }
+
+  /* Section header — DEEP_BLUE band */
+  .section-header {
+    background: var(--deep);
+    color: var(--white);
+    padding: 44px 56px;
+    position: relative;
+  }
+  .section-header::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 1px;
+    background: var(--blue);
+  }
+  @media (max-width: 720px) { .section-header { padding: 32px 24px; } }
+  .section-header .num {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--lt-blue);
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-header .num::before {
+    content: ''; width: 28px; height: 1px; background: var(--lt-blue);
+  }
+  .section-header h2 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 96, "SOFT" 0, "WONK" 0;
+    font-weight: 380;
+    font-size: clamp(28px, 3.8vw, 44px);
+    line-height: 1.05;
+    letter-spacing: -0.018em;
+    color: var(--white);
+    margin: 0 0 12px;
+    max-width: 22ch;
+  }
+  .section-header h2 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 96, "SOFT" 100, "WONK" 1;
+    color: var(--lt-blue);
+    font-weight: 380;
+  }
+  .section-header .deck {
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--stone);
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  /* Section body */
+  .section-body {
+    padding: 36px 56px 48px;
+    max-width: 860px;
+  }
+  @media (max-width: 720px) { .section-body { padding: 28px 24px 36px; } }
+
+  .section-body .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-body .eyebrow::before {
+    content: ''; width: 28px; height: 3px; background: var(--blue);
+  }
+  .section-body .deck-lead {
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--slate);
+    margin: 0 0 24px;
+    max-width: 62ch;
+    font-weight: 400;
+  }
+
+  .section-body p {
+    font-family: var(--body);
+    font-size: 16.5px;
+    line-height: 1.65;
+    color: var(--pavement);
+    font-weight: 400;
+  }
+  .section-body p strong { color: var(--deep); font-weight: 600; }
+  .section-body p em.term {
+    font-style: normal;
+    color: var(--blue);
+    font-weight: 600;
+  }
+  .section-body p em { font-style: italic; color: var(--deep); }
+  .section-body h4 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 30, "SOFT" 0, "WONK" 0;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--deep);
+    margin: 36px 0 12px;
+    letter-spacing: -0.008em;
+    line-height: 1.25;
+  }
+  .section-body h5 {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 28px 0 10px;
+  }
+  .section-body ul, .section-body ol {
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--pavement);
+  }
+  .section-body ul { list-style: none; padding-left: 0; }
+  .section-body ul li {
+    position: relative;
+    padding-left: 24px;
+    margin: 6px 0;
+  }
+  .section-body ul li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0.62em;
+    width: 12px; height: 1px;
+    background: var(--blue);
+  }
+  .section-body ol { padding-left: 28px; }
+  .section-body ol li { margin: 6px 0; }
+
+  /* Drop cap on the first paragraph of section 1 (and any section we tag) */
+  .section-body p.lead::first-letter {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1;
+    font-weight: 360;
+    color: var(--blue);
+    float: left;
+    font-size: 64px;
+    line-height: 0.88;
+    padding: 6px 12px 0 0;
+    margin-top: 4px;
+  }
+
+  /* Pull quote */
+  .pull {
+    margin: 36px 0;
+    padding: 4px 0 4px 24px;
+    border-left: 2px solid var(--blue);
+    font-family: var(--display);
+    font-variation-settings: "opsz" 60, "SOFT" 60, "WONK" 0;
+    font-style: italic;
+    font-weight: 360;
+    font-size: 24px;
+    line-height: 1.25;
+    color: var(--deep);
+    letter-spacing: -0.01em;
+  }
+  .pull .src {
+    display: block;
+    margin-top: 12px;
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 600;
+  }
+
+  /* Notes / callouts */
+  .note {
+    margin: 28px 0;
+    padding: 20px 24px;
+    background: var(--tint-blue);
+    border-left: 2px solid var(--blue);
+    border-radius: 0 2px 2px 0;
+  }
+  .note.warn {
+    background: var(--tint-stone);
+    border-left-color: var(--blue);
+  }
+  .note.muted {
+    background: var(--tint-stone);
+    border-left-color: var(--slate);
+  }
+  .note .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  .note.muted .tag { color: var(--slate); }
+  .note h6 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 30, "SOFT" 0, "WONK" 0;
+    font-style: italic;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--deep);
+    margin: 0 0 6px;
+  }
+  .note p { margin: 0; font-size: 15px; color: var(--pavement); line-height: 1.55; }
+  .note p + p { margin-top: 10px; }
+  .note ul, .note ol { font-size: 15px; }
+
+  /* Tables — hairline RULE grid, TINT_STONE header, PAVEMENT text */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 22px 0 28px;
+    font-family: var(--body);
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--pavement);
+    border: 1px solid var(--rule);
+  }
+  thead th {
+    background: var(--tint-stone);
+    color: var(--pavement);
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 2px solid var(--blue);
+    font-family: var(--body);
+    font-size: 13.5px;
+  }
+  tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--rule);
+    border-right: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  tbody td:last-child { border-right: none; }
+  thead th + th { border-left: 1px solid var(--rule); }
+  tbody tr:nth-child(even) { background: var(--tint-stone); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody td strong { color: var(--deep); font-weight: 600; }
+
+  /* Glossary list */
+  dl.gloss {
+    display: grid;
+    grid-template-columns: 230px 1fr;
+    gap: 0 24px;
+    margin: 18px 0 28px;
+    border-top: 1px solid var(--rule);
+  }
+  dl.gloss dt {
+    font-family: var(--body);
+    font-weight: 600;
+    color: var(--blue);
+    padding: 14px 0 14px 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 14.5px;
+    line-height: 1.45;
+  }
+  dl.gloss dd {
+    margin: 0;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule);
+    font-family: var(--body);
+    font-size: 14.5px;
+    color: var(--pavement);
+    line-height: 1.55;
+  }
+  @media (max-width: 720px) {
+    dl.gloss { grid-template-columns: 1fr; }
+    dl.gloss dt { border-bottom: none; padding-bottom: 4px; }
+  }
+
+  /* Two/three-column panel rows */
+  .two-col, .three-col {
+    display: grid;
+    gap: 16px;
+    margin: 22px 0;
+  }
+  .two-col { grid-template-columns: 1fr 1fr; }
+  .three-col { grid-template-columns: 1fr 1fr 1fr; }
+  @media (max-width: 720px) {
+    .two-col, .three-col { grid-template-columns: 1fr; }
+  }
+  .panel {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--blue);
+    padding: 16px 18px;
+  }
+  .panel h4 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 30, "SOFT" 0, "WONK" 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--deep);
+    margin: 0 0 8px;
+    letter-spacing: -0.005em;
+  }
+  .panel p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--pavement);
+  }
+
+  /* Lifecycle stages — 4-wide grid */
+  .stages {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 22px 0 28px;
+  }
+  @media (max-width: 920px) { .stages { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .stages { grid-template-columns: 1fr; } }
+  .stages .node {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-top: 2px solid var(--blue);
+    padding: 14px 14px 16px;
+  }
+  .stages .node .num {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .stages .node .name {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 24, "SOFT" 0, "WONK" 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--deep);
+    margin-bottom: 8px;
+    letter-spacing: -0.005em;
+    line-height: 1.25;
+  }
+  .stages .node .desc {
+    font-family: var(--body);
+    font-size: 13px;
+    color: var(--slate);
+    line-height: 1.5;
+  }
+
+  /* Scenario / typology grid */
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 22px 0;
+  }
+  @media (max-width: 720px) { .scenario-grid { grid-template-columns: 1fr; } }
+  .scenario {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--blue);
+    padding: 16px 18px;
+  }
+  .scenario.tier-low { border-left-color: var(--lt-blue); }
+  .scenario .hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .scenario .name {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 30, "SOFT" 0, "WONK" 0;
+    font-size: 15.5px;
+    font-weight: 500;
+    color: var(--deep);
+    line-height: 1.25;
+    letter-spacing: -0.005em;
+  }
+  .scenario .tier {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    background: var(--tint-blue);
+    padding: 3px 8px;
+    border: 1px solid var(--blue);
+    white-space: nowrap;
+  }
+  .scenario.tier-low .tier {
+    color: var(--slate);
+    background: var(--tint-stone);
+    border-color: var(--rule);
+  }
+  .scenario .typology {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 24, "SOFT" 60, "WONK" 0;
+    font-size: 13.5px;
+    color: var(--slate);
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .scenario .body {
+    font-family: var(--body);
+    font-size: 13.5px;
+    color: var(--pavement);
+    line-height: 1.55;
+    margin-bottom: 10px;
+  }
+  .scenario .detect {
+    font-family: var(--body);
+    font-size: 12.5px;
+    color: var(--pavement);
+    line-height: 1.5;
+    padding-top: 10px;
+    border-top: 1px solid var(--rule);
+  }
+  .scenario .detect .label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin-right: 8px;
+  }
+
+  /* Walkthrough — reference architecture block */
+  .walkthrough {
+    background: var(--tint-blue);
+    border-left: 2px solid var(--blue);
+    padding: 22px 26px;
+    margin: 22px 0 28px;
+  }
+  .walkthrough h4 {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 12px;
+  }
+  .walkthrough ol {
+    margin: 0;
+    padding-left: 22px;
+    font-family: var(--body);
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--pavement);
+  }
+  .walkthrough ol li { margin: 6px 0; }
+  .walkthrough strong { color: var(--deep); font-weight: 600; }
+
+  /* Vendor grid */
+  .vendor-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 22px 0 28px;
+  }
+  @media (max-width: 720px) { .vendor-grid { grid-template-columns: 1fr; } }
+  .vendor {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--blue);
+    padding: 14px 16px;
+  }
+  .vendor .name {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 30, "SOFT" 0, "WONK" 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--deep);
+    margin-bottom: 4px;
+    letter-spacing: -0.005em;
+  }
+  .vendor .kind {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .vendor .desc {
+    font-family: var(--body);
+    font-size: 13px;
+    color: var(--pavement);
+    line-height: 1.5;
+  }
+
+  /* References block */
+  .ref-block { margin: 24px 0 32px; }
+  .ref-block h5 {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 10px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .ref-block h5::before {
+    content: ''; width: 28px; height: 3px; background: var(--blue);
+  }
+  .ref-block .grouptitle {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+    font-size: 22px;
+    line-height: 1.2;
+    color: var(--deep);
+    margin: 0 0 14px;
+    letter-spacing: -0.008em;
+    font-weight: 500;
+  }
+  .ref-block ol {
+    margin: 0;
+    padding-left: 26px;
+    font-family: var(--body);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--pavement);
+  }
+  .ref-block ol li { margin: 8px 0; }
+  .ref-block .src {
+    display: block;
+    color: var(--slate);
+    font-family: var(--mono);
+    font-size: 11px;
+    margin-top: 2px;
+  }
+
+  /* Colophon */
+  footer.colophon {
+    background: var(--deep);
+    color: var(--stone);
+    padding: 44px 48px;
+  }
+  footer.colophon .inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px;
+  }
+  @media (max-width: 720px) { footer.colophon .inner { grid-template-columns: 1fr; } }
+  footer.colophon .block {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    line-height: 1.7;
+  }
+  footer.colophon .h { color: var(--blue); font-weight: 600; margin-bottom: 10px; }
+  footer.colophon .feature {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 36, "SOFT" 80, "WONK" 0;
+    font-size: 20px;
+    color: var(--white);
+    letter-spacing: -0.01em;
+    text-transform: none;
+    line-height: 1.3;
+    margin: 6px 0 4px;
+    font-weight: 400;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0ms !important;
+      transition-duration: 0ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="prog"></div>
+
+<!-- ════════════════════ TITLE PAGE ════════════════════ -->
+<section class="title-page" id="top">
+  <div class="mast">
+    <span class="mark">Infosys Consulting</span>
+    <span class="meta">Primers &nbsp;·&nbsp; Compliance &nbsp;·&nbsp; May 2026</span>
+  </div>
+
+  <div class="hero">
+    <p class="kicker">A self-learning primer</p>
+    <h1>Customer <em>Due Diligence</em> (CDD/KYC).</h1>
+    <p class="deck">
+      How regulated financial institutions identify, verify, risk-rate and
+      monitor their customers across the relationship lifecycle — the
+      <em>foundational layer</em> of the AML, sanctions and fraud control framework.
+    </p>
+  </div>
+
+  <div class="byline">
+    <div class="field"><span class="label">Audience</span><span class="value">KYC, onboarding &amp; FCC practitioners</span></div>
+    <div class="field"><span class="label">Reading time</span><span class="value">~65 minutes</span></div>
+    <div class="field"><span class="label">Practice</span><span class="value">IC Banking · Financial Crime</span></div>
+    <div class="field"><span class="label">Edition</span><span class="value">No. 05  ·  Spring 2026</span></div>
+  </div>
+</section>
+
+<!-- ════════════════════ MAIN LAYOUT ════════════════════ -->
+<div class="layout">
+
+  <!-- ─────────────── SIDEBAR ─────────────── -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="label">Primers · No. 05</div>
+      <div class="doc-title">Customer <em>Due Diligence</em> (CDD/KYC)</div>
+      <div class="doc-meta">May 2026 · ~65 min</div>
+    </div>
+
+    <nav>
+      <div class="group">
+        <p class="group-label">Foundations</p>
+        <ol>
+          <li><a href="#s1" data-section="s1"><span class="num">I</span><span>Introduction &amp; purpose</span></a></li>
+          <li><a href="#s2" data-section="s2"><span class="num">II</span><span>Regulatory landscape</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Lifecycle &amp; vocabulary</p>
+        <ol>
+          <li><a href="#s3" data-section="s3"><span class="num">III</span><span>The CDD/KYC lifecycle</span></a></li>
+          <li><a href="#s4" data-section="s4"><span class="num">IV</span><span>Core concepts &amp; vocabulary</span></a></li>
+          <li><a href="#s5" data-section="s5"><span class="num">V</span><span>Customer types &amp; onboarding variants</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Verification &amp; ownership</p>
+        <ol>
+          <li><a href="#s6" data-section="s6"><span class="num">VI</span><span>Identity verification</span></a></li>
+          <li><a href="#s7" data-section="s7"><span class="num">VII</span><span>Beneficial ownership (UBO)</span></a></li>
+          <li><a href="#s8" data-section="s8"><span class="num">VIII</span><span>Sanctions, PEP &amp; adverse media</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Risk &amp; EDD</p>
+        <ol>
+          <li><a href="#s9" data-section="s9"><span class="num">IX</span><span>Customer risk rating</span></a></li>
+          <li><a href="#s10" data-section="s10"><span class="num">X</span><span>Enhanced due diligence</span></a></li>
+          <li><a href="#s11" data-section="s11"><span class="num">XI</span><span>Ongoing monitoring &amp; pKYC</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Practice &amp; trends</p>
+        <ol>
+          <li><a href="#s12" data-section="s12"><span class="num">XII</span><span>Specialized domains</span></a></li>
+          <li><a href="#s13" data-section="s13"><span class="num">XIII</span><span>Failure modes &amp; enforcement</span></a></li>
+          <li><a href="#s14" data-section="s14"><span class="num">XIV</span><span>Technology providers</span></a></li>
+          <li><a href="#s15" data-section="s15"><span class="num">XV</span><span>Emerging trends</span></a></li>
+          <li><a href="#s16" data-section="s16"><span class="num">XVI</span><span>Common pitfalls</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Appendix</p>
+        <ol>
+          <li><a href="#s17" data-section="s17" class="appendix"><span class="num">A</span><span>Glossary</span></a></li>
+          <li><a href="#s18" data-section="s18" class="appendix"><span class="num">B</span><span>References</span></a></li>
+        </ol>
+      </div>
+    </nav>
+
+    <div class="foot">
+      <a href="#top">↑ Back to top</a><br>
+      Infosys Consulting<br>
+      Primer · v1.0
+    </div>
+  </aside>
+
+  <!-- ─────────────── CONTENT ─────────────── -->
+  <main class="content">
+
+    <!-- ════════════════════ SECTION I ════════════════════ -->
+    <section id="s1">
+      <div class="section-header">
+        <p class="num">Chapter I · Foundations</p>
+        <h2>Introduction &amp; <em>purpose</em>.</h2>
+        <p class="deck">What CDD/KYC is, why it exists, and where it sits inside the broader financial-crime control framework.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 01 · Foundations</p>
+
+        <p class="lead"><em class="term">Customer Due Diligence (CDD)</em> — colloquially called <em class="term">Know Your Customer (KYC)</em> — is the discipline by which a regulated financial institution (FI) identifies who its customer is, verifies that identity, understands the nature and purpose of the relationship, assesses the risk that the customer poses for money laundering, terrorist financing, sanctions evasion, fraud, tax evasion or proliferation financing, and then keeps that picture current for as long as the relationship endures. It is the <strong>foundational layer</strong> of the AML/CFT/sanctions control framework — without reliable customer data, no transaction monitoring scenario, sanctions screening rule, or fraud model can work properly.</p>
+
+        <p>CDD is not a one-off onboarding step. <em class="term">FATF Recommendation 10</em> defines it as four activities performed on a <strong>risk-sensitive, ongoing basis</strong>: identify the customer; identify and take reasonable measures to verify the beneficial owner; understand the purpose and intended nature of the relationship; and conduct ongoing due diligence on the relationship. KYC, in popular usage, often refers only to the first two; CDD is the broader regulatory term that includes the whole lifecycle.</p>
+
+        <div class="note">
+          <p class="tag">Mental model</p>
+          <h6>The continuously refreshed customer dossier.</h6>
+          <p>Think of CDD as the FI's <strong>continuously refreshed customer dossier</strong>. Each entry in the dossier is a hypothesis: <em>this customer is who they say they are, doing what they said they would do, with funds that came from where they said.</em> Every screening hit, transaction alert, news event, or refresh cycle is an opportunity to confirm or revise that hypothesis. When the hypothesis breaks badly enough — or cannot be re-confirmed at all — the relationship is exited.</p>
+        </div>
+
+        <h4>Why it exists</h4>
+        <ul>
+          <li><strong>Legal obligation.</strong> The US <em class="term">Bank Secrecy Act (1970)</em> and its successor statutes — the <em class="term">USA PATRIOT Act §326</em> (the Customer Identification Program rule), the <em class="term">FinCEN CDD Rule (2018)</em>, and the <em class="term">Corporate Transparency Act (2021, operational 2024)</em> — require every covered FI to establish a written CDD program. Comparable obligations exist under the EU AML Directives, the UK Money Laundering Regulations 2017, MAS Notices 626/824 in Singapore, HKMA AML/CFT guidance in Hong Kong, and RBI's Master Direction on KYC in India.</li>
+          <li><strong>Sanctions enforcement.</strong> Without robust identity data, sanctions screening either over-blocks (false positives crippling operations) or under-blocks (sanctioned parties get through). CDD provides the identifying attributes — name, date of birth, nationality, registered address, UBO chain — that screening engines need to actually work.</li>
+          <li><strong>Risk-based AML pillar.</strong> A risk-based AML program calibrates monitoring intensity to customer risk. The customer risk rating that drives that calibration comes from CDD. A misrated population leads directly to either under-monitoring of risky relationships (the TD Bank, Wachovia, Danske Bank pattern) or to excessive alert volumes against a low-risk population.</li>
+          <li><strong>Reputational integrity.</strong> The bank that onboarded an autocrat's offshore vehicle, the trust company that papered a sanctioned oligarch's yacht, the crypto exchange that registered the North Korean Lazarus Group — these are CDD failures with consequences far beyond the regulatory fine. The Pandora, Panama, Paradise, FinCEN Files, and Suisse Secrets leaks all turn on CDD weaknesses.</li>
+        </ul>
+
+        <h4>Where it sits in the control framework</h4>
+        <p>An AML/CFT/sanctions program rests on three operational pillars and a governance layer. <strong>CDD/KYC</strong> is the input layer that feeds the other two:</p>
+
+        <div class="three-col">
+          <div class="panel">
+            <h4>Pillar 1 — CDD / KYC</h4>
+            <p>Identifies and risk-rates the customer; maintains the dossier; runs ongoing due diligence. Outputs feed every other AML control.</p>
+          </div>
+          <div class="panel">
+            <h4>Pillar 2 — Sanctions screening</h4>
+            <p>Real-time check of names, addresses, and beneficiaries against sanctions lists at onboarding, in payments, and on periodic re-screen. Requires CDD-grade identity data.</p>
+          </div>
+          <div class="panel">
+            <h4>Pillar 3 — Transaction monitoring</h4>
+            <p>Detects suspicious activity in transactions. Calibrates thresholds and scenario logic against the customer's expected behavioral profile — which is CDD output.</p>
+          </div>
+        </div>
+
+        <p class="pull">
+          If a sanctions list is updated with a new name tomorrow, or a transaction monitoring scenario alerts on a customer today, does the CDD record contain enough trustworthy data to investigate that hit in minutes rather than days?
+          <span class="src">A useful test</span>
+        </p>
+
+        <p>If not, CDD is the bottleneck of the entire AML program — irrespective of how sophisticated the screening engine or TM platform is.</p>
+      </div>
+    </section>
+
+    <!-- ════════════════════ SECTION II ════════════════════ -->
+    <section id="s2">
+      <div class="section-header">
+        <p class="num">Chapter II · Foundations</p>
+        <h2>Regulatory <em>landscape</em>.</h2>
+        <p class="deck">The global standard-setter, the major regional regimes, and the regulations you will be examined against.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 02 · Regulatory frame</p>
+
+        <p>CDD obligations are remarkably consistent across jurisdictions because most national regimes implement the same international standard. Understanding the standard first, then the national overlays, is the most efficient way to internalize the regulatory frame.</p>
+
+        <h4>The global standard: FATF</h4>
+        <p>The <em class="term">Financial Action Task Force (FATF)</em> is the inter-governmental body whose <em class="term">40 Recommendations</em> form the de facto global AML/CFT standard. Five Recommendations directly govern CDD:</p>
+        <ul>
+          <li><strong>Rec. 10 — CDD.</strong> Identify and verify the customer; identify and verify the beneficial owner; understand the nature and purpose of the relationship; conduct ongoing due diligence. Applies on a risk-sensitive basis. No anonymous accounts or accounts in fictitious names.</li>
+          <li><strong>Rec. 11 — Record-keeping.</strong> Retain CDD records for at least five years after the relationship ends.</li>
+          <li><strong>Rec. 12 — PEPs.</strong> Apply enhanced measures to foreign PEPs (and risk-sensitively to domestic PEPs and PEPs of international organizations), including senior management approval, source-of-wealth and source-of-funds inquiries, and enhanced ongoing monitoring.</li>
+          <li><strong>Rec. 17 — Reliance on third parties.</strong> Permits limited reliance on regulated third parties for CDD, with conditions.</li>
+          <li><strong>Rec. 22 — DNFBPs.</strong> Extends CDD obligations beyond banks to designated non-financial businesses and professions (casinos, real-estate agents, dealers in precious metals/stones, lawyers, accountants, trust and company service providers).</li>
+          <li><strong>Rec. 24–25 — Beneficial ownership transparency.</strong> Jurisdictions must ensure adequate, accurate and timely beneficial ownership information is available for legal persons and arrangements.</li>
+        </ul>
+
+        <h4>United States</h4>
+        <table>
+          <thead><tr><th>Authority</th><th>Instrument</th><th>What it requires</th></tr></thead>
+          <tbody>
+            <tr><td>FinCEN</td><td>BSA + 31 CFR Chapter X</td><td>Establishes the AML program obligation for all covered FIs.</td></tr>
+            <tr><td>FinCEN (post-Patriot Act)</td><td>CIP Rule — 31 CFR 1020.220</td><td>Customer Identification Program: collect name, DoB (for individuals), address, ID number; verify within reasonable time.</td></tr>
+            <tr><td>FinCEN</td><td>CDD Final Rule (2018)</td><td>Four-pillar CDD: identify customer, identify beneficial owners of legal-entity customers (25% ownership or one controlling individual), understand nature/purpose, ongoing monitoring.</td></tr>
+            <tr><td>FinCEN</td><td>Corporate Transparency Act (CTA) — BOI Reporting Rule (eff. 2024)</td><td>Reporting companies file beneficial ownership information directly with FinCEN. Significantly limits the "I'll just look up the LLC" challenge for FIs.</td></tr>
+            <tr><td>OFAC</td><td>50 USC 1701 et seq.; SDN, SSI, sectoral lists</td><td>Sanctions compliance — strict liability. Drives the screening dimension of CDD.</td></tr>
+            <tr><td>Federal banking agencies</td><td>FFIEC BSA/AML Examination Manual</td><td>How examiners actually test the CDD program in practice. Read this if you operate in the US.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>European Union</h4>
+        <ul>
+          <li><strong>AMLD4 (2015)</strong> — introduced the risk-based approach as a binding requirement and the beneficial ownership register obligation.</li>
+          <li><strong>AMLD5 (2018, eff. 2020)</strong> — extended scope to virtual currency exchanges and custodian wallet providers; required public access to UBO registers (later partially restricted by ECJ ruling in <em>WM and Sovim, C-37/20</em>, November 2022).</li>
+          <li><strong>AMLD6 (2018, eff. 2021)</strong> — harmonized predicate offences and corporate criminal liability.</li>
+          <li><strong>The 2024 AML package — AMLR + AMLD6 (recast) + AMLA Regulation.</strong> A directly applicable EU regulation (<em>not</em> a directive) sets uniform CDD rules across all 27 Member States. The <em class="term">Anti-Money Laundering Authority (AMLA)</em>, headquartered in Frankfurt, becomes operational from 2028 with direct supervision over the riskiest cross-border FIs.</li>
+        </ul>
+
+        <h4>United Kingdom</h4>
+        <ul>
+          <li><strong>Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017 (MLR 2017).</strong> The operational rulebook for UK-regulated firms.</li>
+          <li><strong>FCA Handbook — SYSC 6.3, FCG (Financial Crime Guide).</strong> What the supervisor expects.</li>
+          <li><strong>JMLSG Guidance.</strong> Industry-developed but HM Treasury-approved guidance; the practical operational reference.</li>
+          <li><strong>Economic Crime (Transparency and Enforcement) Act 2022 + Economic Crime and Corporate Transparency Act 2023.</strong> Strengthened Companies House data quality, introduced the Register of Overseas Entities (UBO of foreign entities owning UK property), and reformed corporate criminal liability.</li>
+        </ul>
+
+        <h4>Asia-Pacific</h4>
+        <ul>
+          <li><strong>Singapore — MAS Notices 626 (banks), 824 (merchant banks), and equivalents per sector.</strong> Detailed CDD requirements. COSMIC platform for inter-bank information sharing on suspicious activity.</li>
+          <li><strong>Hong Kong — HKMA Supervisory Policy Manual AML-1 / AML-2;</strong> Anti-Money Laundering and Counter-Terrorist Financing Ordinance (AMLO).</li>
+          <li><strong>India — RBI Master Direction on KYC (most recently amended 2024);</strong> Prevention of Money Laundering Act (PMLA); Aadhaar-based digital KYC; Central KYC Records Registry (CKYCR).</li>
+          <li><strong>Australia — AUSTRAC AML/CTF Act 2006</strong> and Rules. Tranche 2 (extending obligations to lawyers, accountants, real estate, precious metals) finally enacted 2024, eff. 2026.</li>
+        </ul>
+
+        <h4>Sectoral and thematic standards</h4>
+        <ul>
+          <li><strong>Wolfsberg Group.</strong> Industry consortium of 12 global banks; publishes principles on correspondent banking (CBDDQ), private banking, financial inclusion, and AML effectiveness. Wolfsberg is non-binding but is treated as the practical industry standard by regulators.</li>
+          <li><strong>Basel Committee — Sound management of risks related to money laundering and financing of terrorism.</strong> Bank supervisory perspective; aligns to FATF.</li>
+          <li><strong>EBA Guidelines on ML/TF Risk Factors</strong> (EU); <strong>BCBS-CPMI guidance on correspondent banking</strong> (global).</li>
+        </ul>
+
+        <div class="note warn">
+          <p class="tag">Regulatory drift</p>
+          <h6>Three structural shifts are reshaping the landscape.</h6>
+          <p><strong>(i)</strong> the EU is moving from Directive (transposed differently across Member States) to Regulation (uniform across the bloc) with a central supervisor (AMLA) from 2028; <strong>(ii)</strong> beneficial ownership data is moving from FI-collected to state-collected (US CTA, UK Register of Overseas Entities, EU Member State registers); <strong>(iii)</strong> perpetual KYC is supplanting periodic refresh in major banks. Any CDD operating model designed before 2022 should be re-tested against these three shifts.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ SECTION III ════════════════════ -->
+    <section id="s3">
+      <div class="section-header">
+        <p class="num">Chapter III · Operating model</p>
+        <h2>The CDD/KYC <em>lifecycle</em>.</h2>
+        <p class="deck">The end-to-end flow from prospect identification through relationship exit, and where each stage tends to fail.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 03 · Operating model</p>
+
+        <p>Every CDD program — irrespective of size, jurisdiction, or line of business — implements some version of the same lifecycle. The names and tooling differ; the stages do not. Knowing the stages is the fastest way to read any vendor demo, regulatory exam finding, or internal audit report.</p>
+
+        <div class="stages">
+          <div class="node">
+            <div class="num">01</div>
+            <div class="name">Pre-onboarding &amp; intake</div>
+            <div class="desc">Channel intake (branch, digital, RM-led, broker-introduced); collect minimum identification data; preliminary risk screen.</div>
+          </div>
+          <div class="node">
+            <div class="num">02</div>
+            <div class="name">Identification &amp; verification</div>
+            <div class="desc">Identity proofed against documents, biometrics, electronic data sources. Address verified. For entities: incorporation documents, governance, signatories.</div>
+          </div>
+          <div class="node">
+            <div class="num">03</div>
+            <div class="name">UBO &amp; ownership chain</div>
+            <div class="desc">Beneficial owners and controllers identified (≥25% standard) and verified. Ownership chain documented; layered structures traced to natural persons.</div>
+          </div>
+          <div class="node">
+            <div class="num">04</div>
+            <div class="name">Screening</div>
+            <div class="desc">Sanctions, PEP, adverse media checks on customer, UBOs, authorized signatories, related parties. True hits investigated and dispositioned.</div>
+          </div>
+          <div class="node">
+            <div class="num">05</div>
+            <div class="name">Risk rating &amp; profile</div>
+            <div class="desc">Customer risk rating computed across geography, product, channel, behavioral, and entity-type factors. Expected activity profile documented.</div>
+          </div>
+          <div class="node">
+            <div class="num">06</div>
+            <div class="name">Onboarding decision</div>
+            <div class="desc">Approve, decline, or escalate to senior management/Compliance. For high-risk: EDD and senior approval required.</div>
+          </div>
+          <div class="node">
+            <div class="num">07</div>
+            <div class="name">Ongoing monitoring</div>
+            <div class="desc">Activity monitored against expected profile (via TM). Continuous re-screening against updated sanctions/PEP/adverse-media lists. Event-driven triggers from TM, news, customer-initiated changes.</div>
+          </div>
+          <div class="node">
+            <div class="num">08</div>
+            <div class="name">Refresh / pKYC / exit</div>
+            <div class="desc">Periodic refresh on risk-based cadence (or perpetual KYC for continuous refresh). Re-rate. If risk unacceptable: file SAR if warranted, exit relationship.</div>
+          </div>
+        </div>
+
+        <h4>Where each stage tends to fail</h4>
+        <table>
+          <thead>
+            <tr><th style="width:22%;">Stage</th><th>Common failure mode</th><th>Typical mitigation</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Pre-onboarding &amp; intake</td><td>Channel inconsistency — branch collects different fields than digital; broker-introduced customers under-documented; minimum data quality drift.</td><td>Single front-to-back onboarding standard; canonical data model; channel-agnostic policy; data quality scorecards.</td></tr>
+            <tr><td>ID &amp; verification</td><td>Document forgery (now AI-generated); selfie spoofing via deepfakes; over-reliance on a single source; reliance-on-introducer abuse.</td><td>Liveness 2.0 (challenge-response), document forensics, multiple verification sources fused, anti-deepfake detection, restricted use of Rec. 17 reliance.</td></tr>
+            <tr><td>UBO &amp; ownership chain</td><td>Opaque multi-layer structures; nominee directors/shareholders; bearer-share holdouts; jurisdictions with weak registries; self-attestation taken on trust.</td><td>External UBO data (Sayari, Moody's Orbis, OpenCorporates); registry triangulation; graph-based entity resolution; refusal to onboard where structure cannot be unwound.</td></tr>
+            <tr><td>Screening</td><td>Excessive false positives; alias coverage gaps; transliteration weakness; missed entity-as-customer matches; periodic-rescreen lag.</td><td>Tuned matching (exact + fuzzy + phonetic); regular efficacy testing; ongoing rescreening; second-line review of decisioning.</td></tr>
+            <tr><td>Risk rating &amp; profile</td><td>Static model not refreshed; risk factor catalog drifts from regulation; high-risk under-classified to reduce ongoing burden.</td><td>SR 11-7 model risk governance; annual model validation; back-testing against SAR outcomes; clear escalation when overrides used.</td></tr>
+            <tr><td>Onboarding decision</td><td>Sales pressure overrides Compliance; "soft-no" customers re-onboarded through different LOB or geography.</td><td>Centralized customer view across LOBs; mandatory cross-checks; documented declination register; clear FATCA/CRS-style cross-LOB visibility.</td></tr>
+            <tr><td>Ongoing monitoring</td><td>Profile not refreshed; TM thresholds calibrated on stale baseline; behavioral drift undetected.</td><td>Profile feeds from TM disposition; perpetual KYC pipeline; event-driven triggers from news, social, transaction signals.</td></tr>
+            <tr><td>Refresh / pKYC / exit</td><td>Refresh backlogs (the "KYC remediation" pain — sometimes years overdue); exit decisions delayed for revenue; legal off-boarding friction.</td><td>Perpetual KYC pipeline replaces periodic batch; exit playbooks with legal pre-clearance; standing 1L/2L/3L escalation forum.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="note">
+          <p class="tag">A useful observation</p>
+          <h6>The mis-balanced operating model.</h6>
+          <p>Most CDD programs are sized for stages 02 and 04 (verification, screening) and underweight stages 05 and 07 (risk rating and ongoing monitoring). Yet enforcement actions consistently turn on stages 05 and 07: a customer was correctly identified at onboarding and then under-monitored as risk evolved. Re-balance accordingly.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ SECTION IV ════════════════════ -->
+    <section id="s4">
+      <div class="section-header">
+        <p class="num">Chapter IV · Vocabulary</p>
+        <h2>Core concepts &amp; <em>vocabulary</em>.</h2>
+        <p class="deck">The two-dozen concepts you'll see in every regulatory exam, vendor pitch, and consulting deck. Internalize these before reading scenarios.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 04 · Vocabulary you need</p>
+
+        <h4>Customer-side concepts</h4>
+        <dl class="gloss">
+          <dt>KYC (Know Your Customer)</dt>
+          <dd>The colloquial term for the process of identifying, verifying, and risk-rating a customer at onboarding and on an ongoing basis. Often used loosely as a synonym for CDD but technically narrower (focused on identification and verification).</dd>
+
+          <dt>CDD (Customer Due Diligence)</dt>
+          <dd>The regulatory term defined in FATF Rec. 10. Broader than KYC: includes ongoing monitoring of the relationship, not just initial identification.</dd>
+
+          <dt>CIP (Customer Identification Program)</dt>
+          <dd>The US-specific obligation under Patriot Act §326 to verify identity at onboarding. The minimum identity data set: name, date of birth (for individuals), address, ID number.</dd>
+
+          <dt>EDD (Enhanced Due Diligence)</dt>
+          <dd>Heightened CDD applied to higher-risk customers — PEPs, customers in high-risk geographies, complex ownership structures, correspondent banking relationships, cash-intensive businesses. Requires senior management approval and deeper SoW/SoF inquiry.</dd>
+
+          <dt>SDD (Simplified Due Diligence)</dt>
+          <dd>Permitted in some jurisdictions for demonstrably low-risk relationships (e.g. listed companies on a major exchange, certain regulated financial institutions). Reduces but does not eliminate the CDD obligation.</dd>
+
+          <dt>Beneficial Owner / UBO</dt>
+          <dd>The natural person(s) who ultimately own or control a legal entity (typically ≥25% threshold) or on whose behalf a transaction is conducted. For trusts, includes settlor, trustee, protector, beneficiaries, and any other natural person exercising ultimate effective control.</dd>
+
+          <dt>Controlling Person</dt>
+          <dd>A natural person who exercises significant control over a legal-entity customer (in the US CDD Rule, one such individual is always required, regardless of ownership percentage). Senior managing officials are the usual default.</dd>
+
+          <dt>PEP (Politically Exposed Person)</dt>
+          <dd>A natural person entrusted with a prominent public function. <strong>Foreign PEPs</strong> — heads of state, senior politicians, senior judicial/military officials, senior executives of state-owned enterprises — always require EDD. <strong>Domestic PEPs</strong> and <strong>international organization PEPs</strong> require risk-sensitive treatment.</dd>
+
+          <dt>RCA (Relatives &amp; Close Associates)</dt>
+          <dd>Family members and close business associates of PEPs. Carry equivalent risk in most jurisdictions and are screened alongside the PEP themselves.</dd>
+
+          <dt>Source of Wealth (SoW)</dt>
+          <dd>The origin of the customer's <em>entire</em> wealth — how they accumulated their net worth over their lifetime. Required for HNW, PEPs, and EDD-tier customers. "Inheritance from family business" or "founder of listed tech company X (IPO 2014)" are typical SoW statements.</dd>
+
+          <dt>Source of Funds (SoF)</dt>
+          <dd>The origin of the <em>specific funds</em> used in the relationship — proceeds of a property sale, salary, a particular business deal. SoF is transactional; SoW is aggregate.</dd>
+
+          <dt>Expected Activity Profile</dt>
+          <dd>The customer's expected transaction behavior — volumes, geographies, counterparties, product mix, channels — documented at onboarding and refreshed on an ongoing basis. The baseline against which TM scenarios calibrate.</dd>
+        </dl>
+
+        <h4>Process-side concepts</h4>
+        <dl class="gloss">
+          <dt>Customer Risk Rating (CRR)</dt>
+          <dd>The composite risk score assigned to each customer, typically on a Low/Medium/High (or 1–5) scale, driven by attributes (geography, product, channel, customer type, PEP status, etc.) and refreshed periodically and on triggering events.</dd>
+
+          <dt>Risk-based approach (RBA)</dt>
+          <dd>The principle — embedded in FATF Rec. 1 — that AML resources should be allocated proportionally to assessed risk. The CRR is the operational mechanism for the RBA.</dd>
+
+          <dt>Periodic refresh</dt>
+          <dd>Re-performing CDD at fixed intervals based on risk: typically 5 years for Low, 3 years for Medium, 1 year for High. The historical default in most banks; increasingly being supplanted by perpetual KYC.</dd>
+
+          <dt>Event-driven refresh (trigger-based review)</dt>
+          <dd>Re-performing CDD when something material happens: an adverse-media hit, a TM alert, a sanctions list update affecting a related party, an authorized signatory change, a sudden product expansion.</dd>
+
+          <dt>Perpetual KYC (pKYC)</dt>
+          <dd>Continuous CDD: the customer profile is refreshed continuously from external data sources (registries, screening lists, news, behavioral signals) rather than at fixed intervals. Eliminates the refresh backlog and produces a real-time risk picture. Mainstream in tier-1 banks from ~2022 onward.</dd>
+
+          <dt>KYC remediation</dt>
+          <dd>A program to bring a back-book of customers up to current CDD standard — usually triggered by a regulatory finding, an acquisition, or migration to a new platform. Notoriously expensive and lengthy; often where consulting firms earn their AML revenue.</dd>
+
+          <dt>Reliance / introducer model</dt>
+          <dd>Under FATF Rec. 17 and equivalents, an FI may rely on another regulated FI or a designated third party to perform certain CDD steps. The relying FI remains accountable. Frequently abused historically — restricted in many regimes today.</dd>
+
+          <dt>Outsourcing</dt>
+          <dd>Distinct from reliance. The FI uses a vendor to perform CDD tasks on its behalf, with the FI retaining full accountability. Common for ID verification, screening, document collection. Vendor risk management applies (e.g. OCC Bulletin 2023-17, EBA Guidelines on Outsourcing).</dd>
+        </dl>
+
+        <h4>Verification and screening concepts</h4>
+        <dl class="gloss">
+          <dt>Liveness detection</dt>
+          <dd>Biometric check that the person presenting a face is alive and physically present (not a photo, video replay, or deepfake). <em>Liveness 2.0</em> uses challenge-response (e.g. follow a moving dot, speak a phrase, head movement) to defeat passive-attack vectors.</dd>
+
+          <dt>Electronic identity / eID</dt>
+          <dd>A government-backed digital identity used for identity proofing — Aadhaar (India), MyInfo (Singapore), BankID (Nordics), eIDAS notified schemes (EU), ID.me / Login.gov (US, limited), the UK "Brit Card" / GOV.UK One Login (rolling out).</dd>
+
+          <dt>Sanctions screening</dt>
+          <dd>Real-time and batch matching of customer/transaction names against sanctions lists (OFAC SDN, UN, EU, UK OFSI, etc.). True hits block onboarding or transactions.</dd>
+
+          <dt>PEP screening</dt>
+          <dd>Matching against PEP databases (commercial — Dow Jones, World-Check; or built in-house). Hits require senior approval and EDD measures, not automatic blocking.</dd>
+
+          <dt>Adverse media (negative news) screening</dt>
+          <dd>Matching against news databases for negative coverage relevant to financial crime: regulatory action, criminal investigation, asset seizure, leaks (Panama, Pandora, FinCEN Files). Hits trigger investigation and may justify CRR uplift or exit.</dd>
+
+          <dt>False positive rate</dt>
+          <dd>The proportion of screening matches that, on investigation, are not the named party (different person of the same name, transliteration coincidence, etc.). Sanctions screening rates of 95–99% false positives are not uncommon — the operational burden is enormous.</dd>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ════════════════════ SECTION V ════════════════════ -->
+    <section id="s5">
+      <div class="section-header">
+        <p class="num">Chapter V · Customer types</p>
+        <h2>Customer <em>types</em> &amp; onboarding variants.</h2>
+        <p class="deck">CDD requirements vary substantially across customer types. The variation is what makes CDD operationally complex.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 05 · Who you are onboarding</p>
+
+        <p>A retail bank onboarding a salaried individual through a digital channel and a private bank onboarding the family trust of a foreign PEP are performing technically the same regulatory activity, but operationally they are different sports. The matrix below sketches the substantive differences.</p>
+
+        <h4>Individual customers</h4>
+        <div class="three-col">
+          <div class="panel">
+            <h4>Retail / mass-market</h4>
+            <p>Salaried individual, simple SoF (employer payroll). Document + database verification typically sufficient. Digital channel; high straight-through rate the operational priority. CRR usually Low.</p>
+          </div>
+          <div class="panel">
+            <h4>Mass affluent / HNW</h4>
+            <p>Wealth tier where SoW becomes material. Document verification supplemented by wealth-source attestation and credible-source corroboration (LinkedIn profile, prior-employer confirmation, sale agreements). CRR typically Medium.</p>
+          </div>
+          <div class="panel">
+            <h4>Ultra-HNW / Private banking</h4>
+            <p>Bespoke onboarding. Full SoW dossier, often supported by external due diligence (Diligent, K2, Kroll reports). Family office structures, trust arrangements, multi-jurisdictional. EDD by default; senior management approval; relationship manager personally accountable.</p>
+          </div>
+        </div>
+
+        <h4>Legal entities</h4>
+        <table>
+          <thead><tr><th>Entity type</th><th>Specific CDD focus</th></tr></thead>
+          <tbody>
+            <tr><td>Listed company (major exchange)</td><td>SDD may be available. Verify listing status; check senior officials. Public-issuer disclosures are most of the dossier.</td></tr>
+            <tr><td>Private company / LLC / LP</td><td>Incorporation docs, register filings, directors and authorized signatories, ≥25% UBOs identified and verified. Operating address verified independently.</td></tr>
+            <tr><td>Trust / fiduciary arrangement</td><td>Settlor, trustee(s), protector, beneficiaries (or class of beneficiaries), any other natural person exercising effective control. Trust deed reviewed.</td></tr>
+            <tr><td>Foundation</td><td>Founder, council members, beneficiaries (or designated class), purpose. Common-law trust analogue in many civil-law jurisdictions; high abuse risk historically.</td></tr>
+            <tr><td>Charity / NPO</td><td>Mission, geography of activity, principal donors, principal beneficiaries. FATF Rec. 8 sets out specific risk-based expectations.</td></tr>
+            <tr><td>SPV / shell company</td><td>Substance test: does the entity have employees, premises, operations, or is it a paper vehicle? Paper SPVs require strong justification and EDD by default.</td></tr>
+            <tr><td>Investment fund</td><td>Fund manager identified and verified (regulated entity); look-through to investors on a risk-sensitive basis. Master/feeder structures require specific treatment.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Relationship-type variants</h4>
+        <dl class="gloss">
+          <dt>Correspondent banking</dt>
+          <dd>One bank holds an account for another bank. CDD is performed on the <em>respondent institution</em>, not its underlying customers. Wolfsberg CBDDQ is the de facto standard questionnaire. Nested correspondent relationships (the respondent's respondents) are a perennial weakness.</dd>
+
+          <dt>Trade finance counterparties</dt>
+          <dd>LCs, guarantees, and trade-credit involve counterparties (buyer, seller, shipper, insurer) on whom CDD must be performed even when they are not direct customers. Dual-use goods, deceptive shipping practices, and sanctioned port calls are recurring red flags.</dd>
+
+          <dt>Wealth management — trust &amp; corporate service providers</dt>
+          <dd>When the customer is a trust or corporate-service vehicle administered by a regulated TCSP, the FI performs CDD on the vehicle and the underlying beneficial owners. The TCSP is itself a regulated entity in most jurisdictions and the relationship has its own risk profile.</dd>
+
+          <dt>Crypto / VASPs</dt>
+          <dd>Virtual Asset Service Providers (exchanges, custodians, certain OTC desks) are CDD subjects when they bank with a traditional FI. The Travel Rule (FATF Rec. 16) requires originator/beneficiary information to travel with the transaction across VASPs.</dd>
+
+          <dt>Non-resident / non-domestic customers</dt>
+          <dd>Customer resides in a different jurisdiction from the FI booking the account. Drives CRR uplift; requires verification techniques that work cross-border (remote ID, notarized documents, eID interoperability).</dd>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ════════════════════ SECTION VI ════════════════════ -->
+    <section id="s6">
+      <div class="section-header">
+        <p class="num">Chapter VI · Identity</p>
+        <h2>Identity <em>verification</em>.</h2>
+        <p class="deck">The methods by which an FI verifies that the person or entity presenting itself is who it claims to be — and how each method fails.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 06 · Proving who is who</p>
+
+        <p>Identity verification is the technically richest part of CDD. It is also where the AI-fraud wave (synthetic identities, deepfakes, AI-generated documents) has hit hardest in 2023–2026, forcing rapid evolution of historically static methods.</p>
+
+        <h4>Verification methods (in order of historical introduction)</h4>
+        <table>
+          <thead><tr><th style="width:24%;">Method</th><th>How it works</th><th>How it fails</th></tr></thead>
+          <tbody>
+            <tr><td>Document-based</td><td>Customer presents a government-issued ID (passport, driver's license, national ID); document validated for authenticity (security features, MRZ, NFC chip read where available).</td><td>Forgery — historically printing-quality; in 2024+ AI-generated documents indistinguishable to the unaided eye.</td></tr>
+            <tr><td>Database-based</td><td>Identifying attributes (name, DoB, address, ID number) checked against electoral roll, credit bureau, telecom data, government databases.</td><td>Synthetic identities seeded into bureaus over time; bureau coverage variable across geographies; data brokers' freshness inconsistent.</td></tr>
+            <tr><td>Knowledge-based authentication (KBA)</td><td>Out-of-wallet questions ("which of these addresses have you lived at?"). Now largely deprecated in favor of biometric methods.</td><td>Defeated by data breaches (most "out-of-wallet" facts are now in-wallet for fraudsters).</td></tr>
+            <tr><td>Selfie + liveness</td><td>Customer photographs themselves; the system checks the face matches the ID and that the face is "live" (not a photo or video replay).</td><td>Liveness 1.0 (passive) defeated by deepfake video; injection attacks bypass camera entirely.</td></tr>
+            <tr><td>Liveness 2.0 (challenge-response)</td><td>Customer follows a moving dot, speaks a generated phrase, or performs a head movement; the response must match the prompt in time and modality.</td><td>Real-time deepfake-overlay tools are emerging; the arms race continues.</td></tr>
+            <tr><td>Electronic identity (eID)</td><td>Customer authenticates via a government-backed digital identity (Aadhaar, MyInfo, BankID, eIDAS notified scheme).</td><td>Coverage is partial (US has no comparable scheme); identity theft of the underlying eID is possible.</td></tr>
+            <tr><td>Open Banking / account-credentialing</td><td>Customer authenticates by logging into an existing bank account; identity attributes pulled via PSD2 / open-banking APIs.</td><td>Account takeover (ATO) of the source account compromises the verification.</td></tr>
+            <tr><td>Behavioral biometrics</td><td>Mouse movement, keystroke cadence, device-handling style, session telemetry. Distinguishes humans from bots and recognizes the legitimate user across sessions.</td><td>Coaching and AI-driven session emulation are now plausible attack vectors.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="note warn">
+          <p class="tag">The 2024–2026 inflection</p>
+          <h6>Generative AI has industrialized synthetic-identity attacks.</h6>
+          <p>Before 2023, a document-plus-selfie onboarding flow was acceptable for retail. By 2025, generative AI had industrialized synthetic-identity attacks: AI-generated passports, AI-generated selfies, deepfake liveness defeats, fully autonomous agentic account-opening at machine speed. Sumsub and Fourthline both report 3–6× year-over-year increases in deepfake attacks against onboarding. The serious responses combine document forensics (Finovox, Onfido), challenge-response liveness, behavioral biometrics, device intelligence, and cross-FI consortium data on known synthetics. No single signal is sufficient.</p>
+        </div>
+
+        <h4>Verification standards and frameworks</h4>
+        <ul>
+          <li><strong>NIST SP 800-63-3 (Identity Assurance Levels — IAL1/2/3).</strong> The US technical standard. Used widely outside the US too.</li>
+          <li><strong>eIDAS Regulation (EU).</strong> Establishes Low / Substantial / High assurance levels for cross-border digital identity.</li>
+          <li><strong>FATF guidance on Digital Identity (2020).</strong> Confirms digital ID systems can satisfy CDD identification requirements where assurance is sufficient.</li>
+          <li><strong>FFIEC BSA/AML Examination Manual — CIP testing procedures.</strong> Operational US standard.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ════════════════════ SECTION VII ════════════════════ -->
+    <section id="s7">
+      <div class="section-header">
+        <p class="num">Chapter VII · Ownership</p>
+        <h2>Beneficial <em>ownership</em> (UBO).</h2>
+        <p class="deck">The single hardest part of CDD: tracing the natural persons who ultimately own or control a legal entity, often through layers of jurisdictional opacity.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 07 · Who really owns this</p>
+
+        <p>UBO identification is where most enforcement actions land — because it is where determined bad actors invest the most effort to obscure themselves. A bank can do CIP perfectly, verify ID with the best biometric stack, run sanctions screening flawlessly, and still be exposed if it cannot see through to the natural person ultimately benefiting from the relationship.</p>
+
+        <h4>The 25% rule and its limits</h4>
+        <p>Most jurisdictions — FATF, EU AMLD, US FinCEN CDD Rule, UK MLR 2017 — set the UBO threshold at <strong>25% direct or indirect ownership</strong>. A natural person owning 25% or more of a legal entity (directly, or via intermediate entities by multiplication of percentages) is a beneficial owner. The threshold has obvious limitations:</p>
+        <ul>
+          <li>It is a <strong>floor, not a ceiling</strong>. A person owning &lt;25% but exercising effective control (board majority, special voting rights, golden share) is still a beneficial owner.</li>
+          <li>Most rules require identifying <strong>at least one controlling person</strong> regardless of ownership, usually a senior managing official, ensuring no entity escapes UBO entirely.</li>
+          <li>Five 19% shareholders is the classic structuring move to defeat the 25% threshold. Most regulators expect FIs to identify all such "near-threshold" holdings on a risk-sensitive basis.</li>
+        </ul>
+
+        <h4>Common opacity techniques</h4>
+        <div class="scenario-grid">
+          <div class="scenario">
+            <div class="hdr"><div class="name">01 — Multi-layer holding chains</div><div class="tier">High risk</div></div>
+            <div class="typology">Entity owned by entity owned by entity owned by entity…</div>
+            <div class="body">An LP in jurisdiction A holds shares in a company in jurisdiction B which holds a trust in jurisdiction C, whose beneficiaries are entities in jurisdictions D and E. Without coordinated data, the natural person at the top is invisible.</div>
+            <div class="detect"><span class="label">Response</span>External UBO graph databases (Sayari, Moody's Orbis, OpenCorporates), entity resolution, refusal to onboard where the chain cannot be traced to natural persons.</div>
+          </div>
+          <div class="scenario">
+            <div class="hdr"><div class="name">02 — Nominee directors and shareholders</div><div class="tier">High risk</div></div>
+            <div class="typology">Professional intermediary appears in registry, real owner does not.</div>
+            <div class="body">A trust and company service provider supplies a nominee director and a nominee shareholder who hold the position on behalf of an undisclosed principal. Registries show the nominee; nothing shows the principal except a private declaration of trust.</div>
+            <div class="detect"><span class="label">Response</span>Probe nominee arrangements explicitly at onboarding; require the principal to be disclosed; treat nominee-only structures as EDD by default; verify against industry intelligence on known nominee providers.</div>
+          </div>
+          <div class="scenario tier-low">
+            <div class="hdr"><div class="name">03 — Bearer shares</div><div class="tier">Declining</div></div>
+            <div class="typology">Ownership transfers by physical handover of the certificate.</div>
+            <div class="body">Historically widespread (Panama, BVI, Switzerland). Whoever holds the certificate owns the company; ownership can transfer untraceably overnight. FATF pressure has eliminated most regimes by 2026 but residual exposure remains in some structures.</div>
+            <div class="detect"><span class="label">Response</span>Decline to onboard entities with bearer-share capacity unless immobilized at a regulated custodian and verified.</div>
+          </div>
+          <div class="scenario">
+            <div class="hdr"><div class="name">04 — Trust within trust</div><div class="tier">High risk</div></div>
+            <div class="typology">Beneficiaries are themselves trusts, foundations, or discretionary classes.</div>
+            <div class="body">A trust's beneficiaries are described as "the descendants of X for the time being" or "such persons as the trustee may from time to time appoint." The trustee has discretion; no current natural beneficial owner can be named.</div>
+            <div class="detect"><span class="label">Response</span>Identify settlor, trustee, protector, and the class of beneficiaries; document the trustee's discretionary powers; treat as EDD; require disclosure of current beneficiaries actually receiving distributions.</div>
+          </div>
+          <div class="scenario tier-low">
+            <div class="hdr"><div class="name">05 — Free-zone &amp; offshore SPVs</div><div class="tier">Medium risk</div></div>
+            <div class="typology">Light-touch jurisdiction with low-substance company-formation regime.</div>
+            <div class="body">DIFC, ADGM, Cayman, BVI, Delaware (historically), Wyoming, Nevis — paper SPVs incorporated for legitimate tax-neutrality reasons but indistinguishable in registry filings from concealment vehicles.</div>
+            <div class="detect"><span class="label">Response</span>Apply substance test (employees, premises, operations); look-through to UBO must succeed; corroborate ownership via secondary sources.</div>
+          </div>
+          <div class="scenario">
+            <div class="hdr"><div class="name">06 — Cross-jurisdictional disagreement</div><div class="tier">High risk</div></div>
+            <div class="typology">Registry in jurisdiction A says X owns Y; intelligence suggests Z actually does.</div>
+            <div class="body">Discrepancies between registry filings and external intelligence (leaks, journalistic reporting, sanctions designations). The Panama, Paradise, Pandora, and FinCEN Files leaks are the canonical examples.</div>
+            <div class="detect"><span class="label">Response</span>Adverse-media screening against leaks databases; discrepancy reporting (UK PSC discrepancy regime, EU AMLD5); refusal to onboard where intelligence contradicts filings and cannot be resolved.</div>
+          </div>
+        </div>
+
+        <h4>Beneficial ownership registries</h4>
+        <p>A major regulatory trend since AMLD4 (2015) has been the move from FI-collected to state-collected UBO data. The picture in 2026:</p>
+        <ul>
+          <li><strong>US — FinCEN BOI database (Corporate Transparency Act).</strong> Reporting companies file directly with FinCEN. FI access requires customer consent. Significantly narrower in 2024–2025 after various court rulings on the constitutionality of the CTA; situation evolving.</li>
+          <li><strong>UK — Companies House Persons with Significant Control (PSC) register.</strong> Public. Subject to major data-quality reform under the Economic Crime and Corporate Transparency Act 2023.</li>
+          <li><strong>UK — Register of Overseas Entities.</strong> Foreign entities owning UK property must register their beneficial owners.</li>
+          <li><strong>EU — Member State central registers.</strong> Mandatory under AMLD5; public access restricted by ECJ ruling in <em>WM and Sovim</em> (Nov 2022). The 2024 AML Regulation re-frames access criteria.</li>
+          <li><strong>Singapore — ACRA Register of Registrable Controllers.</strong> Limited access.</li>
+          <li><strong>Commercial aggregators — Sayari, Moody's Orbis, OpenCorporates, Diligent, KYCnet.</strong> Combine registry data across jurisdictions with relationship-graph capabilities; in practice the operational source for most FI UBO work.</li>
+        </ul>
+
+        <div class="note muted">
+          <p class="tag">A realistic posture</p>
+          <h6>Triangulate; don't reconcile away.</h6>
+          <p>Registry data is improving but still incomplete and frequently stale. Treat any single source as a starting point, not ground truth. The professional standard is triangulation: registry filings + commercial aggregator + customer attestation + (where risk warrants) external due-diligence report. Disagreements between these are themselves a signal — not noise to be reconciled away.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ SECTION VIII ════════════════════ -->
+    <section id="s8">
+      <div class="section-header">
+        <p class="num">Chapter VIII · Screening</p>
+        <h2>Sanctions, PEP &amp; <em>adverse</em> media screening.</h2>
+        <p class="deck">The three screening dimensions, how they differ in disposition, and where the operational pain concentrates.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 08 · Who you are really dealing with</p>
+
+        <p>Screening is conceptually simple — match a name against a list — and operationally brutal. Every CDD program runs three distinct screening dimensions, each with different lists, different decisioning, and different failure modes.</p>
+
+        <h4>The three dimensions</h4>
+        <table>
+          <thead><tr><th>Dimension</th><th>Lists</th><th>If matched, what?</th></tr></thead>
+          <tbody>
+            <tr><td>Sanctions</td><td>OFAC SDN/SSI/sectoral (US), UN consolidated, EU consolidated, UK OFSI, AUSTRAC, national sanctions, secondary-sanction designations.</td><td><strong>Block.</strong> Strict liability in most regimes — cannot onboard, cannot transact. Investigation determines whether the customer is genuinely the sanctioned party.</td></tr>
+            <tr><td>PEP</td><td>Commercial PEP databases (Dow Jones RiskCenter, LSEG World-Check, RDC/Moody's, Sayari); foreign + domestic + international-org categories; RCAs.</td><td><strong>EDD trigger.</strong> Not a block. Requires senior management approval, SoW/SoF, enhanced ongoing monitoring.</td></tr>
+            <tr><td>Adverse media</td><td>Commercial adverse-media databases (LSEG World-Check, ComplyAdvantage, RDC), plus leaks (ICIJ databases — Panama, Pandora, FinCEN Files), regulatory enforcement registers.</td><td><strong>Investigation trigger.</strong> Disposition depends on the credibility, recency, and AML relevance of the news.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>When screening runs</h4>
+        <ul>
+          <li><strong>At onboarding.</strong> Customer name, UBOs, controlling persons, authorized signatories — all screened.</li>
+          <li><strong>Continuously, against list updates.</strong> Every list update is rescreened against the customer book. OFAC SDN updates can occur intra-day.</li>
+          <li><strong>At periodic refresh / on event triggers.</strong> Rescreen as part of refresh; rescreen on material change (e.g. new signatory added).</li>
+          <li><strong>In payment flows.</strong> Sanctions screening on the originator, beneficiary, and intermediary banks of every cross-border payment.</li>
+        </ul>
+
+        <h4>Matching techniques</h4>
+        <dl class="gloss">
+          <dt>Exact matching</dt>
+          <dd>Character-for-character match. Useful for unique identifiers (passport number, ID number) but useless for names (transliteration, romanization, name-order, nicknames).</dd>
+
+          <dt>Fuzzy matching</dt>
+          <dd>Edit-distance or token-similarity matching: "John Smith" matches "Jon Smith". Most commercial engines use layered fuzzy approaches.</dd>
+
+          <dt>Phonetic matching</dt>
+          <dd>Soundex / Metaphone / NYSIIS — names that sound similar match. Important for transliterated Arabic, Russian, Chinese names. Now layered with other techniques.</dd>
+
+          <dt>Transliteration / romanization</dt>
+          <dd>"Mohammed" / "Muhammad" / "Mohamed" / "Mohammad" — all the same name. Mandatory for sanctions screening.</dd>
+
+          <dt>Address and DoB co-matching</dt>
+          <dd>Modern engines reduce false positives by requiring name <em>plus</em> address or name <em>plus</em> DoB match. Trade-off: missing data in either field can defeat the technique.</dd>
+
+          <dt>Entity-as-customer matching</dt>
+          <dd>Screening a legal entity against the SDN entity list. Often weaker than individual screening because entity naming is more idiosyncratic ("ABC Trading" matches many things).</dd>
+        </dl>
+
+        <h4>The false-positive problem</h4>
+        <p>Sanctions screening commonly generates 95–99% false positives. A bank with 10 million customers running daily OFAC rescreens may produce thousands of new "hits" per day, the overwhelming majority of which are different people with similar names. The operational pattern:</p>
+        <ul>
+          <li><strong>Layered matching with tunable thresholds.</strong> Tighten matching to reduce noise; risk-test the tuning to ensure true hits aren't lost (the "above-the-line / below-the-line" approach borrowed from TM).</li>
+          <li><strong>L1 alert handling.</strong> First-line analysts dispose of obvious false positives based on secondary attributes (DoB doesn't match, country of residence doesn't match, occupation doesn't match).</li>
+          <li><strong>L2 investigation.</strong> Genuine ambiguity escalated for deeper investigation.</li>
+          <li><strong>QA sampling.</strong> Second line samples disposition decisions to detect over-clearing or bias-driven errors.</li>
+          <li><strong>Model-tuning feedback loop.</strong> Disposition data feeds back into matching threshold and rule tuning over time.</li>
+        </ul>
+
+        <div class="note">
+          <p class="tag">Under-appreciated risk</p>
+          <h6>Tight enough to be operable, loose enough that no true hit is missed.</h6>
+          <p>Most enforcement actions and large fines stemming from screening failures are about <em>missed true hits</em>, not false positives. The fine costs $1bn; the false-positive operational burden costs $50m a year. The asymmetry should drive tuning: tight enough to be operable, loose enough that no true hit is plausibly missed. "Operable" is not the same as "comfortable for the L1 queue".</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ SECTION IX ════════════════════ -->
+    <section id="s9">
+      <div class="section-header">
+        <p class="num">Chapter IX · Risk rating</p>
+        <h2>Customer <em>risk</em> rating.</h2>
+        <p class="deck">The composite score that drives downstream monitoring intensity, refresh cadence, EDD triggers, and exit decisions.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 09 · Ranking the risk</p>
+
+        <p>The CRR is the operational manifestation of the risk-based approach. Done well, it ensures that the riskiest 5–10% of the book gets the most attention. Done badly, it either under-monitors high-risk customers (a recurring enforcement pattern) or floods the alert queue with low-risk noise.</p>
+
+        <h4>Standard risk-factor catalog</h4>
+        <table>
+          <thead><tr><th>Dimension</th><th>Typical factors</th></tr></thead>
+          <tbody>
+            <tr><td>Customer attributes</td><td>Type (individual vs entity), PEP status (foreign vs domestic), occupation, industry, wealth tier, nationality, residence, age.</td></tr>
+            <tr><td>Geography</td><td>Country of residence, country of business, countries of frequent transaction. FATF "increased monitoring" and "high-risk jurisdictions" lists drive the floors. EU high-risk third countries list. Sanctions exposure.</td></tr>
+            <tr><td>Product</td><td>Cash-intensive products, private banking, correspondent banking, trade finance, prepaid cards, crypto on-ramps. Each has a default risk weighting.</td></tr>
+            <tr><td>Channel</td><td>Branch (face-to-face) vs digital vs broker-introduced vs RM-led. Non-face-to-face onboarding historically attracted a CDD weight; less so in 2026 with strong digital ID, but still applies in some regimes.</td></tr>
+            <tr><td>Behavioral</td><td>Transaction patterns vs expected, geography mix, counterparty mix, velocity changes. The TM-feedback dimension.</td></tr>
+            <tr><td>Entity-specific</td><td>Structural complexity (number of ownership layers), jurisdictional spread, presence of nominee directors/shareholders, registry data quality.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Scoring approaches</h4>
+        <dl class="gloss">
+          <dt>Rule-based / matrix scoring</dt>
+          <dd>Each factor assigned a weight; weighted sum produces the score; bands map to Low/Medium/High. Most common approach. Transparent, easy to govern under SR 11-7, easy to defend to examiners. Fixed weights drift from true risk over time.</dd>
+
+          <dt>Statistical / ML-based scoring</dt>
+          <dd>Supervised models trained on historical SAR outcomes; or unsupervised anomaly detection across the customer book. More adaptive, harder to explain. Subject to full SR 11-7 model risk governance — independent validation, annual re-validation, monitoring of performance.</dd>
+
+          <dt>Hybrid</dt>
+          <dd>Rule-based floor (regulatory minima — e.g. all PEPs must be at least High) overlaid with statistical adjustments from behavioral signals. The mainstream 2026 architecture.</dd>
+        </dl>
+
+        <h4>Standard rating scale</h4>
+        <div class="three-col">
+          <div class="panel">
+            <h4>Low</h4>
+            <p>Periodic refresh ~5 years. Standard TM thresholds. No EDD trigger. Standard onboarding pathway. Bulk of retail book sits here.</p>
+          </div>
+          <div class="panel">
+            <h4>Medium</h4>
+            <p>Periodic refresh ~3 years. Slightly tighter TM thresholds. No automatic EDD but elevated scrutiny on certain triggers.</p>
+          </div>
+          <div class="panel">
+            <h4>High</h4>
+            <p>Periodic refresh ~1 year. EDD required. Senior management approval at onboarding. Tightest TM thresholds. More frequent rescreening.</p>
+          </div>
+        </div>
+        <p>Some FIs add <strong>Prohibited</strong> (cannot onboard — sanctioned jurisdictions, certain customer types) and <strong>Critical</strong> (an additional tier above High for the very highest-risk relationships requiring board or chief risk officer approval).</p>
+
+        <h4>Re-rating triggers</h4>
+        <ul>
+          <li>Periodic refresh comes due.</li>
+          <li>Material change in customer attributes (new authorized signatory, change of UBO, change of country of residence, change of industry).</li>
+          <li>Material change in transaction behavior (volume spike, new geographies, new product use).</li>
+          <li>Adverse media hit or PEP designation update.</li>
+          <li>Sanctions list update affecting related party.</li>
+          <li>SAR filed on the customer.</li>
+          <li>TM alert that the L1/L2 investigator deemed material.</li>
+        </ul>
+
+        <div class="note muted">
+          <p class="tag">SR 11-7 implications</p>
+          <h6>The CRR is a model, not just a rule.</h6>
+          <p>Under US Federal Reserve SR 11-7 (and its OCC and FDIC equivalents), the CRR is a "model" subject to model risk management. That means: documented methodology, independent validation before production, ongoing monitoring of performance, annual revalidation, governance over overrides, and an inventory entry in the model risk register. Treating the CRR as a "rule" outside model risk governance is a recurring exam finding.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ SECTION X ════════════════════ -->
+    <section id="s10">
+      <div class="section-header">
+        <p class="num">Chapter X · EDD</p>
+        <h2>Enhanced <em>due</em> diligence.</h2>
+        <p class="deck">The escalated CDD regime applied to higher-risk relationships, what it requires, and the senior-approval discipline that surrounds it.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 10 · When standard CDD is not enough</p>
+
+        <p>EDD is not a different process from CDD — it is CDD with more depth, more sources, more senior involvement, and more frequent refresh. It is invoked when the risk picture warrants substantially heightened scrutiny.</p>
+
+        <h4>When EDD is required</h4>
+        <ul>
+          <li><strong>Foreign PEPs (FATF Rec. 12).</strong> Always EDD. Senior management approval at onboarding and at each refresh.</li>
+          <li><strong>Customers from FATF "increased monitoring" or high-risk jurisdictions.</strong> EU equivalent: the EU high-risk third countries list. FATF "grey list" / "black list" countries.</li>
+          <li><strong>Correspondent banking relationships, particularly cross-border.</strong> Wolfsberg CBDDQ-driven EDD; focus on the respondent's AML controls and customer base.</li>
+          <li><strong>Complex ownership structures.</strong> Multi-jurisdictional, multi-layer, nominee arrangements.</li>
+          <li><strong>Cash-intensive businesses</strong> (money service businesses, casinos, certain retail).</li>
+          <li><strong>Wealth-management / private banking customers</strong> above defined thresholds.</li>
+          <li><strong>Non-face-to-face onboarding</strong> in jurisdictions that still treat it as elevated.</li>
+          <li><strong>Customers in industries with elevated ML/TF risk:</strong> precious metals/stones, art and antiquities, real estate, virtual assets, cannabis (in jurisdictions where legal).</li>
+          <li><strong>Any customer whose CRR is High</strong> or whose risk picture has materially changed.</li>
+        </ul>
+
+        <h4>What EDD adds on top of standard CDD</h4>
+        <table>
+          <thead><tr><th style="width:32%;">EDD measure</th><th>What it means in practice</th></tr></thead>
+          <tbody>
+            <tr><td>Senior management approval</td><td>A designated senior officer (often a regional Chief Compliance Officer or business head) approves onboarding in writing. Distinct from the regular onboarding decision; carries personal accountability.</td></tr>
+            <tr><td>Source-of-Wealth inquiry</td><td>Detailed investigation of how the customer accumulated their net worth. Supporting documentation (sale agreements, IPO records, salary history, inheritance papers, M&amp;A announcements). Third-party corroboration where significant.</td></tr>
+            <tr><td>Source-of-Funds inquiry</td><td>Detailed investigation of the origin of the funds being deposited. Salary slip, property-sale agreement, investment-account statement, etc.</td></tr>
+            <tr><td>Enhanced ongoing monitoring</td><td>Tighter TM thresholds; more frequent re-screening; standing monthly review of activity by the RM; quarterly compliance review.</td></tr>
+            <tr><td>More frequent refresh</td><td>Typically annual instead of triennial/quinquennial. Often a documented PEP review on a fixed cadence.</td></tr>
+            <tr><td>Enhanced beneficial ownership investigation</td><td>External due-diligence report (K2, Kroll, Diligent, Mintz); registry triangulation across jurisdictions; adverse-media deep search.</td></tr>
+            <tr><td>Documented purpose of relationship</td><td>Specific written rationale for the relationship: why is this customer banking here, in this product, in this jurisdiction.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>The PEP regime in detail</h4>
+        <p>PEPs are the most common EDD trigger and a recurring enforcement focal point. The regime distinguishes three categories with different obligations:</p>
+        <ul>
+          <li><strong>Foreign PEPs.</strong> FATF Rec. 12: always EDD. Heads of state, ministers, senior judicial, military, central bank, state-owned-enterprise senior executives, senior political-party officials. Treatment usually persists for some defined period after they leave office (the "once a PEP, always a PEP" debate is not resolved across jurisdictions).</li>
+          <li><strong>Domestic PEPs.</strong> Risk-sensitive treatment. EDD applies where risk-rated as high — usually by seniority of office.</li>
+          <li><strong>International organization PEPs.</strong> Heads and senior executives of intergovernmental bodies (UN, IMF, World Bank, regional development banks). Risk-sensitive.</li>
+          <li><strong>RCAs.</strong> Spouses, children, parents, business partners. Treated with PEP-equivalent measures.</li>
+        </ul>
+
+        <div class="note warn">
+          <p class="tag">Frequent enforcement pattern</p>
+          <h6>The PEP forgotten over time.</h6>
+          <p>The recurring PEP-related finding is that a PEP was identified at onboarding, EDD was performed initially, and then the customer's heightened risk was forgotten. As the PEP rotated through political offices, accumulated wealth in unexplained ways, or became implicated in adverse media, the FI continued treating the relationship as if it were a normal HNW account. The control is not at onboarding; it is in the ongoing-monitoring discipline applied for years afterward.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ SECTION XI ════════════════════ -->
+    <section id="s11">
+      <div class="section-header">
+        <p class="num">Chapter XI · pKYC</p>
+        <h2>Ongoing monitoring &amp; <em>perpetual</em> KYC.</h2>
+        <p class="deck">How CDD evolves from a periodic batch process into a continuous data discipline — and why the shift is the defining 2022–2026 trend in the field.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 11 · Keeping the picture current</p>
+
+        <p>The classical CDD operating model treats refresh as a batch event: customers' CDD files are re-performed every 1, 3, or 5 years based on CRR. In practice, this generates large backlogs (often years overdue), produces a stale risk picture, and consumes enormous L1 capacity. The mainstream alternative since ~2022 is <strong>perpetual KYC (pKYC)</strong>: continuous, event-driven refresh, with the file in a permanent "in-review" state instead of moving through discrete review cycles.</p>
+
+        <h4>Periodic vs perpetual — the operational shift</h4>
+        <table>
+          <thead><tr><th style="width:28%;">Dimension</th><th>Periodic refresh</th><th>Perpetual KYC</th></tr></thead>
+          <tbody>
+            <tr><td>Trigger</td><td>Calendar (every N years by CRR)</td><td>Event (any material change in customer or external data)</td></tr>
+            <tr><td>Default state</td><td>Stable until refresh due</td><td>Continuously refreshed</td></tr>
+            <tr><td>Risk picture accuracy</td><td>Increasingly stale through the cycle</td><td>Real-time</td></tr>
+            <tr><td>Operational pattern</td><td>Bursty — refresh waves create capacity peaks</td><td>Steady-state — analyst capacity allocated against triggers</td></tr>
+            <tr><td>Backlog risk</td><td>High (the "KYC remediation" pattern)</td><td>Effectively zero</td></tr>
+            <tr><td>Data source design</td><td>Customer-supplied refresh, supplemented by FI lookups</td><td>External data sources are primary; customer-supplied only when external is inadequate</td></tr>
+            <tr><td>Investment profile</td><td>L1 capacity</td><td>Engineering + data feeds + decisioning logic</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Event-driven triggers</h4>
+        <p>A perpetual-KYC architecture identifies and acts on material changes in real time. Standard triggers:</p>
+        <ul>
+          <li><strong>Sanctions list update</strong> affecting the customer, UBO, or related party.</li>
+          <li><strong>PEP designation update</strong> — new appointment, removal from office, RCA designation.</li>
+          <li><strong>Adverse media hit</strong> — credible news of regulatory action, criminal proceeding, leak, asset seizure.</li>
+          <li><strong>Registry update</strong> — change of directors, change of UBO, change of incorporation status, dissolution.</li>
+          <li><strong>Customer-initiated change</strong> — new authorized signatory, new beneficial owner, change of registered address, new business line.</li>
+          <li><strong>Transaction monitoring signal</strong> — a TM alert with sufficient confidence to warrant CDD re-assessment (not every alert; this is calibration-dependent).</li>
+          <li><strong>Behavioral change</strong> — material drift from expected activity profile (volume, geography, product, counterparties).</li>
+          <li><strong>Internal escalation</strong> — RM raises a concern; second-line review identifies an issue.</li>
+          <li><strong>Group-level event</strong> — a related customer in the group has an event that materially affects the focal customer's risk picture.</li>
+        </ul>
+
+        <h4>Where pKYC architectures break</h4>
+        <p>The architecture is conceptually clean. The 2022–2026 implementation experience has been less clean:</p>
+        <ul>
+          <li><strong>Trigger calibration.</strong> Tune triggers loose enough to catch material change; tight enough not to drown analysts in noise. The same threshold debate as TM.</li>
+          <li><strong>External data quality.</strong> Perpetual KYC is only as good as the data feeds. Stale registries, coverage gaps, false PEP designations, leaks lifted into screening without disposition — all degrade the pipeline.</li>
+          <li><strong>Customer experience.</strong> A perpetual-KYC pipeline that contacts the customer every time a registry attribute changes is intolerable. Most material changes should be resolved without customer outreach.</li>
+          <li><strong>Decision audit trail.</strong> Continuous decisioning requires continuous documentation. Periodic refresh's "review packet" needs an event-stream equivalent.</li>
+          <li><strong>Coexistence with periodic.</strong> Most banks run hybrid for years: pKYC for the segments where data feeds are richest, periodic for the rest. Cross-cutting governance gets complicated.</li>
+        </ul>
+
+        <h4>Reference architecture</h4>
+        <div class="walkthrough">
+          <h4>A workable pKYC stack</h4>
+          <ol>
+            <li><strong>Canonical customer record</strong> as the single source of truth — customer attributes, UBO chain, screening status, CRR, expected activity profile.</li>
+            <li><strong>External data feeds</strong> ingested continuously: sanctions list updates, PEP database updates, adverse-media feed, registry change feed (Companies House, ACRA, FinCEN BOI, etc.), watchlist updates.</li>
+            <li><strong>Trigger engine</strong> that detects material change between the previous canonical state and the new external data. Configurable trigger logic; per-CRR tier sensitivity.</li>
+            <li><strong>Decisioning layer</strong> that routes trigger events: auto-resolve (low-materiality), L1 analyst (review), L2 investigation (escalation), CRR re-rating, SAR consideration, exit consideration.</li>
+            <li><strong>Customer outreach module</strong> that batches and minimizes customer-facing requests; uses digital channels where possible; documents the request and response.</li>
+            <li><strong>Audit and governance</strong> layer that records every state change, decision, and reviewer; feeds MI dashboards and exam preparation.</li>
+          </ol>
+        </div>
+
+        <div class="note">
+          <p class="tag">Early adopters</p>
+          <h6>Where pKYC has been deployed in production.</h6>
+          <p>ABN AMRO, ING, Standard Chartered, HSBC, and DBS have publicly described pKYC implementations from 2021–2024. Vendor platforms: Fenergo (KYC Refresh), Quantexa (Contextual Decision Intelligence), Encompass (KYC Now), Appian (Connected KYC), Pega (KYC). Implementations consistently take 12–24 months; consistently produce 30–60% reductions in L1 effort against equivalent periodic baseline.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ SECTION XII ════════════════════ -->
+    <section id="s12">
+      <div class="section-header">
+        <p class="num">Chapter XII · Specialized</p>
+        <h2>Specialized <em>domains</em>.</h2>
+        <p class="deck">CDD in correspondent banking, trade finance, virtual assets, and wealth management — each domain bends the standard model in domain-specific ways.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 12 · CDD at the edges</p>
+
+        <h4>Correspondent banking</h4>
+        <p>A correspondent banking relationship is a bank-to-bank account: the respondent bank holds an account with the correspondent (commonly to access a payment system or currency the respondent does not directly clear). The respondent's customers are not the correspondent's customers, but the correspondent is exposed to them through the respondent's controls.</p>
+        <ul>
+          <li><strong>Wolfsberg CBDDQ.</strong> The industry-standard correspondent banking due diligence questionnaire. A near-mandatory artifact for every correspondent relationship.</li>
+          <li><strong>Nested relationships.</strong> The respondent's own respondents — sometimes opaque. The Riggs Bank and BCCI scandals turned partly on nested correspondent exposure.</li>
+          <li><strong>Payable-Through Accounts (PTAs).</strong> Accounts where the respondent's customers can transact directly through the correspondent's account. Prohibited or sharply restricted in most regimes.</li>
+          <li><strong>FATF Rec. 13.</strong> Specific EDD on cross-border correspondent relationships: gather information on the respondent's business and reputation, AML controls, supervision quality.</li>
+        </ul>
+
+        <h4>Trade finance</h4>
+        <p>Letters of credit, guarantees, supply-chain finance, and documentary collections involve counterparties on whom CDD must be performed even when they are not direct customers of the FI.</p>
+        <ul>
+          <li><strong>Buyer / seller / shipper / insurer.</strong> All require some level of due diligence.</li>
+          <li><strong>Dual-use goods.</strong> Goods with both civilian and military application. Heightened review. Reference: Wassenaar Arrangement, US Commerce Control List, EU dual-use Regulation.</li>
+          <li><strong>Deceptive shipping practices.</strong> AIS-off vessel traffic, ship-to-ship transfers, false flag-of-convenience operations. Used to evade sanctions on Iran, North Korea, Russia.</li>
+          <li><strong>Trade-based money laundering (TBML).</strong> Over/under-invoicing, phantom shipments, multiple invoicing — laundering value through trade flows. Specific to the trade-finance domain.</li>
+          <li><strong>References:</strong> Wolfsberg Trade Finance Principles; ICC banking commission guidance; FATF TBML reports.</li>
+        </ul>
+
+        <h4>Virtual assets / VASPs</h4>
+        <p>Crypto-asset service providers are CDD subjects when they bank with traditional FIs, and themselves perform CDD on their own users. The domain has its own regulatory architecture, evolving rapidly:</p>
+        <ul>
+          <li><strong>FATF Rec. 15 + 2019 VASP guidance.</strong> Brings VASPs within scope of AML/CFT.</li>
+          <li><strong>Travel Rule (FATF Rec. 16).</strong> Originator and beneficiary information must travel with crypto transactions across VASPs above a threshold (USD 1,000 in most regimes).</li>
+          <li><strong>EU MiCA Regulation (2023, fully eff. 2024).</strong> Comprehensive regulation of crypto-asset service providers; includes CDD requirements.</li>
+          <li><strong>US — FinCEN MSB registration, OFAC sanctions enforcement</strong> (e.g. Tornado Cash, Lazarus Group designations).</li>
+          <li><strong>Singapore — MAS DPT (Digital Payment Token) regime.</strong></li>
+          <li><strong>Risk dimensions:</strong> mixing services, privacy coins, cross-chain bridges, decentralized exchanges, NFT money-laundering.</li>
+        </ul>
+
+        <h4>Private banking and wealth management</h4>
+        <p>The traditional EDD-by-default domain. CDD here is qualitatively different — relationship-manager-led, multi-jurisdictional, multi-generational, and dependent on heavy SoW investigation.</p>
+        <ul>
+          <li><strong>Source of Wealth dossier</strong> — the central artifact. May run to dozens of pages with corroborating documents and external due-diligence reports.</li>
+          <li><strong>Family trust complexity</strong> — multi-generational structures with discretionary beneficiaries, protectors, and reserve powers. Trust deeds are read carefully.</li>
+          <li><strong>Single-family offices and multi-family offices</strong> — themselves regulated in some jurisdictions (US RIA, Singapore VCC, Hong Kong OFC).</li>
+          <li><strong>PEP and RCA concentration</strong> — wealth-management books have higher PEP density than retail.</li>
+          <li><strong>Concierge / referral risk</strong> — wealthy customers are introduced through professional networks (lawyers, accountants, family advisers). Reliance is constrained but the introduction risk remains.</li>
+        </ul>
+
+        <h4>Charities and non-profit organizations</h4>
+        <ul>
+          <li><strong>FATF Rec. 8.</strong> NPOs are not all high-risk; FATF specifically warns against blanket de-risking of the NPO sector.</li>
+          <li><strong>CDD focus:</strong> mission, beneficiary geography, principal donors, principal grantees, governance. NPOs operating in conflict zones or fragile states attract heightened scrutiny.</li>
+          <li><strong>Terrorist-financing exposure</strong> remains the principal concern; charity diversion has been used historically by terrorist organizations.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ════════════════════ SECTION XIII ════════════════════ -->
+    <section id="s13">
+      <div class="section-header">
+        <p class="num">Chapter XIII · Enforcement</p>
+        <h2>Failure modes &amp; <em>enforcement</em> lessons.</h2>
+        <p class="deck">The recurring patterns from major enforcement actions — read these to understand what a regulator examines for.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 13 · What regulators actually punish</p>
+
+        <p>Enforcement orders are the most practically useful CDD reading material. They are written by regulators after months of examination and describe precisely what went wrong and what was expected. The recurring failure modes:</p>
+
+        <h4>Top recurring CDD failure modes</h4>
+        <div class="scenario-grid">
+          <div class="scenario">
+            <div class="hdr"><div class="name">F1 — Inadequate UBO identification</div><div class="tier">Critical</div></div>
+            <div class="typology">Accounts opened in entity names without tracing to natural-person ownership.</div>
+            <div class="body">Customer onboarded; ownership chain documented as "various corporate entities in BVI" with no further look-through. Sanctioned individuals subsequently identified as actual UBOs.</div>
+            <div class="detect"><span class="label">Case</span>Multiple cases across the Russia-sanctions tightening since 2022.</div>
+          </div>
+          <div class="scenario">
+            <div class="hdr"><div class="name">F2 — TM coverage gaps</div><div class="tier">Critical</div></div>
+            <div class="typology">Customer correctly identified at onboarding; subsequently under-monitored as risk evolved.</div>
+            <div class="body">CDD adequate at onboarding. CRR not refreshed as transaction patterns evolved. TM scenarios calibrated against a stale expected-activity baseline.</div>
+            <div class="detect"><span class="label">Case</span>TD Bank (US, 2024, USD 3bn). HSBC (US, 2012, USD 1.9bn).</div>
+          </div>
+          <div class="scenario">
+            <div class="hdr"><div class="name">F3 — PEP onboarded without EDD</div><div class="tier">Critical</div></div>
+            <div class="typology">PEP screening hit not properly investigated; relationship continued without EDD.</div>
+            <div class="body">PEP designation visible at onboarding; L1 disposition closed it as "false positive"; relationship onboarded into wealth management; SoW never properly investigated; subsequent corruption allegations confirmed.</div>
+            <div class="detect"><span class="label">Case</span>1MDB-related actions (multiple banks). Riggs Bank (Pinochet, 2003).</div>
+          </div>
+          <div class="scenario tier-low">
+            <div class="hdr"><div class="name">F4 — Refresh backlog</div><div class="tier">High</div></div>
+            <div class="typology">CDD files years overdue for refresh.</div>
+            <div class="body">Backlog of customers due for periodic refresh exceeds remediation capacity. Some customers have not been re-reviewed in 5–7+ years against original 3-year cadence. Risk picture badly stale.</div>
+            <div class="detect"><span class="label">Case</span>Frequent matter-requiring-attention finding in US bank OCC/FDIC reports.</div>
+          </div>
+          <div class="scenario">
+            <div class="hdr"><div class="name">F5 — Non-resident portfolio</div><div class="tier">Critical</div></div>
+            <div class="typology">Branch in jurisdiction A serves non-resident customers in jurisdiction B with weaker controls than home jurisdiction.</div>
+            <div class="body">A peripheral branch ran a large non-resident book through cross-border arrangements that the head office did not effectively oversee. CDD standards at the branch were below group standards.</div>
+            <div class="detect"><span class="label">Case</span>Danske Bank Estonia branch (EUR 200bn flows; multi-year investigation 2018–2023).</div>
+          </div>
+          <div class="scenario tier-low">
+            <div class="hdr"><div class="name">F6 — Product/channel gap</div><div class="tier">High</div></div>
+            <div class="typology">A new product or channel onboarded customers under a weaker CDD standard than the rest of the bank.</div>
+            <div class="body">Product launched at speed; CDD framework not extended to it; CIP gaps; UBO gaps; activity monitoring sub-standard. The product becomes a back-door for the rest of the bank's risk taxonomy.</div>
+            <div class="detect"><span class="label">Case</span>Westpac LitePay (Australia, 2020, AUD 1.3bn) — child exploitation typology missed across a remittance product.</div>
+          </div>
+          <div class="scenario">
+            <div class="hdr"><div class="name">F7 — Sanctions screening weakness</div><div class="tier">Critical</div></div>
+            <div class="typology">Matching configuration excludes true hits; transliteration coverage gaps; entity-name gaps.</div>
+            <div class="body">Sanctioned parties (or their controlled entities) onboarded because matching engine did not surface the hit at the threshold configured. Subsequent OFAC action.</div>
+            <div class="detect"><span class="label">Case</span>BNP Paribas (US, 2014, USD 8.97bn). Standard Chartered (US/NY, 2012 and 2019).</div>
+          </div>
+          <div class="scenario tier-low">
+            <div class="hdr"><div class="name">F8 — Cross-LOB blindness</div><div class="tier">High</div></div>
+            <div class="typology">Customer onboarded in one LOB after being declined or exited in another.</div>
+            <div class="body">Retail bank declines a customer for AML reasons. Same customer subsequently onboarded by the wealth-management LOB without visibility of the prior decline. Or: customer exited from one LOB continues to trade through another.</div>
+            <div class="detect"><span class="label">Case</span>Recurring across global universal banks; resolved through customer-360 architecture and a group-wide exit register.</div>
+          </div>
+        </div>
+
+        <h4>Major enforcement orders worth reading</h4>
+        <ul>
+          <li><strong>TD Bank — DOJ/FinCEN/OCC, October 2024, USD 3bn+.</strong> Largest BSA-related action in US history. CDD/TM/SAR-filing failures across a multi-year window; explicit findings on inadequate ongoing monitoring.</li>
+          <li><strong>HSBC — DOJ Deferred Prosecution Agreement, 2012, USD 1.9bn.</strong> The reference enforcement action for CDD and TM coverage failures; Mexico drug-cartel exposure.</li>
+          <li><strong>Standard Chartered — DFS/OFAC, 2012 and 2019.</strong> Iran sanctions; CDD weaknesses on correspondent banking.</li>
+          <li><strong>Danske Bank — Estonia branch matter, indictments and settlements 2018–2023.</strong> Classic case study in non-resident portfolio risk and group-level supervision failure.</li>
+          <li><strong>BNP Paribas — DOJ/OFAC, 2014, USD 8.97bn.</strong> Sanctions evasion via correspondent banking; stripping of beneficiary information.</li>
+          <li><strong>Westpac — AUSTRAC, 2020, AUD 1.3bn.</strong> LitePay product gap; child exploitation typology.</li>
+          <li><strong>Wachovia — DOJ, 2010.</strong> Mexican drug-cartel exposure through correspondent banking with Mexican casas de cambio.</li>
+          <li><strong>Riggs Bank — multiple, 2003–2005.</strong> Foundational PEP/wealth-management case (Pinochet, Equatorial Guinea).</li>
+          <li><strong>Various banks — 1MDB-related orders (Goldman Sachs, US/Malaysia, 2020).</strong> PEP and SoW failures in private banking.</li>
+          <li><strong>Binance — DOJ/FinCEN/OFAC/CFTC, November 2023, USD 4.3bn.</strong> Crypto/VASP CDD failures at scale.</li>
+        </ul>
+
+        <div class="note muted">
+          <p class="tag">A suggested reading program</p>
+          <h6>Three orders and a manual.</h6>
+          <p>Read three orders: <em>TD Bank 2024</em> (current US standard), <em>HSBC 2012</em> (foundational US case), and <em>Danske Bank Estonia</em> (group-level governance failure). Then read the <em>FATF Mutual Evaluation Report</em> for your operating jurisdiction. Then read the <em>FFIEC Examination Manual — CDD section</em>. That sequence gives you the regulator's frame for CDD effectiveness.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ SECTION XIV ════════════════════ -->
+    <section id="s14">
+      <div class="section-header">
+        <p class="num">Chapter XIV · Vendors</p>
+        <h2>Technology <em>providers</em>.</h2>
+        <p class="deck">The vendor market segmented by what they actually do. Coverage as of 2026; the field consolidates yearly.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 14 · Vendor landscape</p>
+
+        <p>The CDD vendor landscape divides into clear segments. Most large FIs combine three to six vendors across these segments rather than relying on a single integrated platform; the best-of-breed approach has consistently outperformed monoliths in this space.</p>
+
+        <h4>Identity verification &amp; onboarding (IDV)</h4>
+        <div class="vendor-grid">
+          <div class="vendor">
+            <div class="name">Onfido (now Entrust)</div>
+            <div class="kind">Document + biometric IDV</div>
+            <div class="desc">Document forensics, selfie + liveness, biometric checks. Acquired by Entrust in 2024 to build a broader digital-identity platform.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">Jumio</div>
+            <div class="kind">Document + biometric IDV</div>
+            <div class="desc">End-to-end IDV: document, selfie, liveness, behavioral signals. Strong global coverage.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">Persona</div>
+            <div class="kind">Configurable IDV orchestration</div>
+            <div class="desc">Workflow-first IDV platform — composable identity flows; widely adopted by fintechs and digital-first banks.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">Veriff</div>
+            <div class="kind">Document + biometric IDV</div>
+            <div class="desc">Identity verification with strong document coverage; behavioral and device signals.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">Socure</div>
+            <div class="kind">Identity data + risk scoring</div>
+            <div class="desc">US-focused, identity-data-driven verification and fraud scoring; data-cooperative model.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">Trulioo</div>
+            <div class="kind">Global identity data</div>
+            <div class="desc">Global coverage for identity verification via aggregated data sources; KYB capabilities for legal entities.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">Sumsub</div>
+            <div class="kind">IDV + AML + anti-fraud</div>
+            <div class="desc">All-in-one IDV with strong anti-deepfake and synthetic-identity capabilities; widely used in crypto and gaming.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">Fourthline</div>
+            <div class="kind">IDV + AML</div>
+            <div class="desc">EU-focused IDV with strong NFC chip-reading and eIDAS integration.</div>
+          </div>
+        </div>
+
+        <h4>KYC orchestration platforms</h4>
+        <div class="vendor-grid">
+          <div class="vendor">
+            <div class="name">Fenergo</div>
+            <div class="kind">End-to-end KYC lifecycle</div>
+            <div class="desc">Market leader for tier-1 banks. KYC onboarding, refresh, perpetual KYC, regulatory rule library. Strong in capital-markets onboarding (entities, funds, complex structures).</div>
+          </div>
+          <div class="vendor">
+            <div class="name">Pega KYC</div>
+            <div class="kind">KYC orchestration on BPM</div>
+            <div class="desc">Built on Pega's BPM platform; rule-driven onboarding and refresh flows. Strong in retail and commercial banking.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">Appian Connected KYC</div>
+            <div class="kind">KYC orchestration on low-code</div>
+            <div class="desc">Appian's low-code KYC offering; case management plus integrations to IDV/screening vendors.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">Encompass</div>
+            <div class="kind">KYC automation for entities</div>
+            <div class="desc">Automated UBO and ownership discovery for entity onboarding; strong registry coverage; KYC Now product for ongoing refresh.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">Quantexa</div>
+            <div class="kind">Contextual decision intelligence</div>
+            <div class="desc">Graph-based entity resolution and customer-360; used for pKYC, AML, and fraud convergence at HSBC, Standard Chartered, and others.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">NICE Actimize ActOne / X-Sight</div>
+            <div class="kind">Financial-crime platform (KYC + AML + fraud)</div>
+            <div class="desc">Integrated platform across CDD, AML monitoring, fraud, and sanctions. Significant 2024–2025 investment in agentic AI for case management.</div>
+          </div>
+        </div>
+
+        <h4>Sanctions, PEP &amp; adverse-media data</h4>
+        <div class="vendor-grid">
+          <div class="vendor">
+            <div class="name">LSEG World-Check</div>
+            <div class="kind">Screening data — foundational</div>
+            <div class="desc">The foundational PEP/sanctions/adverse-media database; LSEG (London Stock Exchange Group) owns it post-Refinitiv. Industry-default coverage.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">Dow Jones Risk &amp; Compliance</div>
+            <div class="kind">Screening data</div>
+            <div class="desc">Premium PEP and adverse-media coverage; widely used in private banking and corporate banking.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">Moody's RDC / Bureau van Dijk Orbis</div>
+            <div class="kind">Screening + entity data</div>
+            <div class="desc">RDC (Regulatory DataCorp) for screening; Orbis for entity and ownership data. Both consolidated under Moody's.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">ComplyAdvantage</div>
+            <div class="kind">Screening + adverse media</div>
+            <div class="desc">ML-driven adverse-media classification; favored by fintech and digital-native FIs; expanding into traditional banking.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">LexisNexis Bridger Insight</div>
+            <div class="kind">Screening engine + data</div>
+            <div class="desc">Matching engine plus integrated lists. Strong in US.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">RiskScreen / KYC360</div>
+            <div class="kind">Screening + workflow</div>
+            <div class="desc">Screening with workflow for disposition; mid-market and smaller-bank focus.</div>
+          </div>
+        </div>
+
+        <h4>Beneficial ownership &amp; entity data</h4>
+        <div class="vendor-grid">
+          <div class="vendor">
+            <div class="name">Sayari</div>
+            <div class="kind">UBO + entity graph</div>
+            <div class="desc">Global entity-graph data: registries from 240+ jurisdictions, ownership chains, sanctions enrichment. Strong in sensitive-jurisdiction coverage.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">Moody's Orbis (Bureau van Dijk)</div>
+            <div class="kind">Entity data</div>
+            <div class="desc">~500m entity records globally; ownership data, financials. The reference for corporate due diligence.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">OpenCorporates</div>
+            <div class="kind">Registry data (open)</div>
+            <div class="desc">Open-data company information from registries; widely used as a baseline source, often combined with commercial data.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">Diligent</div>
+            <div class="kind">Entity + governance data</div>
+            <div class="desc">Governance and entity data; integrates with KYC workflows for senior-individual due diligence.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">KYCnet (Mintz/Diligent)</div>
+            <div class="kind">UBO research</div>
+            <div class="desc">UBO research platform; aggregates registry and investigative data.</div>
+          </div>
+          <div class="vendor">
+            <div class="name">Kharon</div>
+            <div class="kind">Sanctions-network intelligence</div>
+            <div class="desc">Sanctions enforcement intelligence — networks behind sanctioned individuals, front companies, designation precursors. Heavily used since the 2022 Russia regime expansion.</div>
+          </div>
+        </div>
+
+        <h4>External due diligence (human-in-the-loop)</h4>
+        <p>For EDD on high-stakes relationships — particularly UHNW, PEP, and high-risk entity onboarding — most banks commission third-party investigative due diligence. The major providers: <strong>Kroll</strong>, <strong>K2 Integrity</strong>, <strong>Mintz Group</strong>, <strong>Control Risks</strong>, <strong>FTI Consulting</strong>, <strong>Nardello</strong>, <strong>S-RM</strong>. Outputs are bespoke human-authored reports that combine open-source intelligence, local-language press, and (where permitted) source interviews.</p>
+      </div>
+    </section>
+
+    <!-- ════════════════════ SECTION XV ════════════════════ -->
+    <section id="s15">
+      <div class="section-header">
+        <p class="num">Chapter XV · Trends</p>
+        <h2>Emerging <em>trends</em>.</h2>
+        <p class="deck">The five or six structural shifts reshaping CDD between 2024 and 2028. Watch these closely.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 15 · Where the field is heading</p>
+
+        <h4>1. Perpetual KYC becomes the default</h4>
+        <p>Major banks have largely committed to pKYC architectures; tier-2 and tier-3 are following. By 2027–2028, expect periodic refresh to be the exception (smaller banks, specific segments) rather than the default. Implications: data-feed infrastructure becomes the constraint; L1 workforce reshapes around event-driven case handling rather than batch refresh cycles; vendor selection pivots toward orchestration and decisioning rather than data alone.</p>
+
+        <h4>2. AI-generated synthetic identities at industrial scale</h4>
+        <p>Sumsub and Fourthline both report deepfake-related attack volumes growing 3–6× year-on-year. AI-generated passports, AI-generated selfies that pass naive liveness, agentic AI that drives full account-opening flows at machine speed across many banks in parallel. The defensive response: liveness 2.0 (challenge-response), document forensics (Finovox), behavioral biometrics across the session, device intelligence, and consortium data on known synthetics. No single signal suffices.</p>
+
+        <h4>3. Agentic AI in CDD investigation</h4>
+        <p>Following the trajectory in AML transaction monitoring and fraud investigation, agentic AI is being deployed for CDD case work — automated UBO discovery and reconciliation, automated adverse-media review with disposition drafting, automated SAR-precursor narrative drafting. NICE Actimize's X-Sight ActOne agentic AI release (Apr 2025), Quantexa's Q Assist, FICO's analyst copilots, and tier-1 in-house implementations. Realistic 2026 expectation: 40–60% reduction in L1 hours on standard case types; analyst role shifts to oversight and exception handling.</p>
+
+        <h4>4. State-collected beneficial ownership data</h4>
+        <p>The structural trend since AMLD4: UBO data moves from FI-collected (attestation-based, hard to verify) to state-collected (registry-based, more authoritative). US CTA, UK PSC + Register of Overseas Entities, EU Member State central registers, Singapore RORC, Australian register (under consultation). Access rules remain contested (the ECJ Sovim ruling restricted public access in the EU). The practical implication: state registries are improving fast and will be the primary UBO source by ~2028.</p>
+
+        <h4>5. Cross-FI information sharing</h4>
+        <p>Pre-2018, AML information sharing between FIs was largely prohibited by privacy law. Since:</p>
+        <ul>
+          <li><strong>US — Section 314(b) of the USA PATRIOT Act</strong> permits voluntary information sharing among FIs on suspected ML/TF activity.</li>
+          <li><strong>Singapore — COSMIC platform (MAS-led, launched 2024).</strong> Permits banks to share customer information on suspicious activity through a regulator-mediated platform.</li>
+          <li><strong>UK — Economic Crime and Corporate Transparency Act 2023</strong> creates new information-sharing gateways.</li>
+          <li><strong>Project Aurora (BIS Innovation Hub).</strong> Federated learning experiments to share AML intelligence without sharing underlying customer data.</li>
+        </ul>
+        <p>Expect more of this — federated learning, regulator-mediated platforms, privacy-preserving collaboration.</p>
+
+        <h4>6. Digital identity infrastructure</h4>
+        <p>The gradual rollout of government-backed digital identity changes the substrate of CDD identification. eIDAS 2.0 in the EU (including the EU Digital Identity Wallet), India's Aadhaar, Singapore's MyInfo, the UK's GOV.UK One Login. Where they exist, they radically reduce identification cost and friction. The unevenness across geographies (the US has no national equivalent) means CDD operating models will need to handle eID-rich and eID-poor jurisdictions in parallel for the foreseeable future.</p>
+
+        <h4>7. Convergence with fraud monitoring</h4>
+        <p>Historically siloed (KYC + AML on one side; fraud on the other), the two functions are converging: account-opening fraud is a CDD problem in everything but org chart; first-party / synthetic-identity fraud requires both lifecycle CDD signals and transactional fraud detection. Quantexa, NICE Actimize, FICO, and SAS all market convergence platforms. Operationally, the merge is harder than the technology suggests (different data, different SLA, different second-line ownership).</p>
+
+        <h4>8. AMLA and EU regulatory centralization</h4>
+        <p>The 2024 EU AML package — directly applicable Regulation (AMLR), recast Directive (AMLD6), and the new Authority (AMLA, Frankfurt, operational 2028) — represents the most significant regulatory restructuring in EU AML history. AMLA will directly supervise the riskiest cross-border FIs. Expectation: harmonized rules across 27 Member States, fewer arbitrage opportunities, more consistent CDD standards.</p>
+      </div>
+    </section>
+
+    <!-- ════════════════════ SECTION XVI ════════════════════ -->
+    <section id="s16">
+      <div class="section-header">
+        <p class="num">Chapter XVI · Pitfalls</p>
+        <h2>Common <em>pitfalls</em> &amp; challenges.</h2>
+        <p class="deck">Operational anti-patterns that recur across CDD programs regardless of size or jurisdiction. If your program shows any of these, address them before the regulator finds them.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 16 · What goes wrong in practice</p>
+
+        <div class="three-col">
+          <div class="panel">
+            <h4>1 · Onboarding data debt</h4>
+            <p>Customer data captured inconsistently across channels and LOBs; canonical record never built; refresh starts with a data-quality remediation. Mitigation: front-to-back data model with channel-agnostic enforcement.</p>
+          </div>
+          <div class="panel">
+            <h4>2 · CRR drift</h4>
+            <p>CRR computed once at onboarding and rarely recomputed. Geography weights drift from current FATF list; product weightings outdated. Mitigation: annual model validation; CRR recomputed on every refresh; rule version control.</p>
+          </div>
+          <div class="panel">
+            <h4>3 · Refresh backlog</h4>
+            <p>The classic. Periodic refresh cadence exceeded; sometimes by years. Risk picture stale; regulatory exposure high. Mitigation: pKYC migration; if interim, a remediation program with clear targets.</p>
+          </div>
+          <div class="panel">
+            <h4>4 · Screening over-clearing</h4>
+            <p>L1 productivity targets create incentive to clear false-positive backlog quickly; in doing so, some true hits are missed. Mitigation: QA sampling; structured disposition templates; calibration sessions; clear escalation discipline.</p>
+          </div>
+          <div class="panel">
+            <h4>5 · UBO self-attestation taken on trust</h4>
+            <p>Customer fills in UBO form; FI files the form; no independent verification. The chain is taken at face value. Mitigation: external UBO data; registry triangulation; substance tests on entities; risk-sensitive deep dives.</p>
+          </div>
+          <div class="panel">
+            <h4>6 · PEP regime forgotten over time</h4>
+            <p>Foreign PEP onboarded with full EDD; over years the PEP status fades from operational view and the relationship is handled as a standard HNW account. Mitigation: ongoing PEP screening; EDD discipline maintained for the relationship lifetime.</p>
+          </div>
+          <div class="panel">
+            <h4>7 · Sales pressure on Compliance</h4>
+            <p>Revenue-pressure overrides Compliance hesitancy at onboarding; "soft-no" customers re-onboarded through other LOBs. Mitigation: centralized customer view; declination register; independent senior approval for marginal cases.</p>
+          </div>
+          <div class="panel">
+            <h4>8 · Documentation expiry</h4>
+            <p>Passport expires; the FI does not notice; identification is technically lapsed. Mitigation: automatic expiry-tracking; customer-facing renewal flows; risk-sensitive grace periods.</p>
+          </div>
+          <div class="panel">
+            <h4>9 · New-product CDD gap</h4>
+            <p>A new product launches without the full CDD framework extended to it. The product becomes a back-door for the rest of the bank's risk taxonomy. Mitigation: new-product approval discipline that includes a Compliance sign-off on CDD applicability.</p>
+          </div>
+          <div class="panel">
+            <h4>10 · Cross-jurisdictional under-coverage</h4>
+            <p>Branch in a peripheral jurisdiction runs lower standards than the home market; group-level oversight is weak. The Danske Estonia pattern. Mitigation: group-level CDD standards mandatory; second-line testing of peripheral entities; whistleblower channels.</p>
+          </div>
+          <div class="panel">
+            <h4>11 · Reliance-on-introducer abuse</h4>
+            <p>Customers onboarded through introducers (brokers, professional intermediaries, group entities) with light CDD on the FI's own side; introducer's quality not independently tested. Mitigation: restrict Rec. 17 reliance; document introducer arrangements; ongoing testing of introducer effectiveness.</p>
+          </div>
+          <div class="panel">
+            <h4>12 · Customer-friction over-correction</h4>
+            <p>Following an enforcement event, the FI tightens CDD aggressively; new-customer onboarding times balloon; drop-off rates spike; financial inclusion suffers. Mitigation: targeted tightening informed by typology; process redesign for low-friction high-assurance flows; ongoing measurement.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════ SECTION XVII — GLOSSARY ════════════════════ -->
+    <section id="s17">
+      <div class="section-header">
+        <p class="num">Appendix A · Reference</p>
+        <h2><em>Glossary</em>.</h2>
+        <p class="deck">The acronyms you'll see most often. Useful to refer back to.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 17 · Quick reference</p>
+
+        <dl class="gloss">
+          <dt>ACAMS</dt><dd>Association of Certified Anti-Money Laundering Specialists — the major industry certification body.</dd>
+          <dt>AMLA</dt><dd>EU Anti-Money Laundering Authority (Frankfurt, operational 2028).</dd>
+          <dt>AMLD / AMLR</dt><dd>EU Anti-Money Laundering Directive (AMLD4, AMLD5, AMLD6) / Regulation (the 2024 directly applicable text).</dd>
+          <dt>BO / UBO</dt><dd>Beneficial Owner / Ultimate Beneficial Owner.</dd>
+          <dt>BOI</dt><dd>Beneficial Ownership Information — the US FinCEN reporting regime under the CTA.</dd>
+          <dt>BSA</dt><dd>US Bank Secrecy Act (1970).</dd>
+          <dt>CBDDQ</dt><dd>Wolfsberg Correspondent Banking Due Diligence Questionnaire.</dd>
+          <dt>CDD / EDD / SDD</dt><dd>Customer / Enhanced / Simplified Due Diligence.</dd>
+          <dt>CIP</dt><dd>Customer Identification Program (US Patriot Act §326).</dd>
+          <dt>CRR</dt><dd>Customer Risk Rating.</dd>
+          <dt>CTA</dt><dd>Corporate Transparency Act (US, 2021, BOI reporting from 2024).</dd>
+          <dt>FATF</dt><dd>Financial Action Task Force — the global AML/CFT standard setter.</dd>
+          <dt>FCA</dt><dd>UK Financial Conduct Authority.</dd>
+          <dt>FFIEC</dt><dd>Federal Financial Institutions Examination Council — publisher of the BSA/AML Examination Manual.</dd>
+          <dt>FinCEN</dt><dd>US Financial Crimes Enforcement Network.</dd>
+          <dt>HKMA</dt><dd>Hong Kong Monetary Authority.</dd>
+          <dt>IAL</dt><dd>Identity Assurance Level (NIST SP 800-63-3).</dd>
+          <dt>JMLSG</dt><dd>UK Joint Money Laundering Steering Group — produces HM Treasury-approved guidance.</dd>
+          <dt>KYB</dt><dd>Know Your Business — KYC applied to legal-entity customers.</dd>
+          <dt>KYC</dt><dd>Know Your Customer.</dd>
+          <dt>MAS</dt><dd>Monetary Authority of Singapore.</dd>
+          <dt>MLR 2017</dt><dd>UK Money Laundering, Terrorist Financing and Transfer of Funds Regulations 2017.</dd>
+          <dt>MLRO</dt><dd>Money Laundering Reporting Officer.</dd>
+          <dt>NPO</dt><dd>Non-Profit Organization (FATF Rec. 8).</dd>
+          <dt>OFAC</dt><dd>US Office of Foreign Assets Control (sanctions authority).</dd>
+          <dt>OFSI</dt><dd>UK Office of Financial Sanctions Implementation.</dd>
+          <dt>PEP</dt><dd>Politically Exposed Person.</dd>
+          <dt>pKYC</dt><dd>Perpetual KYC.</dd>
+          <dt>PMLA</dt><dd>Prevention of Money Laundering Act (India).</dd>
+          <dt>PSC</dt><dd>Persons with Significant Control (UK Companies House register).</dd>
+          <dt>RBA</dt><dd>Risk-Based Approach (FATF Rec. 1).</dd>
+          <dt>RBI</dt><dd>Reserve Bank of India.</dd>
+          <dt>RCA</dt><dd>Relatives and Close Associates (of PEPs).</dd>
+          <dt>RORC</dt><dd>Register of Registrable Controllers (Singapore ACRA).</dd>
+          <dt>SAR / STR</dt><dd>Suspicious Activity Report (US) / Suspicious Transaction Report (rest of world).</dd>
+          <dt>SDN</dt><dd>Specially Designated Nationals — OFAC's primary sanctions list.</dd>
+          <dt>SoF / SoW</dt><dd>Source of Funds / Source of Wealth.</dd>
+          <dt>SR 11-7</dt><dd>US Federal Reserve guidance on Model Risk Management.</dd>
+          <dt>TBML</dt><dd>Trade-Based Money Laundering.</dd>
+          <dt>TCSP</dt><dd>Trust and Company Service Provider.</dd>
+          <dt>VASP</dt><dd>Virtual Asset Service Provider (FATF terminology for crypto exchanges, custodians, etc.).</dd>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ════════════════════ SECTION XVIII — REFERENCES ════════════════════ -->
+    <section id="s18">
+      <div class="section-header">
+        <p class="num">Appendix B · Reading</p>
+        <h2><em>References</em>.</h2>
+        <p class="deck">The primary documents to read next. Curated; not exhaustive. Aim for breadth first, then depth in the specific area you're working on.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 18 · Deep-dive reading</p>
+
+        <div class="ref-block">
+          <h5>FATF &amp; global standards</h5>
+          <p class="grouptitle">The conceptual frame.</p>
+          <ol>
+            <li>FATF — <em>The FATF Recommendations</em> (latest revision).<span class="src">fatf-gafi.org › publications › fatf-recommendations</span></li>
+            <li>FATF — <em>Guidance on Beneficial Ownership for Legal Persons</em> (updated 2023).<span class="src">fatf-gafi.org › publications</span></li>
+            <li>FATF — <em>Guidance for a Risk-Based Approach: Customer Due Diligence</em>.<span class="src">fatf-gafi.org › publications › fatfrecommendations › rba-cdd</span></li>
+            <li>FATF — <em>Guidance on Digital Identity</em> (2020).<span class="src">fatf-gafi.org › publications › documents › digital-identity-guidance</span></li>
+            <li>FATF — <em>Updated Guidance for a Risk-Based Approach to Virtual Assets and VASPs</em> (2021).<span class="src">fatf-gafi.org</span></li>
+            <li>FATF — <em>Mutual Evaluation Report</em> (your jurisdiction).<span class="src">fatf-gafi.org › countries</span></li>
+            <li>Basel Committee — <em>Sound management of risks related to money laundering and financing of terrorism</em>.<span class="src">bis.org › bcbs</span></li>
+          </ol>
+        </div>
+
+        <div class="ref-block">
+          <h5>United States — primary regulation &amp; examiner guidance</h5>
+          <p class="grouptitle">What examiners hold you to.</p>
+          <ol>
+            <li>FFIEC — <em>BSA/AML Examination Manual</em>, CDD/EDD sections (current edition).<span class="src">bsaaml.ffiec.gov</span></li>
+            <li>FinCEN — <em>CDD Final Rule</em> (2018) preamble and rule text.<span class="src">fincen.gov › resources › statutes-regulations › cdd-final-rule</span></li>
+            <li>FinCEN — <em>Beneficial Ownership Information Reporting Rule</em> (Corporate Transparency Act).<span class="src">fincen.gov › boi</span></li>
+            <li>OFAC — <em>A Framework for OFAC Compliance Commitments</em>.<span class="src">ofac.treasury.gov</span></li>
+            <li>Federal Reserve — <em>SR 11-7: Guidance on Model Risk Management</em>.<span class="src">federalreserve.gov › supervisionreg › srletters</span></li>
+            <li>USA PATRIOT Act — <em>§326 Customer Identification Programs</em>, 31 CFR 1020.220.<span class="src">ecfr.gov</span></li>
+          </ol>
+        </div>
+
+        <div class="ref-block">
+          <h5>European Union</h5>
+          <p class="grouptitle">The 2024 restructuring.</p>
+          <ol>
+            <li>European Commission — <em>AML Package 2024: AMLR, AMLD6 recast, AMLA Regulation</em>.<span class="src">finance.ec.europa.eu › financial-crime</span></li>
+            <li>European Banking Authority — <em>Guidelines on ML/TF Risk Factors</em> (revised 2023).<span class="src">eba.europa.eu</span></li>
+            <li>European Court of Justice — <em>Joined cases C-37/20 and C-601/20, WM and Sovim v Luxembourg Business Registers</em> (Nov 2022).<span class="src">curia.europa.eu</span></li>
+            <li>AMLA — establishment regulation and operational guidance (as published from 2026 onward).<span class="src">europa.eu › AMLA</span></li>
+          </ol>
+        </div>
+
+        <div class="ref-block">
+          <h5>United Kingdom</h5>
+          <p class="grouptitle">The UK practitioner reference.</p>
+          <ol>
+            <li>UK — <em>Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017</em>.<span class="src">legislation.gov.uk</span></li>
+            <li>FCA — <em>Financial Crime Guide (FCG)</em>; SYSC 6.3.<span class="src">handbook.fca.org.uk</span></li>
+            <li>JMLSG — <em>Prevention of money laundering / combating terrorist financing — Guidance</em> (Parts I, II, III).<span class="src">jmlsg.org.uk</span></li>
+            <li>UK — <em>Economic Crime and Corporate Transparency Act 2023</em>; <em>Register of Overseas Entities</em>.<span class="src">legislation.gov.uk</span></li>
+          </ol>
+        </div>
+
+        <div class="ref-block">
+          <h5>Asia-Pacific &amp; other jurisdictions</h5>
+          <p class="grouptitle">Regional regimes.</p>
+          <ol>
+            <li>MAS — <em>Notice 626</em> (banks) and equivalents; COSMIC platform documentation.<span class="src">mas.gov.sg</span></li>
+            <li>HKMA — <em>Supervisory Policy Manual AML-1 / AML-2</em>.<span class="src">hkma.gov.hk</span></li>
+            <li>RBI — <em>Master Direction on KYC</em> (latest amendment).<span class="src">rbi.org.in</span></li>
+            <li>AUSTRAC — <em>AML/CTF Compliance Guide</em>; Tranche 2 reform documentation.<span class="src">austrac.gov.au</span></li>
+            <li>FINMA — <em>AML Ordinance (AMLO-FINMA)</em>.<span class="src">finma.ch</span></li>
+          </ol>
+        </div>
+
+        <div class="ref-block">
+          <h5>Industry standards &amp; principles</h5>
+          <p class="grouptitle">The practitioner's bookshelf.</p>
+          <ol>
+            <li>Wolfsberg Group — <em>Anti-Money Laundering Principles for Correspondent Banking</em>; <em>Correspondent Banking Due Diligence Questionnaire (CBDDQ)</em>; <em>FAQs on Beneficial Ownership</em>.<span class="src">wolfsberg-group.org</span></li>
+            <li>Wolfsberg Group — <em>Statement on Effectiveness</em>; <em>AML Guidance for Private Banking</em>.<span class="src">wolfsberg-group.org</span></li>
+            <li>ACAMS — <em>CAMS Study Guide</em> (current edition) — the working operational reference.<span class="src">acams.org</span></li>
+            <li>ICIJ — <em>Panama Papers, Paradise Papers, Pandora Papers, FinCEN Files, Suisse Secrets</em> investigative databases.<span class="src">offshoreleaks.icij.org</span></li>
+          </ol>
+        </div>
+
+        <div class="ref-block">
+          <h5>Major enforcement actions worth reading the orders on</h5>
+          <p class="grouptitle">Where regulators show their hand.</p>
+          <ol>
+            <li>TD Bank — DOJ/FinCEN/OCC consent orders, October 2024 (USD 3bn). Most-recent landmark US BSA action.</li>
+            <li>HSBC — DOJ Deferred Prosecution Agreement, 2012. The foundational US case on CDD/TM coverage failures.</li>
+            <li>Standard Chartered — DFS / OFAC orders, 2012 and 2019. Iran sanctions and correspondent banking CDD.</li>
+            <li>Danske Bank — Estonia branch matter, indictments and settlements 2018–2023. Non-resident portfolio risk.</li>
+            <li>BNP Paribas — DOJ / OFAC, 2014. Sanctions evasion via correspondent banking; USD 8.97bn.</li>
+            <li>Westpac — AUSTRAC penalty, 2020 (AUD 1.3bn). LitePay product gap; child exploitation typology.</li>
+            <li>Riggs Bank — multiple, 2003–2005. Foundational PEP/wealth-management case (Pinochet, Equatorial Guinea).</li>
+            <li>Goldman Sachs — 1MDB-related orders, 2020 (US/Malaysia). PEP and SoW failures in private banking.</li>
+            <li>Binance — DOJ/FinCEN/OFAC/CFTC, November 2023 (USD 4.3bn). VASP CDD failures at scale.</li>
+          </ol>
+        </div>
+
+        <div class="ref-block">
+          <h5>Academic &amp; practitioner texts</h5>
+          <p class="grouptitle">Background depth.</p>
+          <ol>
+            <li>Cox, P. — <em>Handbook of Anti-Money Laundering</em>. Wiley.</li>
+            <li>Schott, P.A. — <em>Reference Guide to Anti-Money Laundering and Combating the Financing of Terrorism</em>. World Bank.</li>
+            <li>UN Office on Drugs and Crime — <em>Estimating Illicit Financial Flows Resulting from Drug Trafficking and Other Transnational Organized Crimes</em>.<span class="src">unodc.org</span></li>
+            <li>BIS Innovation Hub — <em>Project Aurora</em> (federated learning for AML).<span class="src">bis.org › about › bisih</span></li>
+          </ol>
+        </div>
+
+        <div class="note muted">
+          <p class="tag">Suggested reading order</p>
+          <h6>Eighty percent of the working knowledge in six documents.</h6>
+          <p>Start with the <em>FATF 40 Recommendations</em> for the conceptual frame, the <em>FFIEC BSA/AML Examination Manual — CDD section</em> for the US operational standard, the <em>Wolfsberg CBDDQ</em> for the industry view, the <em>JMLSG Guidance Parts I–II</em> for the UK practitioner reference, and at least two enforcement actions (<em>TD Bank 2024</em> + <em>Danske Bank Estonia</em>) to see what regulators actually punish. That sequence gives you 80% of the working knowledge.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ════════════════════ COLOPHON FOOTER ════════════════════ -->
+<footer class="colophon">
+  <div class="inner">
+    <div class="block">
+      <div class="h">Document</div>
+      <div class="feature">Customer Due Diligence (CDD/KYC).</div>
+      <div>Primers · No. 05 · May 2026</div>
+    </div>
+    <div class="block">
+      <div class="h">Practice</div>
+      <div class="feature">Infosys Consulting · Banking · Financial Crime.</div>
+      <div>Self-learning · Internal use</div>
+    </div>
+    <div class="block">
+      <div class="h">Set in</div>
+      <div class="feature">Fraunces &amp; IBM Plex Sans &amp; JetBrains Mono.</div>
+      <div>Designed by IC</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    // Reading-progress bar
+    const prog = document.getElementById('prog');
+    const onScroll = () => {
+      const h = document.documentElement;
+      const scrolled = h.scrollTop;
+      const max = h.scrollHeight - h.clientHeight;
+      const p = max > 0 ? (scrolled / max) * 100 : 0;
+      prog.style.setProperty('--p', p.toFixed(2) + '%');
+    };
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Active-section tracking in the sidebar
+    if ('IntersectionObserver' in window) {
+      const links = document.querySelectorAll('.sidebar nav a[data-section]');
+      const linkMap = {};
+      links.forEach(a => { linkMap[a.dataset.section] = a; });
+
+      const setActive = (id) => {
+        links.forEach(a => a.classList.remove('active'));
+        if (linkMap[id]) linkMap[id].classList.add('active');
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        let best = null;
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            if (!best || e.boundingClientRect.top < best.boundingClientRect.top) {
+              best = e;
+            }
+          }
+        });
+        if (best) setActive(best.target.id);
+      }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+
+      document.querySelectorAll('main.content > section[id]').forEach(s => {
+        observer.observe(s);
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

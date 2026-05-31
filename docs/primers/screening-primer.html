@@ -1,0 +1,2348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Screening in Banks &amp; Financial Institutions — A self-learning primer · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  /* ─────────────── IC tokens ─────────────── */
+  :root {
+    --white:      #FFFFFF;
+    --deep:       #182534;
+    --pavement:   #404040;
+    --blue:       #007CC3;
+    --stone:      #A7A9AC;
+    --slate:      #6D6E71;
+    --lt-blue:    #3699DA;
+    --tint-blue:  #E6F2FA;
+    --tint-stone: #F2F2F3;
+    --rule:       #E2E4E7;
+
+    --display: 'Fraunces', 'Times New Roman', serif;
+    --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+    --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+    --sidebar-w: 280px;
+  }
+
+  /* ─────────────── reset / base ─────────────── */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--pavement);
+    background: var(--white);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern", "liga";
+  }
+  ::selection { background: var(--deep); color: var(--white); }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  p { margin: 0 0 18px; }
+  ol, ul { margin: 0 0 22px; padding-left: 24px; }
+  li { margin: 6px 0; }
+
+  /* ─────────────── reading-progress bar ─────────────── */
+  .progress {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 2px; background: transparent; z-index: 1000;
+    pointer-events: none;
+  }
+  .progress::before {
+    content: ''; display: block;
+    height: 100%; width: var(--p, 0%);
+    background: var(--blue);
+    transition: width 80ms linear;
+  }
+
+  /* ─────────────── TITLE PAGE (full-bleed) ─────────────── */
+  .title-page {
+    background: var(--deep);
+    color: var(--white);
+    min-height: 100vh;
+    padding: 56px 48px 48px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 32px;
+    position: relative;
+  }
+  .title-page::after {
+    content: ''; position: absolute;
+    left: 0; right: 0; bottom: 0; height: 2px;
+    background: var(--blue);
+  }
+  .title-page .mast {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .title-page .mast .mark { color: var(--white); font-weight: 600; }
+  .title-page .mast .meta { color: var(--stone); }
+  .title-page .hero {
+    align-self: center;
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .title-page .kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--lt-blue);
+    font-weight: 600;
+    margin: 0 0 24px;
+    display: flex; align-items: center; gap: 16px;
+    animation: fadeUp 700ms cubic-bezier(.2,.7,.2,1) both;
+  }
+  .title-page .kicker::before {
+    content: ''; width: 56px; height: 1px; background: var(--lt-blue);
+  }
+  .title-page h1 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+    font-weight: 380;
+    font-size: clamp(48px, 8vw, 116px);
+    line-height: 0.96;
+    letter-spacing: -0.028em;
+    margin: 0 0 36px;
+    color: var(--white);
+    max-width: 14ch;
+    animation: fadeUp 900ms cubic-bezier(.2,.7,.2,1) 100ms both;
+  }
+  .title-page h1 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+    color: var(--lt-blue);
+    font-weight: 380;
+  }
+  .title-page .deck {
+    font-family: var(--body);
+    font-size: clamp(18px, 1.6vw, 22px);
+    line-height: 1.5;
+    font-weight: 400;
+    color: var(--stone);
+    max-width: 60ch;
+    margin: 0;
+    animation: fadeUp 1000ms cubic-bezier(.2,.7,.2,1) 240ms both;
+  }
+  .title-page .deck em { font-style: italic; color: var(--white); }
+  .title-page .byline {
+    border-top: 1px solid rgba(255,255,255,0.12);
+    padding-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+    animation: fadeUp 1100ms cubic-bezier(.2,.7,.2,1) 420ms both;
+  }
+  @media (max-width: 720px) { .title-page .byline { grid-template-columns: repeat(2, 1fr); } }
+  .title-page .byline .field { display: flex; flex-direction: column; gap: 6px; }
+  .title-page .byline .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--stone);
+    font-weight: 600;
+  }
+  .title-page .byline .value {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 30, "SOFT" 60, "WONK" 0;
+    font-size: 17px;
+    color: var(--white);
+    line-height: 1.3;
+  }
+
+  /* ═════════════════════ MAIN LAYOUT ═════════════════════ */
+  .layout {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+    gap: 0;
+    position: relative;
+  }
+  @media (max-width: 920px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  /* ─────────────── SIDEBAR (sticky TOC) ─────────────── */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 36px 28px 32px;
+    border-right: 1px solid var(--rule);
+    background: var(--white);
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule) transparent;
+  }
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+  @media (max-width: 920px) {
+    .sidebar {
+      position: static;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--rule);
+      padding: 28px 24px;
+    }
+  }
+
+  .sidebar .brand {
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 22px;
+  }
+  .sidebar .brand .label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sidebar .brand .label::before {
+    content: ''; width: 22px; height: 2px; background: var(--blue);
+  }
+  .sidebar .brand .doc-title {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+    font-size: 20px;
+    line-height: 1.18;
+    color: var(--deep);
+    margin: 0 0 6px;
+    letter-spacing: -0.005em;
+  }
+  .sidebar .brand .doc-title em {
+    font-style: italic;
+    font-variation-settings: "opsz" 36, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+    font-weight: 400;
+  }
+  .sidebar .brand .doc-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--slate);
+    text-transform: uppercase;
+  }
+
+  .sidebar nav .group { margin-bottom: 22px; }
+  .sidebar nav .group-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 600;
+    margin: 0 0 6px;
+    padding-left: 14px;
+  }
+  .sidebar nav ol { list-style: none; margin: 0; padding: 0; }
+  .sidebar nav li { margin: 0; }
+  .sidebar nav a {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 10px;
+    align-items: baseline;
+    padding: 7px 12px 7px 12px;
+    border-left: 2px solid transparent;
+    color: var(--pavement);
+    font-family: var(--body);
+    font-size: 14px;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+    font-weight: 400;
+  }
+  .sidebar nav a:hover {
+    color: var(--blue);
+    background: var(--tint-blue);
+    text-decoration: none;
+  }
+  .sidebar nav a.active {
+    color: var(--blue);
+    border-left-color: var(--blue);
+    background: var(--tint-blue);
+    font-weight: 500;
+  }
+  .sidebar nav .num {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 24, "SOFT" 100, "WONK" 1;
+    font-size: 14px;
+    color: var(--blue);
+    line-height: 1;
+    font-weight: 400;
+  }
+  .sidebar nav a.appendix .num {
+    font-family: var(--mono);
+    font-style: normal;
+    color: var(--stone);
+    font-size: 12px;
+  }
+
+  .sidebar .foot {
+    margin-top: 32px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--slate);
+    line-height: 1.7;
+  }
+  .sidebar .foot a { color: var(--blue); font-weight: 600; }
+
+  /* ─────────────── CONTENT COLUMN ─────────────── */
+  .content { min-width: 0; }
+
+  /* Section header — DEEP_BLUE band within the content column. */
+  .section-header {
+    background: var(--deep);
+    color: var(--white);
+    padding: 44px 56px;
+    position: relative;
+  }
+  .section-header::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 1px;
+    background: var(--blue);
+  }
+  @media (max-width: 720px) { .section-header { padding: 32px 24px; } }
+
+  .section-header .num {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--lt-blue);
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-header .num::before {
+    content: ''; width: 28px; height: 1px; background: var(--lt-blue);
+  }
+  .section-header h2 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 96, "SOFT" 0, "WONK" 0;
+    font-weight: 380;
+    font-size: clamp(28px, 3.8vw, 44px);
+    line-height: 1.05;
+    letter-spacing: -0.018em;
+    color: var(--white);
+    margin: 0 0 12px;
+    max-width: 22ch;
+  }
+  .section-header h2 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 96, "SOFT" 100, "WONK" 1;
+    color: var(--lt-blue);
+    font-weight: 380;
+  }
+  .section-header .deck {
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--stone);
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  /* Section body */
+  .section-body {
+    padding: 36px 56px 48px;
+    max-width: 880px;
+  }
+  @media (max-width: 720px) { .section-body { padding: 28px 24px 36px; } }
+
+  .section-body .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-body .eyebrow::before {
+    content: ''; width: 28px; height: 3px; background: var(--blue);
+  }
+  .section-body h3 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 60, "SOFT" 0, "WONK" 0;
+    font-weight: 400;
+    font-size: clamp(22px, 2.6vw, 28px);
+    line-height: 1.14;
+    letter-spacing: -0.01em;
+    color: var(--deep);
+    margin: 0 0 14px;
+  }
+  .section-body h3 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 60, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+    font-weight: 400;
+  }
+  .section-body .deck {
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--slate);
+    margin: 0 0 24px;
+    max-width: 62ch;
+    font-weight: 400;
+  }
+
+  .section-body p {
+    font-family: var(--body);
+    font-size: 16.5px;
+    line-height: 1.65;
+    color: var(--pavement);
+    font-weight: 400;
+  }
+  .section-body p strong { color: var(--deep); font-weight: 600; }
+  .section-body p em { font-style: italic; color: var(--deep); }
+  /* Inline term emphasis — defined / introduced vocabulary */
+  .term {
+    font-style: normal;
+    color: var(--blue);
+    font-weight: 600;
+  }
+
+  .section-body h4 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 30, "SOFT" 0, "WONK" 0;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--deep);
+    margin: 32px 0 10px;
+    letter-spacing: -0.008em;
+    line-height: 1.25;
+  }
+  .section-body h5 {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 24px 0 10px;
+  }
+  .section-body ul, .section-body ol {
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--pavement);
+  }
+  .section-body ul { list-style: none; padding-left: 0; }
+  .section-body ul li {
+    position: relative;
+    padding-left: 22px;
+    margin: 6px 0;
+  }
+  .section-body ul li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0.62em;
+    width: 12px; height: 1px;
+    background: var(--blue);
+  }
+  .section-body ol { padding-left: 22px; }
+  .section-body ol li { margin: 6px 0; }
+  .section-body ol li::marker { color: var(--blue); font-family: var(--mono); font-size: 0.9em; }
+
+  /* Drop cap — chapter opener of each section */
+  .section-body p.opener::first-letter {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1;
+    font-weight: 400;
+    color: var(--blue);
+    float: left;
+    font-size: 4em;
+    line-height: 0.88;
+    padding: 4px 10px 0 0;
+    margin-top: 2px;
+  }
+
+  /* Pull quote */
+  .pull {
+    margin: 36px 0;
+    padding: 4px 0 4px 24px;
+    border-left: 2px solid var(--blue);
+    font-family: var(--display);
+    font-variation-settings: "opsz" 60, "SOFT" 60, "WONK" 0;
+    font-style: italic;
+    font-weight: 360;
+    font-size: 24px;
+    line-height: 1.25;
+    color: var(--deep);
+    letter-spacing: -0.01em;
+  }
+  .pull .src {
+    display: block;
+    margin-top: 12px;
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 600;
+  }
+
+  /* Inline code */
+  code.inline, code {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: var(--tint-blue);
+    color: var(--blue);
+    padding: 1px 6px;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+
+  /* Notes / callouts */
+  .note {
+    margin: 28px 0;
+    padding: 20px 24px;
+    background: var(--tint-blue);
+    border-left: 2px solid var(--blue);
+    border-radius: 0 2px 2px 0;
+  }
+  .note .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  .note h6 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 30, "SOFT" 0, "WONK" 0;
+    font-style: italic;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--deep);
+    margin: 0 0 8px;
+    line-height: 1.3;
+  }
+  .note p { margin: 0; font-size: 15.5px; color: var(--pavement); line-height: 1.55; }
+  .note p + p { margin-top: 10px; }
+  .note p strong { color: var(--deep); }
+  .note p em { color: var(--deep); font-style: italic; }
+
+  /* Tables — RULE-hairline grid, TINT_STONE_BG header */
+  .section-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 22px 0;
+    font-size: 14.5px;
+    font-family: var(--body);
+  }
+  .section-body thead th {
+    background: var(--tint-stone);
+    color: var(--pavement);
+    text-align: left;
+    padding: 11px 14px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-bottom: 2px solid var(--blue);
+    vertical-align: bottom;
+  }
+  .section-body tbody td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+    color: var(--pavement);
+    line-height: 1.5;
+  }
+  .section-body tbody tr:nth-child(even) td { background: var(--tint-stone); }
+  .section-body tbody td strong { color: var(--deep); font-weight: 600; }
+  .section-body tbody td:first-child { font-weight: 500; color: var(--deep); }
+
+  /* Three-column lifecycle / stage grid */
+  .stages {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 24px 0;
+  }
+  @media (max-width: 720px) { .stages { grid-template-columns: 1fr; } }
+  .stage {
+    padding: 18px 18px;
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--blue);
+  }
+  .stage .num {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .stage h4 {
+    margin: 0 0 8px;
+    font-family: var(--display);
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--deep);
+    letter-spacing: -0.005em;
+    line-height: 1.2;
+  }
+  .stage p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--pavement);
+    line-height: 1.55;
+  }
+  .stage p strong { color: var(--deep); }
+  .stage p em { color: var(--deep); font-style: italic; }
+
+  /* Two-column / three-column panel grids */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 22px 0;
+  }
+  .three-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 22px 0;
+  }
+  @media (max-width: 720px) {
+    .two-col, .three-col { grid-template-columns: 1fr; }
+  }
+  .panel {
+    background: var(--tint-stone);
+    padding: 18px 18px;
+    border-top: 3px solid var(--blue);
+  }
+  .panel.alt {
+    background: var(--tint-blue);
+    border-top-color: var(--lt-blue);
+  }
+  .panel h4 {
+    margin: 0 0 8px;
+    font-family: var(--display);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--deep);
+    letter-spacing: -0.005em;
+    line-height: 1.25;
+  }
+  .panel p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--pavement);
+    line-height: 1.55;
+  }
+  .panel p strong { color: var(--deep); }
+
+  /* Lifecycle flow strip */
+  .flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 22px 0;
+    overflow-x: auto;
+    border: 1px solid var(--rule);
+  }
+  .flow .node {
+    flex: 1;
+    min-width: 140px;
+    background: var(--white);
+    padding: 14px 14px;
+    border-right: 1px solid var(--rule);
+    position: relative;
+  }
+  .flow .node:last-child { border-right: none; }
+  .flow .node::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 32px; height: 2px;
+    background: var(--blue);
+  }
+  .flow .node .num {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--blue);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    margin-bottom: 6px;
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+  .flow .node .name {
+    font-family: var(--display);
+    font-size: 14.5px;
+    color: var(--deep);
+    font-weight: 500;
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  .flow .node .desc {
+    font-family: var(--body);
+    font-size: 12px;
+    color: var(--slate);
+    line-height: 1.4;
+  }
+
+  /* Algorithm comparison table — purpose-built for §VII */
+  .algo {
+    display: grid;
+    grid-template-columns: 200px 1fr 1fr 110px;
+    gap: 14px;
+    align-items: start;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--rule);
+    font-size: 14px;
+    line-height: 1.5;
+    font-family: var(--body);
+  }
+  .algo:first-of-type {
+    background: var(--tint-stone);
+    color: var(--pavement);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 11px 14px;
+    border-bottom: 2px solid var(--blue);
+  }
+  .algo .name { font-weight: 500; color: var(--deep); }
+  .algo:first-of-type .name { color: var(--pavement); font-weight: 600; }
+  @media (max-width: 720px) {
+    .algo {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+
+  /* Priority pill — neutral / blue / amber / red / gray (no DEEP_BLUE fills) */
+  .pill {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--white);
+    background: var(--slate);
+    text-transform: uppercase;
+    vertical-align: middle;
+  }
+  .pill.p1 { background: #C0392B; }
+  .pill.p2 { background: #D89B1F; }
+  .pill.p3 { background: var(--blue); }
+  .pill.p4 { background: var(--slate); }
+  .pill.blue { background: var(--blue); }
+  .pill.amber { background: #D89B1F; }
+  .pill.red { background: #C0392B; }
+
+  /* Scenario card grid — for § Hit Scenarios */
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 22px 0;
+  }
+  @media (max-width: 720px) { .scenario-grid { grid-template-columns: 1fr; } }
+  .scenario {
+    border: 1px solid var(--rule);
+    background: var(--white);
+    padding: 18px 20px;
+    position: relative;
+  }
+  .scenario::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--lt-blue);
+  }
+  .scenario.p1::before { background: #C0392B; }
+  .scenario.p2::before { background: #D89B1F; }
+  .scenario.p3::before { background: var(--blue); }
+  .scenario.p4::before { background: var(--slate); }
+  .scenario .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .scenario .head h4 {
+    margin: 0;
+    font-family: var(--display);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--deep);
+    letter-spacing: -0.005em;
+    line-height: 1.2;
+  }
+  .scenario .sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--slate);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .scenario .row { margin-bottom: 10px; }
+  .scenario .row:last-child { margin-bottom: 0; }
+  .scenario .row .k {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--slate);
+    font-weight: 600;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+  }
+  .scenario .row .v {
+    font-family: var(--body);
+    font-size: 13.5px;
+    color: var(--pavement);
+    line-height: 1.5;
+  }
+  .scenario .row.risk .v { font-weight: 500; color: var(--deep); }
+
+  /* Worked-example card */
+  .example {
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--blue);
+    padding: 22px 24px;
+    margin: 26px 0;
+    background: var(--white);
+  }
+  .example .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .example h4 {
+    margin: 0 0 12px;
+    font-family: var(--display);
+    font-size: 19px;
+    font-weight: 500;
+    color: var(--deep);
+    letter-spacing: -0.008em;
+    line-height: 1.25;
+  }
+  .example p { font-size: 14.5px; line-height: 1.55; }
+  .example ol { font-size: 14px; padding-left: 22px; }
+  .example ol li { margin: 4px 0; }
+  .example .lessons {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--rule);
+    font-size: 14px;
+    color: var(--slate);
+    line-height: 1.55;
+  }
+  .example .lessons strong { color: var(--blue); }
+
+  /* Glossary / reference list (appendix-style) */
+  .appendix-body .group { margin-bottom: 56px; }
+  .appendix-body .group h5 {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 14px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .appendix-body .group h5::before {
+    content: ''; width: 28px; height: 3px; background: var(--blue);
+  }
+  .appendix-body .group .grouptitle {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+    font-size: 24px;
+    line-height: 1.18;
+    color: var(--deep);
+    margin: 0 0 18px;
+    letter-spacing: -0.008em;
+  }
+  .glossary { border-top: 1px solid var(--rule); margin: 0; }
+  .glossary dt {
+    font-family: var(--body);
+    font-weight: 600;
+    color: var(--deep);
+    margin-top: 14px;
+    font-size: 15px;
+  }
+  .glossary dd {
+    margin: 4px 0 0;
+    font-family: var(--body);
+    font-size: 14.5px;
+    color: var(--pavement);
+    line-height: 1.55;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .glossary dd em { color: var(--deep); font-style: italic; }
+
+  /* References — numbered list with source citation */
+  .refs ol {
+    padding-left: 26px;
+    font-size: 14.5px;
+    margin: 0 0 32px;
+  }
+  .refs ol li {
+    margin-bottom: 10px;
+    color: var(--pavement);
+    line-height: 1.55;
+  }
+  .refs ol li::marker { color: var(--blue); font-family: var(--mono); font-size: 0.85em; }
+  .refs .src {
+    color: var(--slate);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    margin-left: 6px;
+  }
+
+  /* Colophon */
+  footer.colophon {
+    background: var(--deep);
+    color: var(--stone);
+    padding: 44px 48px;
+  }
+  footer.colophon .inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px;
+  }
+  @media (max-width: 720px) { footer.colophon .inner { grid-template-columns: 1fr; } }
+  footer.colophon .block {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    line-height: 1.7;
+  }
+  footer.colophon .h { color: var(--blue); font-weight: 600; margin-bottom: 10px; }
+  footer.colophon .feature {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 36, "SOFT" 80, "WONK" 0;
+    font-size: 20px;
+    color: var(--white);
+    letter-spacing: -0.01em;
+    text-transform: none;
+    line-height: 1.3;
+    margin: 6px 0 4px;
+    font-weight: 400;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0ms !important;
+      transition-duration: 0ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="prog"></div>
+
+<!-- ════════════════════ TITLE PAGE ════════════════════ -->
+<section class="title-page" id="top">
+  <div class="mast">
+    <span class="mark">Infosys Consulting</span>
+    <span class="meta">Primers &nbsp;·&nbsp; Compliance &nbsp;·&nbsp; May 2026</span>
+  </div>
+
+  <div class="hero">
+    <p class="kicker">A self-learning primer</p>
+    <h1><em>Screening</em> in banks &amp; financial institutions.</h1>
+    <p class="deck">
+      A structured walk through sanctions, PEP, and adverse-media screening — across
+      customers, counterparties, and payments. Regulatory drivers, the list landscape,
+      <em>name-matching mechanics</em>, false-positive reduction, vendors, and the
+      direction of travel.
+    </p>
+  </div>
+
+  <div class="byline">
+    <div class="field"><span class="label">Audience</span><span class="value">Banking compliance analysts &amp; consulting practitioners</span></div>
+    <div class="field"><span class="label">Reading time</span><span class="value">~60 minutes</span></div>
+    <div class="field"><span class="label">Practice</span><span class="value">IC Banking · Financial Crime</span></div>
+    <div class="field"><span class="label">Edition</span><span class="value">No. 02 · Spring 2026</span></div>
+  </div>
+</section>
+
+<!-- ════════════════════ MAIN LAYOUT (sidebar + content) ════════════════════ -->
+<div class="layout">
+
+  <!-- ─────────────── SIDEBAR / TOC ─────────────── -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="label">Primer · No. 02</div>
+      <div class="doc-title"><em>Screening</em> in banks &amp; FIs</div>
+      <div class="doc-meta">May 2026 · ~60 min</div>
+    </div>
+
+    <nav>
+      <div class="group">
+        <p class="group-label">Foundations</p>
+        <ol>
+          <li><a href="#s1" data-section="s1"><span class="num">I</span><span>Introduction &amp; purpose</span></a></li>
+          <li><a href="#s2" data-section="s2"><span class="num">II</span><span>Regulatory landscape</span></a></li>
+          <li><a href="#s3" data-section="s3"><span class="num">III</span><span>Three flavors of screening</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Lists &amp; lifecycle</p>
+        <ol>
+          <li><a href="#s4" data-section="s4"><span class="num">IV</span><span>The lists landscape</span></a></li>
+          <li><a href="#s5" data-section="s5"><span class="num">V</span><span>The screening lifecycle</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Vocabulary &amp; matching</p>
+        <ol>
+          <li><a href="#s6" data-section="s6"><span class="num">VI</span><span>Core concepts &amp; vocabulary</span></a></li>
+          <li><a href="#s7" data-section="s7"><span class="num">VII</span><span>Name-matching deep dive</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Screening types</p>
+        <ol>
+          <li><a href="#s8" data-section="s8"><span class="num">VIII</span><span>Customer screening</span></a></li>
+          <li><a href="#s9" data-section="s9"><span class="num">IX</span><span>Payment screening</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Operations</p>
+        <ol>
+          <li><a href="#s10" data-section="s10"><span class="num">X</span><span>Hit scenarios &amp; examples</span></a></li>
+          <li><a href="#s11" data-section="s11"><span class="num">XI</span><span>Worked walkthroughs</span></a></li>
+          <li><a href="#s12" data-section="s12"><span class="num">XII</span><span>False-positive reduction</span></a></li>
+          <li><a href="#s13" data-section="s13"><span class="num">XIII</span><span>Investigation &amp; disposition</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Landscape &amp; trends</p>
+        <ol>
+          <li><a href="#s14" data-section="s14"><span class="num">XIV</span><span>Technology providers</span></a></li>
+          <li><a href="#s15" data-section="s15"><span class="num">XV</span><span>Emerging trends</span></a></li>
+          <li><a href="#s16" data-section="s16"><span class="num">XVI</span><span>Common pitfalls &amp; challenges</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Appendix</p>
+        <ol>
+          <li><a href="#s17" data-section="s17" class="appendix"><span class="num">—</span><span>Glossary</span></a></li>
+          <li><a href="#s18" data-section="s18" class="appendix"><span class="num">—</span><span>References &amp; further reading</span></a></li>
+        </ol>
+      </div>
+    </nav>
+
+    <div class="foot">
+      <a href="#top">↑ Back to top</a><br>
+      Infosys Consulting<br>
+      Internal · Self-learning
+    </div>
+  </aside>
+
+  <!-- ─────────────── CONTENT ─────────────── -->
+  <main class="content">
+
+    <!-- ============ SECTION I · INTRODUCTION ============ -->
+    <section id="s1">
+      <div class="section-header">
+        <p class="num">Chapter I · Foundations</p>
+        <h2>Introduction &amp; <em>purpose</em>.</h2>
+        <p class="deck">What screening is, why it sits beside Transaction Monitoring and KYC as the third pillar of the financial-crime control framework, and what makes it operationally distinct.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 01 · Foundations</p>
+        <h3>Names, lists, and the law of the land.</h3>
+
+        <p class="opener"><span class="term">Screening</span> is the comparison of names, identifiers, and other attributes — of customers, counterparties, beneficial owners, payment parties, vessels, and aircraft — against curated <em>lists of concern</em>: sanctions, embargoed jurisdictions, politically exposed persons (PEPs), adverse media, and internal blacklists. The goal is to <strong>prevent prohibited business</strong> from being onboarded or transacted, and to <strong>identify elevated-risk business</strong> for enhanced due diligence.</p>
+
+        <p>Unlike Transaction Monitoring — which is suspicion-based and post-event — screening is largely <strong>rule-based and preventative</strong>. A sanctions hit is not "suspicious activity"; it is, in the first instance, a <em>legal prohibition</em> on transacting. The bank cannot proceed until the hit is cleared as a false positive. This makes screening one of the only compliance functions that <em>blocks business in real time</em>.</p>
+
+        <div class="note">
+          <p class="tag">Mental model</p>
+          <h6>A name-matching problem wrapped in a regulatory framework.</h6>
+          <p>Screening is a <strong>name-matching problem at industrial scale, wrapped in a regulatory framework</strong>. Most of the engineering effort goes into making the match robust enough to catch obfuscated names without drowning the operation in false positives. Most of the regulatory effort goes into showing the matching is complete, current, and properly governed.</p>
+        </div>
+
+        <h4>Why it exists</h4>
+        <ul>
+          <li><strong>Legal prohibitions.</strong> Sanctions are not guidance — they are binding law. Transacting with a sanctioned party (knowingly or otherwise, in many regimes) exposes the institution to civil penalties, criminal prosecution, and revocation of operating licences.</li>
+          <li><strong>Enforcement consequence.</strong> The largest single fines in banking history have been sanctions cases: BNP Paribas (USD 8.9bn, 2014), Standard Chartered (multiple, totalling ~USD 1.7bn), HSBC, Credit Suisse, ING. Sanctions exposure is also the leading reason for de-risking and correspondent-banking exits.</li>
+          <li><strong>Geopolitical immediacy.</strong> Sanctions regimes change in hours, not years — see the rapid Russia-related expansions of 2022 onwards. The screening function is the operational lever a bank pulls to react.</li>
+        </ul>
+
+        <h4>Where screening sits in the control framework</h4>
+        <table>
+          <thead><tr><th style="width:25%;">Control</th><th>Purpose</th><th style="width:25%;">When it fires</th></tr></thead>
+          <tbody>
+            <tr><td>KYC / CDD</td><td>Establish and maintain customer identity and risk profile.</td><td>Onboarding + refresh</td></tr>
+            <tr><td><strong>Sanctions screening</strong></td><td>Prevent prohibited business with listed parties.</td><td>Onboarding + ongoing + every payment</td></tr>
+            <tr><td><strong>PEP screening</strong></td><td>Identify customers/counterparties warranting EDD.</td><td>Onboarding + ongoing</td></tr>
+            <tr><td><strong>Adverse media screening</strong></td><td>Surface negative reputational/criminal signals.</td><td>Onboarding + ongoing</td></tr>
+            <tr><td>Transaction monitoring</td><td>Detect suspicious patterns post-event.</td><td>Batch + intraday</td></tr>
+            <tr><td>Fraud monitoring</td><td>Detect unauthorized transactions.</td><td>Real-time</td></tr>
+          </tbody>
+        </table>
+
+        <h4>What makes screening operationally different from TM</h4>
+        <ul>
+          <li><strong>Volume.</strong> A tier-1 bank screens hundreds of millions of names and tens of millions of payments per day. The platform must perform at industrial throughput.</li>
+          <li><strong>Latency.</strong> Payment screening is real-time, sub-second. A SWIFT payment that fails screening cannot leave the bank.</li>
+          <li><strong>Determinism.</strong> Same input + same list version = same hit, every time. Auditors and regulators expect this; ML-led screening introduces an explainability challenge.</li>
+          <li><strong>Zero-tolerance.</strong> A missed sanctions hit is a strict-liability violation in most regimes, regardless of intent. There is no "false negative is acceptable" tolerance.</li>
+        </ul>
+
+        <p class="pull">
+          Screening is one of the only compliance functions that blocks business in real time.
+          <span class="src">A working definition</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ SECTION II · REGULATORY ============ -->
+    <section id="s2">
+      <div class="section-header">
+        <p class="num">Chapter II · Foundations</p>
+        <h2>The <em>regulatory</em> landscape.</h2>
+        <p class="deck">The sanctions regimes that mandate screening, the supervisors that enforce it, and the conceptual rules (50% rule, secondary sanctions) that shape implementation.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 02 · Why this exists</p>
+        <h3>Multiple regimes, one platform.</h3>
+
+        <p class="opener">Sanctions are made and enforced by national governments and supranational bodies. A bank operating across borders is subject to <em>all of them simultaneously</em> — and they do not always agree. This section walks the major regimes a screening function must contend with, then surfaces the implementation consequences for platform design.</p>
+
+        <h4>United States</h4>
+        <ul>
+          <li><span class="term">OFAC (Office of Foreign Assets Control)</span>, US Treasury — administers and enforces US sanctions. Publishes the <strong>SDN List</strong> (Specially Designated Nationals), the <strong>SSI List</strong> (Sectoral Sanctions Identifications, for Russia/Ukraine), the <strong>NS-MBS List</strong> (Non-SDN Menu-Based Sanctions, for China), and program-specific lists for Cuba, Iran, North Korea, Syria, Venezuela, etc.</li>
+          <li><span class="term">The 50% Rule.</span> Any entity owned <strong>50% or more</strong> — directly or indirectly, individually or in the aggregate — by one or more SDNs is itself sanctioned, even if not listed. This single rule is the most consequential interpretive principle in screening: it forces banks to screen <em>beneficial ownership</em>, not just names on the list.</li>
+          <li><span class="term">Secondary sanctions.</span> Sanctions on non-US persons for transacting with listed parties — extending the reach of US sanctions globally and making US-dollar correspondent banking the chokepoint for enforcement.</li>
+          <li>Other US lists: <span class="term">DPL</span> (Denied Persons List, Commerce/BIS), <span class="term">Entity List</span> (BIS), <span class="term">Unverified List</span>, <span class="term">Military End User (MEU) List</span>, <span class="term">SDGT</span> designations, <span class="term">FBI Most Wanted</span>.</li>
+        </ul>
+
+        <h4>European Union</h4>
+        <ul>
+          <li><span class="term">EU Consolidated Financial Sanctions List</span> — maintained by the European Commission; consolidates restrictive measures adopted under the Common Foreign and Security Policy (CFSP). Implemented via Council Regulations directly binding on EU persons.</li>
+          <li><span class="term">EU Anti-Money Laundering Regulation (AMLR)</span>, 2024 — formalizes the screening obligation and introduces the EU AML Authority (AMLA) for direct supervision from 2028.</li>
+          <li>Member-state competent authorities (BaFin, AMF, DNB, etc.) enforce locally; national lists may supplement EU-wide measures.</li>
+        </ul>
+
+        <h4>United Kingdom</h4>
+        <ul>
+          <li><span class="term">OFSI (Office of Financial Sanctions Implementation)</span>, HM Treasury — administers UK financial sanctions; publishes the <strong>UK Sanctions List</strong>; enforces breaches via civil penalties and (since 2022) strict-liability standard.</li>
+          <li><span class="term">Sanctions and Anti-Money Laundering Act 2018</span> — the post-Brexit legal foundation.</li>
+          <li>Russia (Sanctions) Regulations 2019 and dozens of country/thematic regimes.</li>
+        </ul>
+
+        <h4>United Nations</h4>
+        <ul>
+          <li><span class="term">UN Consolidated List</span> — Security Council sanctions implemented under UN Charter Chapter VII; binding on all member states. Covers Al-Qaida/ISIL/Da'esh (1267 regime), Taliban (1988 regime), DPRK, Iran, Libya, etc.</li>
+        </ul>
+
+        <h4>Other regimes worth knowing</h4>
+        <table>
+          <thead><tr><th style="width:20%;">Regime</th><th>Authority</th><th>Notable features</th></tr></thead>
+          <tbody>
+            <tr><td>Canada</td><td>Global Affairs Canada; FINTRAC; OSFI</td><td>SEMA (Special Economic Measures Act) and JVCFOA (Sergei Magnitsky)</td></tr>
+            <tr><td>Australia</td><td>DFAT; AUSTRAC</td><td>Autonomous Sanctions Act 2011; Consolidated List</td></tr>
+            <tr><td>Switzerland</td><td>SECO</td><td>Largely tracks EU; independent listings possible</td></tr>
+            <tr><td>Singapore</td><td>MAS</td><td>UN-mandated; MAS Notice 626 details obligations</td></tr>
+            <tr><td>Hong Kong</td><td>HKMA</td><td>UN-mandated; primarily UNSC measures</td></tr>
+            <tr><td>Japan</td><td>METI; MoF</td><td>Foreign Exchange and Foreign Trade Act</td></tr>
+          </tbody>
+        </table>
+
+        <div class="note">
+          <p class="tag">Jurisdictional overlap</p>
+          <h6>"Most stringent applicable" is the safe default — until it isn't.</h6>
+          <p>A multinational bank is subject to multiple sanctions regimes simultaneously — and they don't always agree. An entity sanctioned by OFAC but not by the EU presents a complex compliance decision for an EU bank with US-dollar correspondent relationships. "Most stringent applicable" is the safe default, but the conflicts regime (e.g. EU Blocking Statute) can prohibit complying with extraterritorial US measures, creating genuine legal dilemmas. The screening platform must operate <em>per business unit and per booking entity</em>, not bank-wide.</p>
+        </div>
+
+        <h4>Why this matters for screening design</h4>
+        <p>Screening platforms must support: (a) <strong>multiple lists simultaneously</strong>, with per-list enable/disable per booking entity; (b) <strong>list version control</strong>, so any historical hit can be traced to the list as it stood at the moment of screening; (c) <strong>real-time list refresh</strong>, because new designations are immediately legally effective; (d) <strong>governance of internal lists</strong>, because internally-maintained blacklists carry the same operational weight as regulator lists.</p>
+      </div>
+    </section>
+
+    <!-- ============ SECTION III · THREE FLAVORS ============ -->
+    <section id="s3">
+      <div class="section-header">
+        <p class="num">Chapter III · Foundations</p>
+        <h2>Three <em>flavors</em> of screening.</h2>
+        <p class="deck">The screening function delivers three different controls against three different risks. They share infrastructure but differ fundamentally in legal nature.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 03 · What to screen against</p>
+        <h3>One engine, three decisions.</h3>
+
+        <p class="opener">Although "screening" is often discussed as a single discipline, three distinct controls live under that banner. They are run on the same platform, against overlapping data, by overlapping investigators — but they answer fundamentally different regulatory questions. Confusing them is one of the most common cultural failure modes in compliance functions.</p>
+
+        <div class="stages">
+          <div class="stage">
+            <div class="num">Flavor 01</div>
+            <h4>Sanctions screening</h4>
+            <p>A binary, strict-liability legal control. A confirmed hit is a <strong>prohibition on doing business</strong> — the bank cannot onboard the customer, cannot release the payment, and (depending on regime) must freeze any property in its possession. Decision: <em>proceed</em> or <em>block</em>.</p>
+          </div>
+          <div class="stage">
+            <div class="num">Flavor 02</div>
+            <h4>PEP screening</h4>
+            <p>A risk-rating control. A confirmed PEP match is <strong>not prohibited</strong>; it requires the bank to apply <em>enhanced due diligence</em>, source-of-wealth review, and senior management approval. Decision: <em>onboard with EDD</em> or <em>decline as risk-policy choice</em>.</p>
+          </div>
+          <div class="stage">
+            <div class="num">Flavor 03</div>
+            <h4>Adverse media screening</h4>
+            <p>A reputational and risk control. Hits indicate negative news, criminal allegations, regulatory action, or controversy. Decision: <em>investigate</em>; outcomes range from no action to EDD to exit. Less binary, more judgement-led.</p>
+          </div>
+        </div>
+
+        <div class="note">
+          <p class="tag">A useful frame</p>
+          <h6>Must not / must more carefully / should know about.</h6>
+          <p><strong>Sanctions</strong> tells you what you <em>must not do</em>. <strong>PEP</strong> tells you what you must do <em>more carefully</em>. <strong>Adverse media</strong> tells you what you should <em>know about</em>. Different decision rules, different escalation paths, different documentation standards — but one screening engine, one data lake, and increasingly one investigator workflow.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SECTION IV · LISTS LANDSCAPE ============ -->
+    <section id="s4">
+      <div class="section-header">
+        <p class="num">Chapter IV · Lists &amp; lifecycle</p>
+        <h2>The <em>lists</em> landscape.</h2>
+        <p class="deck">A surprising amount of operational complexity comes from the lists themselves — what they are, how often they change, how they're structured, and how they're consumed.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 04 · The data you screen against</p>
+        <h3>What is actually in the lists.</h3>
+
+        <p class="opener">The lists are not a fixed corpus of known villains. They are dynamic, sprawling, multi-vendor, multi-format data assets — issued daily by regulators in some cases and curated continuously by commercial vendors in others. Understanding them as data is the precondition for everything else in this primer.</p>
+
+        <h4>Sanctions lists — the canonical set</h4>
+        <table>
+          <thead><tr><th style="width:24%;">List</th><th>Authority</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>SDN List</td><td>OFAC (US)</td><td>The most consequential list globally; published as XML and CSV; updated daily on average.</td></tr>
+            <tr><td>SSI List</td><td>OFAC (US)</td><td>Sectoral sanctions identifications — restrictions on specific activities (e.g. debt &gt; 14 days), not full blocking.</td></tr>
+            <tr><td>NS-MBS List</td><td>OFAC (US)</td><td>Non-SDN Menu-Based Sanctions; primarily China-related measures with menu-selected restrictions.</td></tr>
+            <tr><td>Consolidated Financial Sanctions List</td><td>EU</td><td>All persons/entities sanctioned under EU CFSP measures.</td></tr>
+            <tr><td>UK Sanctions List</td><td>OFSI (UK)</td><td>Consolidated UK financial sanctions; CSV and ODT formats.</td></tr>
+            <tr><td>UN Consolidated List</td><td>UN Security Council</td><td>Binding on all member states; legally adopted into national lists.</td></tr>
+            <tr><td>BIS Entity List / DPL / MEU List</td><td>US Commerce</td><td>Export-control rather than blocking, but increasingly relevant to bank screening.</td></tr>
+            <tr><td>SECO List</td><td>Swiss Confederation</td><td>Largely tracks EU plus Swiss-autonomous measures.</td></tr>
+            <tr><td>Country-specific lists</td><td>National authorities</td><td>Canada (SEMA/JVCFOA), Australia (DFAT), Japan (MoF), Singapore (MAS), Hong Kong (HKMA), India (UAPA list).</td></tr>
+          </tbody>
+        </table>
+
+        <h4>PEP lists</h4>
+        <p>Unlike sanctions lists, PEP lists are <strong>not published by regulators</strong>. They are commercial datasets compiled by vendors (Refinitiv World-Check, Dow Jones, LexisNexis, ComplyAdvantage, Moody's GRID) from public records, gazettes, news, and proprietary research. The vendor's taxonomy of "PEP" is consequential: definitions of <em>domestic vs foreign PEP</em>, <em>close associate</em>, <em>family member</em>, and the <em>once-a-PEP-always-a-PEP</em> question all vary by vendor and by jurisdiction. The FATF Recommendations and EU AMLD set the conceptual baseline; the vendor implements.</p>
+
+        <h4>Adverse media data sources</h4>
+        <p>Curated and aggregated negative news, regulatory enforcement records, court filings, sanctions analyses, bribery/corruption databases. Sources: Refinitiv World-Check, Dow Jones Risk &amp; Compliance, LexisNexis WorldCompliance, ComplyAdvantage, Moody's GRID, public-records databases. Increasingly enriched with NLP classification (relevance scoring, risk-category tagging) to suppress noise.</p>
+
+        <h4>Internal lists</h4>
+        <p>Every institution maintains its own internal lists alongside external ones: <em>declined customers</em>, <em>exited customers</em>, <em>watch list</em> (active investigations), <em>fraud blacklist</em>, <em>litigation hold</em>. Internal lists carry the same operational weight as external ones — and the same governance expectations.</p>
+
+        <h4>List structure — what's actually in a record</h4>
+        <p>A single SDN record (or its equivalent) typically includes:</p>
+        <ul>
+          <li><strong>Primary name</strong> and one or more <strong>aliases</strong> (a.k.a., f.k.a., n.k.a.) — often transliterated multiple ways</li>
+          <li><strong>Date(s) of birth</strong>, and <strong>place of birth</strong></li>
+          <li><strong>Nationality / citizenship</strong></li>
+          <li><strong>Identifiers</strong> — passport numbers, national IDs, tax IDs, IMO numbers for vessels, tail numbers for aircraft, SWIFT BICs for entities</li>
+          <li><strong>Addresses</strong></li>
+          <li><strong>Designation reference</strong> and <strong>program code</strong> (e.g. SDGT, UKRAINE-EO13662, CYBER2)</li>
+          <li><strong>Position</strong> — for sectoral sanctions, the specific restriction</li>
+          <li><strong>Last updated</strong> date</li>
+        </ul>
+
+        <div class="note">
+          <p class="tag">In practice</p>
+          <h6>Lists are living data.</h6>
+          <p>The SDN list changes most business days. New designations are legally effective immediately; banks must ingest, propagate, and re-screen against new entries within hours, not days. Sophisticated programs run <strong>portfolio rescreening</strong> automatically every time the list changes — not on a fixed cycle.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SECTION V · LIFECYCLE ============ -->
+    <section id="s5">
+      <div class="section-header">
+        <p class="num">Chapter V · Lists &amp; lifecycle</p>
+        <h2>The screening <em>lifecycle</em>.</h2>
+        <p class="deck">Seven stages, common across all flavors and across both customer and payment screening.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 05 · How screening actually works</p>
+        <h3>From list ingestion to blocking report.</h3>
+
+        <p class="opener">However many vendors, however many lists, however many flavors of screening — the operating model collapses to a single seven-stage pipeline. Each stage has its own well-documented failure modes, its own well-documented mitigations, and its own well-documented audit expectations. Mastering screening operationally is, in large part, mastering this pipeline.</p>
+
+        <div class="flow">
+          <div class="node"><div class="num">01</div><div class="name">List ingestion</div><div class="desc">Fetch list updates from regulator and vendor feeds; version, normalize, validate.</div></div>
+          <div class="node"><div class="num">02</div><div class="name">Indexing</div><div class="desc">Build search structures: phonetic codes, n-grams, transliteration variants.</div></div>
+          <div class="node"><div class="num">03</div><div class="name">Input capture</div><div class="desc">Customer record at onboarding, or payment message at SWIFT/ACH/SEPA gateway.</div></div>
+          <div class="node"><div class="num">04</div><div class="name">Matching</div><div class="desc">Run the candidate input against indexed list entries; emit candidate hits.</div></div>
+          <div class="node"><div class="num">05</div><div class="name">Hit generation</div><div class="desc">Score, prioritize, dedupe, attach context (which list, why, what attributes matched).</div></div>
+          <div class="node"><div class="num">06</div><div class="name">Investigation</div><div class="desc">Analyst clears (false positive) or confirms (true match) using secondary attributes.</div></div>
+          <div class="node"><div class="num">07</div><div class="name">Block / release / report</div><div class="desc">Block payment, freeze assets, file blocking report; or release with documented rationale.</div></div>
+        </div>
+
+        <h4>Where each stage tends to fail</h4>
+        <table>
+          <thead><tr><th style="width:20%;">Stage</th><th>Common failure mode</th><th>Typical mitigation</th></tr></thead>
+          <tbody>
+            <tr><td>List ingestion</td><td>Late feed, broken parse, missed mid-day update.</td><td>Automated polling, schema validation, change alerts.</td></tr>
+            <tr><td>Indexing</td><td>Stale index after list update; missing transliteration variants.</td><td>Hot reindex on list change, multi-script normalization.</td></tr>
+            <tr><td>Input capture</td><td>Missing fields (no DOB, no country), bad data quality in customer record.</td><td>Mandatory CDD fields, ISO 20022 enriched payments.</td></tr>
+            <tr><td>Matching</td><td>Threshold mis-calibrated; algorithm misses obfuscation or floods on common names.</td><td>Algorithm portfolio (see §VII); secondary-attribute scoring.</td></tr>
+            <tr><td>Hit generation</td><td>Dupe hits across lists; weak prioritization.</td><td>Hit consolidation, risk-based queueing.</td></tr>
+            <tr><td>Investigation</td><td>Productivity-driven clearance; weak rationale.</td><td>4-eyes principle, QA sampling, structured templates.</td></tr>
+            <tr><td>Block / release / report</td><td>Late OFAC blocking report; failed SWIFT MT202 stop.</td><td>SLA, integrated case-to-payment-gateway tooling.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ SECTION VI · CONCEPTS ============ -->
+    <section id="s6">
+      <div class="section-header">
+        <p class="num">Chapter VI · Vocabulary &amp; matching</p>
+        <h2>Core <em>concepts</em> &amp; vocabulary.</h2>
+        <p class="deck">The terms that recur across regulation, vendor pitches, and consulting decks. Internalize these before reading the matching section.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 06 · Vocabulary you need</p>
+        <h3>The terms that anchor every screening conversation.</h3>
+
+        <p class="opener">The screening world has a dense vocabulary that recurs across regulators, vendors, lawyers, and engineers — often with subtle but consequential definitional differences. This section is the glossary you need to internalize before walking into a vendor demo, reading an OFAC settlement, or sitting in a model-governance committee.</p>
+
+        <h4>Sanctions concepts</h4>
+        <dl class="glossary">
+          <dt>SDN (Specially Designated National)</dt>
+          <dd>An individual or entity on the OFAC SDN List; US persons are prohibited from transacting with them and must block any property in their possession.</dd>
+
+          <dt>Blocked property</dt>
+          <dd>Any asset of a sanctioned party that comes into the institution's possession or control. Must be frozen, reported to OFAC within 10 days, and held until the sanction is lifted or licensed.</dd>
+
+          <dt>OFAC licence</dt>
+          <dd>An authorization — general or specific — that permits an otherwise-prohibited transaction. General licences apply broadly; specific licences are applied for case-by-case.</dd>
+
+          <dt>The 50% Rule</dt>
+          <dd>OFAC interpretive rule that any entity owned 50%+ by one or more SDNs is itself sanctioned, by operation of law, regardless of whether it appears on the list. Forces UBO screening.</dd>
+
+          <dt>Secondary sanctions</dt>
+          <dd>Sanctions imposed on non-US persons for dealing with sanctioned parties — extends the reach of US sanctions and is the principal lever of US sanctions diplomacy.</dd>
+
+          <dt>Designation reference / Program code</dt>
+          <dd>The legal authority for a listing (e.g. SDGT, IRAN-EO13599, RUSSIA-EO14024). Determines which restrictions apply.</dd>
+
+          <dt>Sectoral sanctions</dt>
+          <dd>Targeted restrictions on specific activities (e.g. financing &gt; 14 days for SSI Russian entities) rather than full blocking. More technical to implement; the platform must understand the rule, not just flag the name.</dd>
+
+          <dt>Strict liability</dt>
+          <dd>Most sanctions regimes impose liability without proof of intent or knowledge. A bank that processes a payment to a sanctioned party is in breach even if it didn't know.</dd>
+        </dl>
+
+        <h4>PEP concepts</h4>
+        <dl class="glossary">
+          <dt>PEP</dt>
+          <dd>A natural person entrusted with prominent public functions (head of state, senior politician, judge, senior military, senior executive of a state-owned enterprise).</dd>
+
+          <dt>Domestic vs Foreign PEP</dt>
+          <dd>FATF and EU definitions distinguish PEPs in the home country (domestic) from those abroad (foreign). Foreign PEPs are always high-risk; domestic PEPs are risk-rated case-by-case.</dd>
+
+          <dt>RCA (Relative or Close Associate)</dt>
+          <dd>Family members and close associates of a PEP. Required to be screened and risk-rated as PEPs in most regimes.</dd>
+
+          <dt>Once-a-PEP</dt>
+          <dd>How long after leaving the public role someone remains a PEP. The 5th and 6th EU AMLDs treat someone as PEP for at least 12 months after leaving office, with risk-based extension; some banks operate once-a-PEP-always-a-PEP.</dd>
+        </dl>
+
+        <h4>Adverse media concepts</h4>
+        <dl class="glossary">
+          <dt>Risk category</dt>
+          <dd>Taxonomy of adverse signals: financial crime, terrorism, narcotics, corruption, sanctions evasion, fraud, sexual offences, environmental crime, etc. Drives investigator triage.</dd>
+
+          <dt>Relevance / Recency</dt>
+          <dd>Article relevance (is it really about this person?) and recency (is it current?). NLP scoring of both is now standard with vendors.</dd>
+        </dl>
+
+        <h4>Matching concepts</h4>
+        <dl class="glossary">
+          <dt>Hit</dt>
+          <dd>The output of a screening match — a candidate identification of an input against a listed party.</dd>
+
+          <dt>True positive / False positive</dt>
+          <dd>A confirmed match is a TP; a name-coincidence that turns out not to be the listed party is an FP. Payment screening typically produces FP rates of 95–99%.</dd>
+
+          <dt>False negative</dt>
+          <dd>A listed party not detected. The unforgiving metric; even rare false negatives are regulatory catastrophes.</dd>
+
+          <dt>Match score / Confidence</dt>
+          <dd>A numerical score the matching engine assigns to a candidate match. Threshold-based gating decides what becomes a hit for investigation.</dd>
+
+          <dt>Whitelist (Good-Guy list)</dt>
+          <dd>Curated list of confirmed false positives that should not re-alert. Tightly governed because a bad entry on the whitelist creates an undetected hole.</dd>
+
+          <dt>Secondary attributes</dt>
+          <dd>Non-name attributes used to confirm or refute a name match — DOB, nationality, passport number, address, identifier. The single most powerful FP-reduction lever.</dd>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ============ SECTION VII · NAME MATCHING ============ -->
+    <section id="s7">
+      <div class="section-header">
+        <p class="num">Chapter VII · Vocabulary &amp; matching</p>
+        <h2>Name-<em>matching</em> deep dive.</h2>
+        <p class="deck">The single most consequential engineering choice in screening. Most vendor differentiation lives here.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 07 · The technical heart</p>
+        <h3>Tolerant enough to catch obfuscation, strict enough not to drown.</h3>
+
+        <p class="opener">Names of sanctioned parties and PEPs are routinely obfuscated, mis-transliterated, abbreviated, or reordered. "Vladimir Putin", "V. Putin", "Vlad Pootin", "путин", "Putin Vladimir Vladimirovich", "بوتين", and "Putin V V" must all match a single underlying record. The matching engine must be <strong>tolerant enough</strong> to catch real obfuscation and <strong>strict enough</strong> not to drown in spurious matches against, say, "Vladimir Petrov" or "John Smith".</p>
+
+        <h4>The algorithm portfolio</h4>
+        <p>No single algorithm does this well. Production platforms run a <em>portfolio</em>:</p>
+
+        <div class="algo">
+          <div class="name">Algorithm</div>
+          <div>What it does</div>
+          <div>Catches</div>
+          <div>Use</div>
+        </div>
+
+        <div class="algo">
+          <div class="name">Exact match</div>
+          <div>String equality after normalization (case, whitespace, punctuation).</div>
+          <div>Cleanest, most obvious cases.</div>
+          <div><span class="pill p4">Floor</span></div>
+        </div>
+
+        <div class="algo">
+          <div class="name">Levenshtein distance</div>
+          <div>Edit-distance: number of insertions/deletions/substitutions to convert one string to another.</div>
+          <div>Typos, single-character variations.</div>
+          <div><span class="pill p3">Core</span></div>
+        </div>
+
+        <div class="algo">
+          <div class="name">Jaro-Winkler</div>
+          <div>Similarity metric that emphasizes matching prefixes; tolerant of transpositions.</div>
+          <div>Short-name typos; common in name-matching libraries.</div>
+          <div><span class="pill p3">Core</span></div>
+        </div>
+
+        <div class="algo">
+          <div class="name">N-gram / token overlap</div>
+          <div>Decomposes strings into overlapping substrings of length N; computes set similarity (Jaccard, cosine).</div>
+          <div>Word reordering, missing tokens, multi-word names.</div>
+          <div><span class="pill p3">Core</span></div>
+        </div>
+
+        <div class="algo">
+          <div class="name">Soundex / Metaphone / Double Metaphone</div>
+          <div>Phonetic codes that map similar-sounding names to the same code.</div>
+          <div>Phonetic variants: "Smith"/"Smyth", "Cohen"/"Kohen", "Mohammed"/"Muhammad".</div>
+          <div><span class="pill p3">Core</span></div>
+        </div>
+
+        <div class="algo">
+          <div class="name">Beider-Morse / NYSIIS</div>
+          <div>Phonetic encoders designed to handle multi-language and ethnonym variation (e.g. Slavic, Yiddish, Arabic).</div>
+          <div>Cross-language phonetic equivalence beyond Soundex.</div>
+          <div><span class="pill p2">Specialist</span></div>
+        </div>
+
+        <div class="algo">
+          <div class="name">Transliteration normalization</div>
+          <div>Map non-Latin scripts (Cyrillic, Arabic, Chinese, Hebrew, Devanagari) to a normalized form using BGN/PCGN, ICAO, or ISO standards.</div>
+          <div>Cross-script matches; multiple Roman spellings of the same Arabic name.</div>
+          <div><span class="pill p2">Essential</span></div>
+        </div>
+
+        <div class="algo">
+          <div class="name">Tokenization &amp; word-order</div>
+          <div>Decompose names into tokens (first, middle, last, particles); match token-set rather than ordered string.</div>
+          <div>"Putin Vladimir Vladimirovich" vs "Vladimir Putin".</div>
+          <div><span class="pill p3">Core</span></div>
+        </div>
+
+        <div class="algo">
+          <div class="name">Stop-word / particle handling</div>
+          <div>Identify and weight particles ("Al-", "Bin", "de la", "van der", "Mc") appropriately — neither match-blocking nor over-matching.</div>
+          <div>Arabic and European compound names.</div>
+          <div><span class="pill p2">Essential</span></div>
+        </div>
+
+        <div class="algo">
+          <div class="name">Nickname expansion</div>
+          <div>Map common nicknames to formal names ("Bob"↔"Robert", "Bill"↔"William").</div>
+          <div>Anglo informalization patterns.</div>
+          <div><span class="pill p4">Supporting</span></div>
+        </div>
+
+        <div class="algo">
+          <div class="name">Cultural name parsing</div>
+          <div>Honour name conventions per culture: East-Asian family-name-first, Spanish-style maternal+paternal surnames, Russian patronymics.</div>
+          <div>Misordered match attempts.</div>
+          <div><span class="pill p2">Essential</span></div>
+        </div>
+
+        <div class="algo">
+          <div class="name">Identifier matching</div>
+          <div>Exact match on passport number, national ID, tax ID, IMO number, BIC. Strongest single signal when available.</div>
+          <div>Direct identification, regardless of name spelling.</div>
+          <div><span class="pill p1">Strongest</span></div>
+        </div>
+
+        <h4>Stop-word and obfuscation patterns to know</h4>
+        <p>Beyond pure algorithms, screening platforms maintain pattern libraries for common obfuscations:</p>
+        <ul>
+          <li><strong>Embedded special characters</strong> ("V.l.a.d.i.m.i.r"; "Vlad!mir") — strip and re-match.</li>
+          <li><strong>Numeric substitution (leet)</strong> ("Vl4d1m1r") — normalize digits to letters.</li>
+          <li><strong>Inserted whitespace</strong> ("Vla dimir") — collapse before matching.</li>
+          <li><strong>Concatenated names</strong> ("VladimirPutin") — token segmentation.</li>
+          <li><strong>Honorifics and titles</strong> ("Mr Vladimir Putin", "President Putin") — strip before matching.</li>
+          <li><strong>Stripped vowels</strong> common in payment-message free-text — use phonetic and consonantal matching as backstop.</li>
+        </ul>
+
+        <h4>Secondary attribute scoring</h4>
+        <p>Once a candidate hit fires on name similarity, the platform applies <em>secondary attributes</em> to raise or lower the score:</p>
+        <ul>
+          <li><strong>DOB match</strong> — exact +confidence, year-only +partial, mismatch −confidence, missing on either side = no signal</li>
+          <li><strong>Nationality / Country of residence</strong> — match +confidence, mismatch −confidence (but cautiously, since residency changes)</li>
+          <li><strong>Identifier match</strong> — passport / national ID exact match is near-determinative</li>
+          <li><strong>Address proximity</strong> — same country/city raises confidence</li>
+          <li><strong>Gender</strong> — only when independently established for the listed party</li>
+        </ul>
+
+        <div class="note">
+          <p class="tag">The trade-off every program lives with</p>
+          <h6>Recall vs. precision is the regulator's question, not yours.</h6>
+          <p>Looser matching → higher recall, higher FP rate, larger investigation team. Tighter matching → lower FP rate, but the regulator's question after any miss will be: <em>"Why didn't your algorithm catch this obvious obfuscation?"</em> The defensible posture is documented, evidence-based threshold setting with ongoing performance monitoring — not optimization for either pole.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SECTION VIII · CUSTOMER SCREENING ============ -->
+    <section id="s8">
+      <div class="section-header">
+        <p class="num">Chapter VIII · Screening types</p>
+        <h2><em>Customer</em> screening.</h2>
+        <p class="deck">Screening of the people and entities the bank knowingly transacts with — at onboarding and on an ongoing basis throughout the relationship.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 08 · Screening the customer</p>
+        <h3>From the named entity to every party in its orbit.</h3>
+
+        <p class="opener">Customer screening is the older of the two big screening disciplines — it predates payment screening by decades and grew out of KYC. Its scope, though, has steadily expanded: today, screening the customer means screening not just the named entity but every individual and entity in its ownership and control orbit, and re-running that screen every time anything material changes — the customer, the lists, or the relationship.</p>
+
+        <h4>What gets screened</h4>
+        <ul>
+          <li><strong>The customer</strong> — individual or entity name, DOB, nationality, address, identifiers.</li>
+          <li><strong>Beneficial owners</strong> — natural persons owning ≥ 25% (or controlling) the entity. Critical for the 50% rule.</li>
+          <li><strong>Directors, officers, authorized signatories</strong> — anyone with control over the account.</li>
+          <li><strong>Related parties</strong> — joint account holders, guarantors, trustees, settlors, beneficiaries.</li>
+          <li><strong>For trusts</strong> — trustee, settlor, protector, beneficiary, beneficial owner.</li>
+          <li><strong>For correspondent banking</strong> — the respondent bank and its own AML programme.</li>
+        </ul>
+
+        <h4>When screening fires</h4>
+        <table>
+          <thead><tr><th style="width:22%;">Event</th><th>What is screened</th><th style="width:18%;">Latency</th></tr></thead>
+          <tbody>
+            <tr><td>Onboarding</td><td>All names captured at KYC; identifiers; UBO chain</td><td>Same-day</td></tr>
+            <tr><td>Periodic KYC refresh</td><td>Same scope; refreshed list versions</td><td>Per cycle</td></tr>
+            <tr><td>Event-driven refresh</td><td>Triggered by change in customer data, KYC update, transaction pattern shift</td><td>Same-day</td></tr>
+            <tr><td>List update rescreening</td><td>Whole-portfolio re-screen against newly added list entries</td><td>Within hours of list publication</td></tr>
+            <tr><td>Beneficiary screening</td><td>Whenever a new beneficiary is added to a trust, payment instruction, account</td><td>Real-time</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Customer screening operational flow</h4>
+        <p>At onboarding: capture KYC → extract every name + identifier → screen against sanctions, PEP, adverse media → hits route to investigator → cleared as FP or escalated → onboarding proceeds, is delayed, or is declined. Throughout the relationship: any change in customer data, any list update, any periodic-refresh event re-runs the screen and re-routes any new hits.</p>
+
+        <h4>The UBO challenge</h4>
+        <p>The 50% rule means screening the named entity alone is insufficient. You must walk the ownership chain to identify the natural persons who ultimately control the entity, then screen each one. Where ownership structures involve multiple corporate layers across jurisdictions — common in trade finance, shipping, private wealth — the UBO chain may have a dozen entities and require enrichment from corporate registries (Companies House, Bureau van Dijk Orbis, OpenCorporates), public filings, and the customer's own disclosures. Many sanctions breaches turn on a UBO failure rather than a name-match failure.</p>
+      </div>
+    </section>
+
+    <!-- ============ SECTION IX · PAYMENT SCREENING ============ -->
+    <section id="s9">
+      <div class="section-header">
+        <p class="num">Chapter IX · Screening types</p>
+        <h2><em>Payment</em> screening.</h2>
+        <p class="deck">Real-time screening of every party in every cross-border (and increasingly domestic) payment message. Most volume-intensive part of the screening estate.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 09 · Screening the payment</p>
+        <h3>Every party, in real time, at industrial volume.</h3>
+
+        <p class="opener">If customer screening is the slower, more deliberate side of screening, payment screening is the high-velocity one — sub-second, transactional, every party in every message, all day, every day. It is where the bulk of false positives are generated, where the most consequential historical enforcement actions have landed, and where the ISO 20022 transition is currently rewriting expectations.</p>
+
+        <h4>What gets screened in a payment</h4>
+        <p>Every party named in a payment message:</p>
+        <ul>
+          <li><strong>Ordering customer / Debtor</strong> (the originator)</li>
+          <li><strong>Ordering institution / Debtor agent</strong> (the originator's bank)</li>
+          <li><strong>Intermediary institution(s)</strong> (correspondent banks in the chain)</li>
+          <li><strong>Beneficiary institution / Creditor agent</strong> (the beneficiary's bank)</li>
+          <li><strong>Beneficiary / Creditor</strong> (the recipient)</li>
+          <li><strong>Remittance information</strong> (free-text reference field — often contains additional party names)</li>
+          <li><strong>Trade-finance attachments</strong> — invoices, bills of lading, shipper, consignee, vessel name, port of loading/discharge, goods description</li>
+        </ul>
+
+        <h4>SWIFT message types &amp; ISO 20022</h4>
+        <table>
+          <thead><tr><th style="width:22%;">Message</th><th>Purpose</th><th>Screening implication</th></tr></thead>
+          <tbody>
+            <tr><td>MT103</td><td>Single customer credit transfer</td><td>The canonical international payment; multiple parties to screen</td></tr>
+            <tr><td>MT202</td><td>General financial-institution transfer</td><td>Bank-to-bank settlement; sender, receiver, often intermediary</td></tr>
+            <tr><td>MT202 COV</td><td>Cover payment</td><td>Carries the underlying MT103 parties — must be screened to prevent SCB-style cover-payment evasion</td></tr>
+            <tr><td>MT700-series</td><td>Trade finance (LCs, guarantees, documentary collections)</td><td>Applicant, beneficiary, advising/confirming banks, goods, ports, vessels</td></tr>
+            <tr><td>pacs.008 (ISO 20022)</td><td>Customer credit transfer in ISO 20022</td><td>Structured fields for debtor/creditor and their agents; richer screening signal than MT103</td></tr>
+            <tr><td>pacs.009 (ISO 20022)</td><td>Financial-institution credit transfer</td><td>ISO 20022 equivalent of MT202</td></tr>
+          </tbody>
+        </table>
+
+        <h4>The ISO 20022 transition</h4>
+        <p>The global SWIFT migration to ISO 20022 (in force end of 2025 for cross-border payments) replaces the legacy MT free-text fields with structured XML that explicitly identifies the originator, originator address, ultimate debtor, ultimate creditor, etc. This is the most significant change to payment screening in two decades:</p>
+        <ul>
+          <li><strong>Structured party data</strong> — addresses, identifiers, and roles are now in defined fields, not concatenated free text. Matching accuracy improves dramatically when used properly.</li>
+          <li><strong>Ultimate debtor / ultimate creditor</strong> — explicit fields for the parties behind the ordering and beneficiary names; previously buried in remittance info or invisible.</li>
+          <li><strong>Truncation no longer mandatory</strong> — MT had 4×35-char address blocks; ISO 20022 allows much richer addresses, removing a major source of screening ambiguity.</li>
+          <li><strong>BICs and LEIs</strong> — structured machine-readable identifiers reduce reliance on name matching for entities.</li>
+        </ul>
+
+        <h4>Stripping &amp; cover-payment evasion</h4>
+        <p>Historically, sanctioned parties (and their facilitators) used <em>wire stripping</em> — deliberately removing or obfuscating originator/beneficiary information to defeat screening at intermediary banks. Several major US enforcement actions (Lloyds 2009, Credit Suisse 2009, Barclays 2010, ING 2012, Standard Chartered 2012/2019, BNP Paribas 2014) involved stripping. Modern screening platforms must inspect the cover payment chain (MT202 COV) and the remittance free-text field, and re-construct full party information from related messages. ISO 20022's structured fields are designed to make stripping much harder to disguise.</p>
+
+        <h4>Latency &amp; volume</h4>
+        <p>Payment screening must complete in milliseconds — typically &lt; 200ms end-to-end for the screening step — to avoid material delay in payment processing. A tier-1 international bank processes tens of millions of payments per day, each requiring screening of 3–10 parties; the platform throughput requirement is industrial.</p>
+
+        <h4>Trade finance &amp; vessel screening</h4>
+        <p>Trade-finance payments carry additional screening dimensions: <strong>goods descriptions</strong> against controlled/dual-use lists; <strong>port and country</strong> against sanctioned destinations; <strong>vessel name and IMO number</strong> against vessel-specific sanctions lists (the practice of <em>identity-laundering</em> — repainting names, switching off AIS — has made dedicated vessel-tracking integration essential, e.g. with Pole Star, Windward, Lloyd's List Intelligence).</p>
+      </div>
+    </section>
+
+    <!-- ============ SECTION X · SCENARIOS ============ -->
+    <section id="s10">
+      <div class="section-header">
+        <p class="num">Chapter X · Operations</p>
+        <h2>Hit <em>scenarios</em> &amp; examples.</h2>
+        <p class="deck">The recurring shapes of screening hits, with the operational handling each implies.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 10 · Hits you'll encounter</p>
+        <h3>The patterns that repeat across institutions.</h3>
+
+        <p class="opener">However sophisticated the matching engine, what lands on the investigator's desk fits a relatively small number of recurring shapes. Recognizing the shape before reading the detail accelerates investigation and improves consistency. The ten scenarios below are not exhaustive but they cover the vast majority of what a screening team sees in a typical month.</p>
+
+        <div class="scenario-grid">
+
+          <div class="scenario p3">
+            <div class="head"><div><h4>Name collision false positive</h4><div class="sub">Same name, different person</div></div><span class="pill p3">P3</span></div>
+            <div class="row"><div class="k">Typology</div><div class="v">A common-name customer ("Mohammed Ali", "John Smith", "Wang Wei") fires a match against a listed party with the same or similar name but different identifiers, DOB, nationality, or jurisdiction.</div></div>
+            <div class="row"><div class="k">Signature</div><div class="v">Name similarity high; secondary attributes (DOB, nationality, identifier) mismatch.</div></div>
+            <div class="row risk"><div class="k">Disposition</div><div class="v">Cleared as false positive with documented secondary-attribute analysis; whitelisted for future matches.</div></div>
+          </div>
+
+          <div class="scenario p1">
+            <div class="head"><div><h4>Confirmed sanctions hit</h4><div class="sub">True positive — listed party</div></div><span class="pill p1">P1</span></div>
+            <div class="row"><div class="k">Typology</div><div class="v">Name and secondary attributes align convincingly with a listed party on OFAC/UN/EU/UK list.</div></div>
+            <div class="row"><div class="k">Signature</div><div class="v">High name score + matching DOB/identifier/nationality + plausible role.</div></div>
+            <div class="row risk"><div class="k">Disposition</div><div class="v">Block the transaction; freeze any property; file blocking report (OFAC within 10 days of blocking); apply for OFAC licence if permitted activity; do not onboard; document fully.</div></div>
+          </div>
+
+          <div class="scenario p2">
+            <div class="head"><div><h4>50% rule indirect hit</h4><div class="sub">UBO-derived sanction</div></div><span class="pill p2">P2</span></div>
+            <div class="row"><div class="k">Typology</div><div class="v">The named entity is not itself on the list, but ownership analysis reveals 50%+ ownership by one or more SDNs.</div></div>
+            <div class="row"><div class="k">Signature</div><div class="v">Direct screening returns no hit; UBO chain screening returns SDN match; aggregate ownership ≥ 50%.</div></div>
+            <div class="row risk"><div class="k">Disposition</div><div class="v">Treat as blocked party; same handling as direct SDN match.</div></div>
+          </div>
+
+          <div class="scenario p2">
+            <div class="head"><div><h4>Sectoral / menu-based sanction</h4><div class="sub">Activity-restricted, not blocked</div></div><span class="pill p2">P2</span></div>
+            <div class="row"><div class="k">Typology</div><div class="v">Listed party is subject to specific activity restrictions (e.g. debt &gt; 14 days, equity issuance, specific sectors) rather than full blocking.</div></div>
+            <div class="row"><div class="k">Signature</div><div class="v">Hit on SSI or NS-MBS lists; restriction-type field on list record.</div></div>
+            <div class="row risk"><div class="k">Disposition</div><div class="v">Evaluate the specific activity against the menu of restrictions; some transactions permissible, others not. Granular and detail-sensitive.</div></div>
+          </div>
+
+          <div class="scenario p2">
+            <div class="head"><div><h4>PEP match</h4><div class="sub">Risk-rating, not prohibition</div></div><span class="pill p2">P2</span></div>
+            <div class="row"><div class="k">Typology</div><div class="v">Customer or beneficial owner identified as PEP or RCA.</div></div>
+            <div class="row"><div class="k">Signature</div><div class="v">PEP-list match; vendor-categorized role, country, status (current/former).</div></div>
+            <div class="row risk"><div class="k">Disposition</div><div class="v">Apply EDD: source-of-wealth, senior management approval, enhanced ongoing monitoring. Not a block.</div></div>
+          </div>
+
+          <div class="scenario p3">
+            <div class="head"><div><h4>Adverse media hit</h4><div class="sub">Negative public record</div></div><span class="pill p3">P3</span></div>
+            <div class="row"><div class="k">Typology</div><div class="v">Customer linked to financial crime, corruption, fraud, regulatory action, sexual offence, or major controversy via curated media database.</div></div>
+            <div class="row"><div class="k">Signature</div><div class="v">Vendor-classified risk category; relevance and recency scores; supporting article excerpts.</div></div>
+            <div class="row risk"><div class="k">Disposition</div><div class="v">Assess severity and recency; range from no action to EDD to relationship exit. Document reasoning.</div></div>
+          </div>
+
+          <div class="scenario p2">
+            <div class="head"><div><h4>Payment hit — counterparty</h4><div class="sub">Beneficiary or originator match</div></div><span class="pill p2">P2</span></div>
+            <div class="row"><div class="k">Typology</div><div class="v">A name in the payment message (typically the beneficiary or ordering customer) matches a listed party.</div></div>
+            <div class="row"><div class="k">Signature</div><div class="v">Real-time alert in the payment gateway; payment placed on hold pre-execution.</div></div>
+            <div class="row risk"><div class="k">Disposition</div><div class="v">Investigate within payment SLA; release, reject, or block-and-report. Time-critical operation.</div></div>
+          </div>
+
+          <div class="scenario p3">
+            <div class="head"><div><h4>Payment hit — free text</h4><div class="sub">Remittance-info match</div></div><span class="pill p3">P3</span></div>
+            <div class="row"><div class="k">Typology</div><div class="v">A listed name appears in the remittance information / payment reference field (e.g. "Payment for shipment to [sanctioned port]") even though the named parties are clean.</div></div>
+            <div class="row"><div class="k">Signature</div><div class="v">Match in free-text field; party names independently clear.</div></div>
+            <div class="row risk"><div class="k">Disposition</div><div class="v">Investigate context; possible stripping evasion; escalate if suspicious. ISO 20022 transition has reduced the prevalence but not eliminated it.</div></div>
+          </div>
+
+          <div class="scenario p2">
+            <div class="head"><div><h4>Vessel / aircraft hit</h4><div class="sub">Asset-level sanction</div></div><span class="pill p2">P2</span></div>
+            <div class="row"><div class="k">Typology</div><div class="v">A trade-finance or shipping payment references a vessel (by name or IMO) or aircraft (by tail number) that is itself sanctioned.</div></div>
+            <div class="row"><div class="k">Signature</div><div class="v">Match on IMO/tail number; flag-of-convenience signal; AIS-darkness signal from vessel-tracking provider.</div></div>
+            <div class="row risk"><div class="k">Disposition</div><div class="v">Block; consider sanctions evasion typology; check related parties and broader trade-finance chain.</div></div>
+          </div>
+
+          <div class="scenario p4">
+            <div class="head"><div><h4>Whitelist-driven suppression</h4><div class="sub">Previously-cleared FP</div></div><span class="pill p4">P4</span></div>
+            <div class="row"><div class="k">Typology</div><div class="v">A customer or counterparty previously investigated and confirmed as FP triggers a match again on subsequent screening.</div></div>
+            <div class="row"><div class="k">Signature</div><div class="v">Match on a named-entity-list-entry pair previously dispositioned as FP and added to the good-guy list.</div></div>
+            <div class="row risk"><div class="k">Disposition</div><div class="v">Auto-suppress with audit trail; periodic review of whitelist hygiene; unwind suppression if list entry materially changes.</div></div>
+          </div>
+
+        </div>
+
+        <div class="note">
+          <p class="tag">Priority code</p>
+          <h6>An operational, not regulatory, classification.</h6>
+          <p><span class="pill p1">P1</span> blocking action required &nbsp;·&nbsp; <span class="pill p2">P2</span> material risk decision &nbsp;·&nbsp; <span class="pill p3">P3</span> investigate, often resolved as FP &nbsp;·&nbsp; <span class="pill p4">P4</span> automated handling. Priority is operational, not regulatory.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SECTION XI · WORKED ============ -->
+    <section id="s11">
+      <div class="section-header">
+        <p class="num">Chapter XI · Operations</p>
+        <h2>Worked <em>walkthroughs</em>.</h2>
+        <p class="deck">Three concrete examples showing how a hit looks, how it's analyzed, and how an investigator resolves it.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 11 · From hit to disposition</p>
+        <h3>Three end-to-end resolutions.</h3>
+
+        <p class="opener">The scenarios in the previous section described shapes. This section walks three of them all the way through: what the hit looked like on screen, what the investigator saw, what they did, and why. These are composites, not real cases — but they reflect the texture of the work as it is genuinely practised in tier-1 institutions.</p>
+
+        <div class="example">
+          <div class="label">Walkthrough 01 · false-positive common-name collision</div>
+          <h4>Wang Wei, a software engineer in Shenzhen, fires against an SDN Wang Wei.</h4>
+          <p><strong>Setup.</strong> Customer Wang Wei is onboarding for a personal account. Name is captured exactly as printed on national ID.</p>
+          <p><strong>Hit:</strong></p>
+          <ol>
+            <li>Sanctions screen returns one candidate match: SDN "WANG, Wei" listed under a cyber program</li>
+            <li>Name similarity score: 0.95 (very high)</li>
+            <li>Customer DOB: 1987-03-12 · SDN DOB: 1971-08-04 (mismatch)</li>
+            <li>Customer nationality: Chinese (PRC) · SDN nationality: Chinese (PRC) (match)</li>
+            <li>Customer ID: PRC national ID 4403... · SDN identifier: PRC passport E12... (different document; no overlap)</li>
+            <li>Customer address: Shenzhen · SDN known address: Beijing</li>
+          </ol>
+          <p><strong>Investigator analysis.</strong> Name similarity alone is not enough — "Wang" is among the most common surnames globally and "Wei" is a common given name. The DOB mismatch alone is decisive; the identifier non-overlap and address mismatch confirm. The match is logged as a confirmed false positive, the rationale documented, and the customer/listed-entry pair added to the good-guy list to suppress future re-alerting on this specific pair (but the customer remains in scope for all future list updates).</p>
+          <div class="lessons">
+            <strong>Why it works.</strong> Secondary attributes did the heavy lifting; name matching alone produces unmanageable volumes on common names. The whitelist entry is <em>per-pair</em> (this customer to this SDN entry) — not a blanket exemption for the customer. If a different SDN listing later matches this customer, it will alert anew.
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="label">Walkthrough 02 · confirmed payment hit, block and report</div>
+          <h4>Outgoing wire to a beneficiary linked to a sanctioned entity.</h4>
+          <p><strong>Setup.</strong> US-domiciled corporate customer Acme Trading Inc instructs an MT103 of USD 4.2m to beneficiary "Trans-Caspian Logistics LLC" at a Turkish correspondent.</p>
+          <p><strong>Hit signals:</strong></p>
+          <ol>
+            <li>Beneficiary name matches OFAC SDN entry "Trans-Caspian Logistics LLC" (Russia-related EO14024 program)</li>
+            <li>SDN entry includes the same registered address (Istanbul branch) cited in the payment</li>
+            <li>Identifier (Turkish tax number) matches the SDN entry</li>
+            <li>Match score: 0.99; secondary attribute alignment: 3 of 3</li>
+          </ol>
+          <p><strong>Investigator actions.</strong> (a) Payment is held pre-execution at the SWIFT gateway. (b) Investigator confirms the match against OFAC listing details. (c) Compliance officer signs off as confirmed true positive. (d) Funds are <em>blocked</em> — placed in an interest-bearing blocked account in Acme Trading's name. (e) <em>OFAC blocking report</em> is filed within 10 business days. (f) Annual blocked-property report submitted as required. (g) Acme Trading is contacted (limited communication permitted) to explain that the funds are blocked and that they may apply to OFAC for a specific licence if applicable.</p>
+          <div class="lessons">
+            <strong>Why it works.</strong> This is the textbook outcome of payment screening — the control achieved its purpose. Note the asymmetry with AML SAR filing: in screening, the customer must be informed that their payment was blocked (they cannot be left to assume it went through), even though tipping off about the broader investigation may still be restricted.
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="label">Walkthrough 03 · 50% rule indirect hit via UBO chain</div>
+          <h4>A clean-looking entity owned 60% by an SDN through nested holdings.</h4>
+          <p><strong>Setup.</strong> A new corporate customer "Bluegrass Investments Ltd" is onboarding. The entity itself appears nowhere on any list.</p>
+          <p><strong>UBO analysis:</strong></p>
+          <ol>
+            <li>Bluegrass Investments Ltd (BVI) is owned 100% by "Coastal Holdings PCC" (Guernsey)</li>
+            <li>Coastal Holdings PCC is owned 60% by "Mr Aleksandr Ivanov" (individual)</li>
+            <li>Direct screening of Bluegrass: no hit</li>
+            <li>Screening of Coastal Holdings: no hit</li>
+            <li>Screening of Aleksandr Ivanov: <strong>hit on SDN list, Russia-EO14024 program, with matching DOB and passport number</strong></li>
+          </ol>
+          <p><strong>Disposition.</strong> Aleksandr Ivanov's 60% ownership of Coastal Holdings exceeds the 50% threshold. Coastal Holdings is therefore itself sanctioned by operation of law. Coastal's 100% ownership of Bluegrass means Bluegrass is also sanctioned by operation of law. Onboarding is declined; any pre-existing funds received are blocked; OFAC reporting follows.</p>
+          <div class="lessons">
+            <strong>Why it works (and where it usually fails).</strong> The customer record alone gave no hit. The protection lived entirely in the UBO chain. Programs that screen only the named customer — without walking ownership through every layer — fail this case. UBO data quality (from the customer's disclosures plus enrichment via corporate registry data) is the operational bottleneck. The 50% rule applies to aggregate ownership across multiple SDNs, so the calculation can be more complex than this example.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SECTION XII · FP REDUCTION ============ -->
+    <section id="s12">
+      <div class="section-header">
+        <p class="num">Chapter XII · Operations</p>
+        <h2><em>False-positive</em> reduction.</h2>
+        <p class="deck">Most screening programs run FP rates of 95–99%. Reducing this — without missing true positives — is where most of the engineering and tuning effort goes.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 12 · The central operational problem</p>
+        <h3>Cutting noise without cutting signal.</h3>
+
+        <p class="opener">A typical payment-screening program flags one alert per 50–200 messages and clears more than 95% of them as false positives. That ratio defines the cost structure of the function — the size of the L1 team, the latency at the payment gateway, the percentage of alerts the regulator sampling sees. Reducing it, defensibly, without trading away true positives, is the central engineering and tuning problem of screening.</p>
+
+        <h4>Secondary-attribute scoring</h4>
+        <p>The largest single FP-reduction lever. Configure the engine to require not just a name-similarity threshold, but corroboration from DOB / nationality / identifier / address before generating a high-priority hit. Many modern vendors expose this as a multi-factor scoring framework with bank-tunable weights.</p>
+
+        <h4>Whitelisting (Good-Guy lists)</h4>
+        <p>Once a name-pair has been investigated and dispositioned as FP, suppress future re-alerting on that pair. Critical caveats: <strong>per-pair, not per-customer</strong>; reviewed periodically and unwound if either side changes; documented with the investigation rationale that justified suppression. Bad whitelist hygiene is a regulatory finding hot-spot — a misconfigured "always clear" entry can create a permanent blind spot.</p>
+
+        <h4>List enrichment &amp; cleanup</h4>
+        <p>Some vendor lists carry weak entries with sparse identifiers. Enrich your local copy of the list with additional data (gazette references, public-domain identifiers, court documents) to give the matching engine more secondary attributes to work with. Drop or flag duplicate entries.</p>
+
+        <h4>Per-program scoring</h4>
+        <p>Match thresholds calibrated by sanctions program: the threshold for a confirmed-hit alert on an SDGT (terrorism) entry can be looser than for a sectoral SSI entry where the cost of an over-alert is high and the underlying party is more easily disambiguated.</p>
+
+        <h4>Cultural / linguistic tuning</h4>
+        <p>Recognize that some name conventions produce structurally more FPs (common Chinese, Korean, Arabic, Slavic names with short forms or limited identifier penetration). Apply context-aware thresholds and secondary-attribute weights, rather than a single global setting.</p>
+
+        <h4>Machine learning</h4>
+        <p>Supervised ML trained on dispositioned hits predicts FP likelihood and routes high-confidence FPs to auto-clear queues (with sampled human QA) or to lower-priority investigation. Vendors increasingly ship these as bolt-on layers (ComplyAdvantage, Hawk AI, Quantexa, NICE Actimize WL-X, Lucinity). All such models require SR 11-7-style validation and ongoing performance monitoring.</p>
+
+        <h4>Above-the-line / Below-the-line testing</h4>
+        <p>Standard regulatory expectation: periodically sample alerts just above and just below the matching threshold, manually review, confirm the threshold is calibrated correctly. The same discipline used in TM applies to screening — perhaps even more so given the strict-liability standard for sanctions hits.</p>
+
+        <div class="note">
+          <p class="tag">A regulatory trap</p>
+          <h6>"We were drowning in FPs" is not a defence.</h6>
+          <p>Loosening match thresholds <em>solely</em> to reduce alert volume is the most-common screening finding in OFAC and OFSI enforcement matters. Any change in match parameters must be supported by ATL/BTL testing, documented in the model inventory, approved by model governance, and re-tested afterwards. "We were drowning in FPs" is not a defence.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SECTION XIII · INVESTIGATION ============ -->
+    <section id="s13">
+      <div class="section-header">
+        <p class="num">Chapter XIII · Operations</p>
+        <h2><em>Investigation</em> &amp; disposition.</h2>
+        <p class="deck">The human side of screening. Latency-critical for payment screening, judgement-critical for sanctions and PEP investigations.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 13 · What happens after a hit</p>
+        <h3>Where matching ends and judgement begins.</h3>
+
+        <p class="opener">When the matching engine raises a hit, the locus of the work shifts from algorithms to humans. The investigator becomes the bank's final line of defence — and, in payment screening, the source of the SLA that determines whether the bank's wire can leave on time. The structure of the investigation function, the toolkit it uses, and the documentation it produces all determine whether screening succeeds operationally and survives audit.</p>
+
+        <h4>Investigator hierarchy</h4>
+        <div class="three-col">
+          <div class="panel">
+            <h4>L1 — Screening analyst</h4>
+            <p>First touch on every hit. Validates inputs, applies secondary attributes, checks public sources, closes obvious FPs with documented rationale, escalates the rest. Often a 24×7 operation for payment screening.</p>
+          </div>
+          <div class="panel">
+            <h4>L2 — Sanctions investigator</h4>
+            <p>Handles non-trivial cases — 50% rule analyses, sectoral sanctions complexity, multi-jurisdictional issues. May liaise with the customer's relationship manager and with internal legal.</p>
+          </div>
+          <div class="panel">
+            <h4>L3 — Sanctions / OFAC officer</h4>
+            <p>Senior compliance officer; signs off on blocking decisions; manages OFAC reporting; coordinates with external counsel on licence applications and ambiguous cases; manages regulator-facing communications.</p>
+          </div>
+        </div>
+
+        <h4>The investigator's toolkit</h4>
+        <ul>
+          <li><strong>Hit detail panel</strong> — input vs list entry side-by-side; algorithm contributions to score; all secondary attributes.</li>
+          <li><strong>List entry detail</strong> — full SDN record, program reference, date listed, links to source documents.</li>
+          <li><strong>Customer 360</strong> — KYC, transactions, prior screening history, prior hits and dispositions.</li>
+          <li><strong>UBO &amp; corporate structure</strong> — ownership chain visualization, often from Orbis, OpenCorporates, registries.</li>
+          <li><strong>Vessel / aircraft tracking</strong> — AIS data, ownership, voyage history (Pole Star, Windward, Lloyd's List Intelligence).</li>
+          <li><strong>Adverse media context</strong> — articles and risk-category tagging from vendor data.</li>
+          <li><strong>GenAI assistants</strong> — emerging from Lucinity, Saifr, ComplyAdvantage, Hawk AI for narrative drafting, summarization, and source-of-wealth analysis.</li>
+        </ul>
+
+        <h4>Disposition documentation</h4>
+        <div class="note">
+          <p class="tag">Disposition rationale — example</p>
+          <h6>What "good" looks like on the page.</h6>
+          <p><em>"Hit on customer Wang Wei vs SDN WANG, Wei (Cyber2). Name similarity 0.95. DOB mismatch (customer 1987-03-12 vs SDN 1971-08-04); identifier non-overlap (customer PRC ID 4403... vs SDN PRC passport E12...); address mismatch (Shenzhen vs Beijing). Three secondary attributes contradict; identifier non-overlap decisive. Disposition: false positive, customer cleared, pair whitelisted with 12-month review. Investigator: [name]. Reviewer: [name]. Date: [date]."</em></p>
+        </div>
+
+        <h4>Reporting outputs</h4>
+        <ul>
+          <li><strong>OFAC blocking report</strong> — within 10 business days of blocking property; annual blocked-property report.</li>
+          <li><strong>OFAC reject report</strong> — for transactions rejected (not blocked) due to sanctions.</li>
+          <li><strong>OFSI compliance reporting</strong> — including the UK annual review process.</li>
+          <li><strong>SAR/STR</strong> — where the hit also raises money-laundering suspicion (e.g. sanctions evasion typology).</li>
+          <li><strong>Voluntary self-disclosure</strong> — to OFAC or OFSI where the bank discovers a past breach; materially reduces penalty exposure.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ SECTION XIV · VENDORS ============ -->
+    <section id="s14">
+      <div class="section-header">
+        <p class="num">Chapter XIV · Landscape &amp; trends</p>
+        <h2>Technology <em>providers</em>.</h2>
+        <p class="deck">A non-exhaustive landscape across data providers, customer-screening engines, payment-screening engines, and crypto-screening platforms. Positioning shifts rapidly — verify current capability before procurement.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 14 · Who builds the tools</p>
+        <h3>Data, engines, and the specialist edges.</h3>
+
+        <p class="opener">The screening market is layered: data providers sit underneath the engines, the engines split between customer and payment, and a handful of specialist providers cover the edges (vessels, crypto). Most tier-1 banks run a stack made up of <em>several</em> vendors at the same time. Migration is rare and expensive; incumbency is high; positioning shifts continuously. The table below is a snapshot, not a recommendation.</p>
+
+        <h4>Watchlist, PEP &amp; adverse media data</h4>
+        <table>
+          <thead><tr><th style="width:24%;">Vendor / Product</th><th>Positioning</th><th style="width:26%;">Typical customers</th></tr></thead>
+          <tbody>
+            <tr><td>Refinitiv World-Check (LSEG)</td><td>Industry-standard sanctions, PEP, and adverse media database; the most-cited data feed in tier-1 banks.</td><td>Almost all tier-1 banks.</td></tr>
+            <tr><td>Dow Jones Risk &amp; Compliance</td><td>Competing global sanctions / PEP / adverse media data; strong in corporate compliance.</td><td>Banks, asset managers, corporates.</td></tr>
+            <tr><td>LexisNexis Risk Solutions (WorldCompliance, Bridger)</td><td>Screening data plus identity verification; US-heavy distribution.</td><td>Banks, insurers, US distribution.</td></tr>
+            <tr><td>Moody's GRID</td><td>Risk data plus deep beneficial-ownership data via Bureau van Dijk / Orbis.</td><td>Compliance and KYC functions.</td></tr>
+            <tr><td>ComplyAdvantage</td><td>Cloud-first AML data + screening; popular with fintechs and digital banks.</td><td>Fintechs, digital banks, payment platforms.</td></tr>
+            <tr><td>Acuris (Mergermarket / C6 Intelligence)</td><td>Specialist risk data, particularly adverse media.</td><td>Compliance teams.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Customer-screening engines</h4>
+        <table>
+          <thead><tr><th style="width:24%;">Vendor / Product</th><th>Positioning</th><th style="width:26%;">Typical customers</th></tr></thead>
+          <tbody>
+            <tr><td>NICE Actimize WL-X</td><td>Watchlist filtering with strong configurable scoring; part of Actimize financial-crime suite.</td><td>Tier-1 and tier-2 banks.</td></tr>
+            <tr><td>Oracle FCCM Sanctions Engine</td><td>Long-established enterprise screening; deep regulator familiarity.</td><td>Large banks, particularly US.</td></tr>
+            <tr><td>SAS Screening / SAS Visual Investigator</td><td>Analytics-led platform; pairs with SAS's broader financial-crime stack.</td><td>Large banks, government, insurance.</td></tr>
+            <tr><td>FICO TONBELLER Siron</td><td>European-headquartered AML/screening suite.</td><td>European banks, insurers.</td></tr>
+            <tr><td>ComplyAdvantage</td><td>Combined data + screening + monitoring in a SaaS package; strong fintech adoption.</td><td>Fintechs, neobanks, payment institutions.</td></tr>
+            <tr><td>Hawk AI</td><td>Cloud-native AML + screening with explainable AI positioning; European focus.</td><td>Fintechs, neobanks, mid-market banks.</td></tr>
+            <tr><td>Napier</td><td>Modular cloud-native AML and screening platform.</td><td>Banks, e-money, payment institutions.</td></tr>
+            <tr><td>Lucinity</td><td>AI-led platform with GenAI investigator copilot.</td><td>Banks and fintechs investing in GenAI workflows.</td></tr>
+            <tr><td>Quantexa</td><td>Entity-resolution and graph for screening at the UBO chain layer; strong on shell-company detection.</td><td>HSBC, Standard Chartered, Danske, BNY, AIB, NAB.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Payment-screening engines</h4>
+        <table>
+          <thead><tr><th style="width:24%;">Vendor / Product</th><th>Positioning</th><th style="width:26%;">Typical customers</th></tr></thead>
+          <tbody>
+            <tr><td>Fircosoft (Accuity / LSEG)</td><td>Long-established payment-screening incumbent; deep SWIFT integration; broad installed base.</td><td>Tier-1 international banks.</td></tr>
+            <tr><td>Bottomline (now part of Lloyds / Thoma Bravo)</td><td>Payments and screening platform; common in mid-market and treasury contexts.</td><td>Mid-market banks, corporates.</td></tr>
+            <tr><td>Eastnets en.SafeWatch</td><td>SWIFT-integrated payments screening; common in MENA and Europe.</td><td>MENA banks, Asian banks, European correspondents.</td></tr>
+            <tr><td>ACI Worldwide</td><td>End-to-end payments platform including screening.</td><td>Banks, retailers, processors.</td></tr>
+            <tr><td>Pelican Sanctions (Fenergo)</td><td>Payment-screening engine integrated with Fenergo's KYC platform.</td><td>Banks and asset managers using Fenergo.</td></tr>
+            <tr><td>NetReveal / SymphonyAI</td><td>Payment surveillance and screening as part of the broader financial-crime suite.</td><td>Tier-1 and tier-2 banks.</td></tr>
+            <tr><td>SWIFT Sanctions Screening</td><td>SWIFT's own hosted sanctions-screening service; common in smaller banks.</td><td>Smaller banks, less-direct screening needs.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Beneficial-ownership &amp; corporate data</h4>
+        <table>
+          <thead><tr><th style="width:24%;">Vendor / Product</th><th>Positioning</th><th style="width:26%;">Typical customers</th></tr></thead>
+          <tbody>
+            <tr><td>Moody's Bureau van Dijk Orbis</td><td>Global corporate ownership and financial data; deep coverage of UBO chains.</td><td>KYC and compliance teams globally.</td></tr>
+            <tr><td>OpenCorporates</td><td>Open-data corporate registry aggregation; complements paid data.</td><td>Banks, journalists, civil society.</td></tr>
+            <tr><td>Dun &amp; Bradstreet</td><td>Corporate identification (DUNS numbers), credit data, and ownership.</td><td>Banks, corporates, trade-finance.</td></tr>
+            <tr><td>LSEG / Refinitiv DataLink</td><td>Entity data integrated with World-Check.</td><td>Tier-1 banks.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Vessel &amp; aircraft tracking (for trade-finance and sanctions evasion)</h4>
+        <table>
+          <thead><tr><th style="width:24%;">Vendor / Product</th><th>Positioning</th><th style="width:26%;">Typical customers</th></tr></thead>
+          <tbody>
+            <tr><td>Pole Star (LSEG)</td><td>Vessel tracking, sanctions screening of maritime assets, dark-fleet detection.</td><td>Trade-finance banks, insurers, regulators.</td></tr>
+            <tr><td>Windward</td><td>AI-driven maritime risk and sanctions analytics.</td><td>Banks, insurers, government.</td></tr>
+            <tr><td>Lloyd's List Intelligence</td><td>Vessel ownership, voyage history, and sanctions exposure data.</td><td>Maritime industry, banks.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Crypto / blockchain screening</h4>
+        <table>
+          <thead><tr><th style="width:24%;">Vendor / Product</th><th>Positioning</th><th style="width:26%;">Typical customers</th></tr></thead>
+          <tbody>
+            <tr><td>Chainalysis KYT</td><td>Real-time transaction-level sanctions screening for crypto exposures (wallet vs sanctioned address).</td><td>Crypto exchanges, banks dealing with VASPs.</td></tr>
+            <tr><td>TRM Labs</td><td>Wallet risk-scoring and sanctions screening on-chain; strong on emerging threats.</td><td>Exchanges, banks, regulators.</td></tr>
+            <tr><td>Elliptic</td><td>Blockchain analytics; sanctions and counterparty risk on-chain.</td><td>Exchanges, banks, payment providers.</td></tr>
+            <tr><td>Crystal Blockchain (Bitfury)</td><td>Wallet risk and compliance on-chain.</td><td>VASPs, banks with digital-asset exposure.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="note">
+          <p class="tag">Choosing a vendor</p>
+          <h6>Most tier-1 banks run several at once.</h6>
+          <p>Right vendor depends on (a) which side of screening (customer vs payment), (b) data-licence preference (Refinitiv vs Dow Jones vs ComplyAdvantage), (c) integration with the rest of the AML stack, (d) regulatory geography. Most tier-1 banks run <strong>multiple vendors</strong>: one or more data providers, a customer-screening engine, a payment-screening engine (often a different vendor and platform), plus specialist vessel and crypto screening providers. Migration is rare and expensive; vendor incumbency is high.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SECTION XV · TRENDS ============ -->
+    <section id="s15">
+      <div class="section-header">
+        <p class="num">Chapter XV · Landscape &amp; trends</p>
+        <h2>Emerging <em>trends</em>.</h2>
+        <p class="deck">The dominant directions of change in screening as of 2024–2026.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 15 · Where screening is heading</p>
+        <h3>What is changing, and what is not.</h3>
+
+        <p class="opener">Screening is one of the slower-moving disciplines in financial crime — by design, since predictability and audit-defensibility are part of its core value. Even so, the period 2022–2026 has produced more change than any equivalent span in the previous decade. The themes below are the ones that are reshaping platform architecture, vendor positioning, and regulator expectations in real time.</p>
+
+        <h4>ISO 20022 fully landed</h4>
+        <p>The SWIFT MT → ISO 20022 migration completed end of 2025 for cross-border payments. Structured payment fields dramatically improve screening accuracy when fully consumed — but require the screening platform to be re-architected to consume XML, parse structured parties, and use Ultimate Debtor / Ultimate Creditor fields properly. Many banks are still in transition; legacy MT consumption co-exists with ISO 20022 in hybrid configurations.</p>
+
+        <h4>AI for hit reduction with explainability</h4>
+        <p>Machine-learning hit-scoring layers are now mainstream on top of deterministic matching — provided each decision is explainable to a regulator. The deterministic match still fires; ML triages and prioritizes. The black-box-only vendor model is no longer viable.</p>
+
+        <h4>Perpetual screening</h4>
+        <p>Traditional cycle-based rescreening (annual, every-three-years) is being replaced by <span class="term">perpetual screening</span>: every list update triggers automatic portfolio rescreen, and any change in customer data triggers a fresh screen. Pairs naturally with <em>perpetual KYC</em>.</p>
+
+        <h4>Crypto wallet screening</h4>
+        <p>Banks with any VASP exposure now embed Chainalysis / TRM / Elliptic into their screening flow — checking whether a wallet involved in a transaction has historical exposure to sanctioned addresses, mixers, or darknet markets. The OFAC sanctioning of Tornado Cash (2022) established that protocols and addresses themselves can be sanctioned, not just legal persons.</p>
+
+        <h4>Beneficial-ownership transparency expansion</h4>
+        <p>Public UBO registers — UK Companies House PSC register, EU Beneficial Ownership Registers (where accessible post-2022 CJEU ruling), US Corporate Transparency Act FinCEN reporting — make UBO data more available, and raise regulator expectations. Programs that previously took customer-provided UBO at face value increasingly must verify against public registers.</p>
+
+        <h4>Russia-sanctions expansion and dark-fleet evasion</h4>
+        <p>The 2022 expansion of Russia sanctions, the price-cap regime for Russian oil, and the rise of the "dark fleet" (vessels using flag-of-convenience, AIS spoofing, identity laundering) have made trade-finance screening dramatically more complex. Vessel tracking integration is no longer optional for institutions with shipping exposure.</p>
+
+        <h4>Sanctions complexity and policy fragmentation</h4>
+        <p>Sectoral and menu-based sanctions (NS-MBS, SSI) and divergence between US/EU/UK programs are creating ever-more granular sanctions logic. Screening platforms increasingly need rule engines beyond pure list-matching — to evaluate not "is this name listed?" but "does this specific activity, with this party, under this program, in this booking entity, breach the restriction menu?"</p>
+
+        <h4>GenAI for investigation</h4>
+        <p>As in TM and TS, GenAI is being deployed not in the matching layer (explainability constraint) but in the <strong>investigation</strong> layer: drafting dispositions, summarizing public-source research, structuring source-of-wealth analyses, walking ownership chains. Lucinity, Saifr, ComplyAdvantage, Hawk AI, and SymphonyAI all have shipping or piloted copilots.</p>
+      </div>
+    </section>
+
+    <!-- ============ SECTION XVI · PITFALLS ============ -->
+    <section id="s16">
+      <div class="section-header">
+        <p class="num">Chapter XVI · Landscape &amp; trends</p>
+        <h2>Common <em>pitfalls</em> &amp; challenges.</h2>
+        <p class="deck">Patterns repeating across OFAC enforcement orders, OFSI penalties, audit findings, and consulting engagements.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 16 · What goes wrong</p>
+        <h3>Ten failure modes the regulator sees most often.</h3>
+
+        <p class="opener">If you read enough OFAC and OFSI enforcement orders, the same ten patterns repeat with unsettling consistency. They are documented here not because any of them is exotic — none of them is — but because the test of a screening program's maturity is whether each of them has been actively engineered out, not merely "considered".</p>
+
+        <div class="two-col">
+          <div class="panel"><h4>1 · UBO blind spots</h4><p>Direct screening passes; the SDN owner sits two corporate layers deep, in a different jurisdiction. The 50% rule applies anyway. This pattern is in nearly every modern sanctions enforcement.</p></div>
+          <div class="panel"><h4>2 · List ingestion lag</h4><p>A new designation goes live on the list at 14:00 local time; the bank's screening engine doesn't refresh until overnight. Hours of unblocked exposure.</p></div>
+          <div class="panel"><h4>3 · Cover-payment stripping</h4><p>MT202 COV chain is not fully screened; underlying payment parties slip through. Multiple US enforcement actions against major banks turned on this.</p></div>
+          <div class="panel"><h4>4 · Free-text remittance gaps</h4><p>Sanctioned name appears in the unstructured payment reference field, never reaches the matching engine. ISO 20022 reduces but does not eliminate.</p></div>
+          <div class="panel"><h4>5 · Whitelist contamination</h4><p>A bad good-guy entry permanently suppresses a real hit. Hygiene failures here are devastating.</p></div>
+          <div class="panel"><h4>6 · Threshold drift</h4><p>Quietly raising match thresholds to reduce FPs without ATL/BTL evidence. Classic regulator finding.</p></div>
+          <div class="panel"><h4>7 · Transliteration weakness</h4><p>Cyrillic, Arabic, or Chinese names entered in script; matching engine handles only Latin. Real exposure during the Russia sanctions expansion.</p></div>
+          <div class="panel"><h4>8 · List version vs decision mismatch</h4><p>When investigating a historical screening pass, the bank cannot reproduce the list as it stood at the time. Auditors and regulators ask for exactly this.</p></div>
+          <div class="panel"><h4>9 · Sectoral-sanctions misapplication</h4><p>SSI entries treated as full blocks (over-restrictive) or as no-restriction (under-restrictive). Both are findings.</p></div>
+          <div class="panel"><h4>10 · Vessel and trade-finance gaps</h4><p>No screening of IMO numbers, no integration with vessel-tracking data, no ability to detect AIS-darkness signal on dark-fleet shipping.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SECTION XVII · GLOSSARY ============ -->
+    <section id="s17">
+      <div class="section-header">
+        <p class="num">— Appendix</p>
+        <h2><em>Glossary</em>.</h2>
+        <p class="deck">The acronyms you will see most often.</p>
+      </div>
+      <div class="section-body appendix-body">
+        <div class="group">
+          <h5>Acronyms &amp; abbreviations</h5>
+          <p class="grouptitle">A quick-reference key to the dense vocabulary of screening.</p>
+          <dl class="glossary">
+            <dt>AIS</dt><dd>Automatic Identification System — vessel-tracking signal; "going dark" is a sanctions-evasion signal.</dd>
+            <dt>AMLA</dt><dd>EU Anti-Money Laundering Authority (from 2028).</dd>
+            <dt>BIC</dt><dd>Bank Identifier Code; ISO 9362.</dd>
+            <dt>BIS</dt><dd>US Department of Commerce, Bureau of Industry and Security; publisher of the Entity List, DPL, MEU.</dd>
+            <dt>CFSP</dt><dd>EU Common Foreign and Security Policy — the legal basis for EU sanctions.</dd>
+            <dt>CTA</dt><dd>US Corporate Transparency Act — beneficial-ownership reporting to FinCEN.</dd>
+            <dt>DPL</dt><dd>Denied Persons List (BIS).</dd>
+            <dt>EBA</dt><dd>European Banking Authority.</dd>
+            <dt>EDD</dt><dd>Enhanced Due Diligence.</dd>
+            <dt>FATF</dt><dd>Financial Action Task Force.</dd>
+            <dt>HMT</dt><dd>HM Treasury (UK).</dd>
+            <dt>IMO</dt><dd>International Maritime Organization; vessel IMO number is a persistent identifier.</dd>
+            <dt>ISO 20022</dt><dd>The XML-based payments-messaging standard replacing legacy SWIFT MT.</dd>
+            <dt>KYC / CDD</dt><dd>Know Your Customer / Customer Due Diligence.</dd>
+            <dt>LEI</dt><dd>Legal Entity Identifier; ISO 17442.</dd>
+            <dt>MEU</dt><dd>Military End User list (BIS).</dd>
+            <dt>NS-MBS</dt><dd>Non-SDN Menu-Based Sanctions list (OFAC; China-related).</dd>
+            <dt>OFAC</dt><dd>US Office of Foreign Assets Control.</dd>
+            <dt>OFSI</dt><dd>UK Office of Financial Sanctions Implementation.</dd>
+            <dt>PEP / RCA</dt><dd>Politically Exposed Person / Relative or Close Associate.</dd>
+            <dt>PSC</dt><dd>Person with Significant Control (UK Companies House register).</dd>
+            <dt>SDGT</dt><dd>Specially Designated Global Terrorist (OFAC program code).</dd>
+            <dt>SDN</dt><dd>Specially Designated National (OFAC); main blocking list.</dd>
+            <dt>SECO</dt><dd>Swiss State Secretariat for Economic Affairs.</dd>
+            <dt>SSI</dt><dd>Sectoral Sanctions Identifications (OFAC).</dd>
+            <dt>UBO</dt><dd>Ultimate Beneficial Owner.</dd>
+            <dt>UNSC</dt><dd>United Nations Security Council.</dd>
+            <dt>VASP</dt><dd>Virtual Asset Service Provider.</dd>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SECTION XVIII · REFERENCES ============ -->
+    <section id="s18">
+      <div class="section-header">
+        <p class="num">— Appendix</p>
+        <h2><em>References</em> &amp; further reading.</h2>
+        <p class="deck">Primary sources first; supervisory guidance second; enforcement orders to see what is actually punished.</p>
+      </div>
+      <div class="section-body appendix-body refs">
+
+        <div class="group">
+          <h5>US sanctions framework</h5>
+          <p class="grouptitle">The OFAC corpus and adjacent BIS lists.</p>
+          <ol>
+            <li>OFAC — <em>A Framework for OFAC Compliance Commitments</em> (2019). Required reading; sets out the risk-based-approach expectations. <span class="src">treasury.gov &rsaquo; ofac</span></li>
+            <li>OFAC — <em>Recent Actions</em> feed; SDN List downloads (XML/CSV/Delimited); 50% Rule guidance. <span class="src">treasury.gov &rsaquo; ofac &rsaquo; recent-actions</span></li>
+            <li>OFAC — <em>Sanctions Program Summaries</em> (one per country/thematic program). <span class="src">treasury.gov &rsaquo; ofac &rsaquo; programs</span></li>
+            <li>OFAC — <em>Strengthening Sanctions Compliance through Voluntary Self-Disclosure</em>. <span class="src">treasury.gov &rsaquo; ofac</span></li>
+            <li>BIS — Entity List, Denied Persons List, Military End User List, and Unverified List. <span class="src">bis.doc.gov</span></li>
+          </ol>
+        </div>
+
+        <div class="group">
+          <h5>UK sanctions framework</h5>
+          <p class="grouptitle">OFSI guidance and the post-Brexit foundation.</p>
+          <ol start="6">
+            <li>OFSI — <em>UK Sanctions List</em> and per-regime guidance. <span class="src">gov.uk &rsaquo; government &rsaquo; collections &rsaquo; ofsi-financial-sanctions-guidance</span></li>
+            <li>OFSI — <em>General Guidance for Financial Sanctions</em>.</li>
+            <li>UK <em>Sanctions and Anti-Money Laundering Act 2018</em>. <span class="src">legislation.gov.uk</span></li>
+            <li>UK Russia (Sanctions) (EU Exit) Regulations 2019 and amendments.</li>
+          </ol>
+        </div>
+
+        <div class="group">
+          <h5>EU sanctions framework</h5>
+          <p class="grouptitle">EU consolidated list, AMLR, and the Blocking Statute.</p>
+          <ol start="10">
+            <li>European Commission — <em>EU Sanctions Map</em> and <em>Consolidated Financial Sanctions List</em>. <span class="src">sanctionsmap.eu &nbsp;·&nbsp; data.europa.eu</span></li>
+            <li>European Commission — <em>Best Practices for the Effective Implementation of Restrictive Measures</em>.</li>
+            <li>EU AMLR (2024) and AMLD6 — anti-money-laundering package. <span class="src">finance.ec.europa.eu</span></li>
+            <li>EU Blocking Statute — Regulation 2271/96 (the legal regime for resisting extraterritorial sanctions).</li>
+          </ol>
+        </div>
+
+        <div class="group">
+          <h5>UN sanctions framework</h5>
+          <p class="grouptitle">The Consolidated List and its supporting committees.</p>
+          <ol start="14">
+            <li>UN Security Council — <em>Consolidated United Nations Security Council Sanctions List</em>. <span class="src">un.org &rsaquo; securitycouncil &rsaquo; content &rsaquo; un-sc-consolidated-list</span></li>
+            <li>UNSC committee reports (1267/1989/2253 Al-Qaida/Da'esh; 1718 DPRK; 1737 Iran legacy; 1591 Sudan etc.).</li>
+          </ol>
+        </div>
+
+        <div class="group">
+          <h5>FATF, Wolfsberg &amp; supervisory</h5>
+          <p class="grouptitle">The industry-and-standard-setter layer.</p>
+          <ol start="16">
+            <li>FATF — <em>The FATF Recommendations</em> (esp. Recs 6, 7, 12 on sanctions and PEPs). <span class="src">fatf-gafi.org</span></li>
+            <li>FATF — <em>Guidance on Targeted Financial Sanctions Related to Terrorism and Terrorist Financing</em>.</li>
+            <li>Wolfsberg Group — <em>Wolfsberg Guidance on Sanctions Screening</em>; <em>Wolfsberg Guidance on Politically Exposed Persons</em>; <em>Wolfsberg Statement on Effective Monitoring for Suspicious Activity</em>. <span class="src">wolfsberg-principles.com</span></li>
+            <li>EBA — <em>Guidelines on ML/TF Risk Factors</em>; <em>Guidelines on Internal Policies, Procedures and Controls Concerning Restrictive Measures</em> (2024). <span class="src">eba.europa.eu</span></li>
+            <li>FFIEC — <em>BSA/AML Examination Manual</em> — sanctions screening section. <span class="src">bsaaml.ffiec.gov</span></li>
+          </ol>
+        </div>
+
+        <div class="group">
+          <h5>Payment-messaging standards</h5>
+          <p class="grouptitle">SWIFT and the ISO 20022 migration.</p>
+          <ol start="21">
+            <li>SWIFT — <em>ISO 20022 Programme</em> documentation, including <em>MT-to-MX Migration Guidance</em>. <span class="src">swift.com &rsaquo; standards</span></li>
+            <li>ISO — <em>ISO 20022 standard</em> and message-set documentation (pacs.008, pacs.009, camt.* family). <span class="src">iso20022.org</span></li>
+            <li>Wolfsberg / BAFT / IIF — <em>Payment Transparency Standards</em>.</li>
+          </ol>
+        </div>
+
+        <div class="group">
+          <h5>Industry &amp; academic</h5>
+          <p class="grouptitle">Practitioner texts to read end-to-end.</p>
+          <ol start="24">
+            <li>Carlisle, T. — <em>Sanctions Compliance: A Practical Guide</em>.</li>
+            <li>Cox, P. — <em>Handbook of Anti-Money Laundering</em>.</li>
+            <li>Christensen, R. — <em>The Anti-Money Laundering Officer Handbook</em>.</li>
+          </ol>
+        </div>
+
+        <div class="group">
+          <h5>Major enforcement actions worth reading the orders on</h5>
+          <p class="grouptitle">The cases that define modern screening expectations.</p>
+          <ol start="27">
+            <li><strong>BNP Paribas</strong> — DOJ / OFAC, 2014 — USD 8.9bn — Sudan/Iran/Cuba payment stripping. The largest single sanctions penalty in history; defining case for cover-payment stripping risk.</li>
+            <li><strong>Standard Chartered</strong> — NYDFS / OFAC, 2012 and 2019 — Iran-related sanctions; second order arose from inadequate remediation post first order.</li>
+            <li><strong>Credit Suisse</strong> — 2009; Iran/Sudan stripping; ~USD 536m.</li>
+            <li><strong>Lloyds TSB</strong> — 2009; Iran/Sudan/Libya stripping; ~USD 350m. Earliest of the modern stripping cases.</li>
+            <li><strong>ING Bank</strong> — 2012; Cuba/Iran stripping; ~USD 619m.</li>
+            <li><strong>Société Générale</strong> — 2018; Cuba/Iran/Libya/Sudan; ~USD 1.34bn.</li>
+            <li><strong>Standard Chartered</strong> — NYDFS / OFAC, 2019 — Iran-related sanctions follow-up.</li>
+            <li><strong>British Arab Commercial Bank</strong> — OFAC, 2019; Sudan-related.</li>
+            <li><strong>Binance</strong> — DOJ / OFAC / FinCEN / CFTC, 2023 — USD 4.3bn — sanctions and AML failures in crypto; the largest crypto-side action and a defining case for digital-asset sanctions exposure.</li>
+            <li><strong>OFAC Tornado Cash designation</strong>, 2022 — the precedent for sanctioning a protocol / smart-contract address rather than a legal person.</li>
+            <li><strong>BAE Systems / NCA / SFO regimes</strong> — UK and US guidance on systemic sanctions and bribery overlaps.</li>
+          </ol>
+        </div>
+
+        <div class="note">
+          <p class="tag">Suggested reading order</p>
+          <h6>Eighty percent of the working knowledge in four documents.</h6>
+          <p>Start with the <em>OFAC Framework for Compliance Commitments</em> (concise; sets the conceptual baseline), the <em>Wolfsberg Guidance on Sanctions Screening</em> (industry view), the <em>OFAC 50% Rule guidance</em> (the single most consequential interpretive principle), then read the <em>BNP Paribas 2014 settlement agreement</em> and <em>OFAC Tornado Cash 2022</em> for the breadth of what is being enforced. That sequence gives you 80% of the working knowledge for any vendor demo or consulting deck on screening.</p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ════════════════════ COLOPHON FOOTER ════════════════════ -->
+<footer class="colophon">
+  <div class="inner">
+    <div class="block">
+      <div class="h">Document</div>
+      <div class="feature">Screening in banks &amp; financial institutions.</div>
+      <div>Primer · No. 02 · May 2026</div>
+    </div>
+    <div class="block">
+      <div class="h">Practice</div>
+      <div class="feature">Infosys Consulting · Banking &amp; financial crime.</div>
+      <div>Self-learning · Internal use</div>
+    </div>
+    <div class="block">
+      <div class="h">Set in</div>
+      <div class="feature">Fraunces &amp; IBM Plex Sans &amp; JetBrains Mono.</div>
+      <div>Designed by IC</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    // Reading-progress bar
+    const prog = document.getElementById('prog');
+    const onScroll = () => {
+      const h = document.documentElement;
+      const scrolled = h.scrollTop;
+      const max = h.scrollHeight - h.clientHeight;
+      const p = max > 0 ? (scrolled / max) * 100 : 0;
+      prog.style.setProperty('--p', p.toFixed(2) + '%');
+    };
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Active-section tracking in the sidebar via IntersectionObserver.
+    if ('IntersectionObserver' in window) {
+      const links = document.querySelectorAll('.sidebar nav a[data-section]');
+      const linkMap = {};
+      links.forEach(a => { linkMap[a.dataset.section] = a; });
+
+      const setActive = (id) => {
+        links.forEach(a => a.classList.remove('active'));
+        if (linkMap[id]) linkMap[id].classList.add('active');
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        let best = null;
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            if (!best || e.boundingClientRect.top < best.boundingClientRect.top) {
+              best = e;
+            }
+          }
+        });
+        if (best) setActive(best.target.id);
+      }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+
+      document.querySelectorAll('main.content > section[id]').forEach(s => {
+        observer.observe(s);
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

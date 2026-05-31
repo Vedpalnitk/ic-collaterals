@@ -1,0 +1,2072 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Trade Surveillance in Banks &amp; Financial Institutions — A Primer · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  /* ─────────────── IC tokens ─────────────── */
+  :root {
+    --white:      #FFFFFF;
+    --deep:       #182534;
+    --pavement:   #404040;
+    --blue:       #007CC3;
+    --stone:      #A7A9AC;
+    --slate:      #6D6E71;
+    --lt-blue:    #3699DA;
+    --tint-blue:  #E6F2FA;
+    --tint-stone: #F2F2F3;
+    --rule:       #E2E4E7;
+
+    --display: 'Fraunces', 'Times New Roman', serif;
+    --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+    --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+    --sidebar-w: 280px;
+  }
+
+  /* ─────────────── reset / base ─────────────── */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--pavement);
+    background: var(--white);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern", "liga";
+  }
+  ::selection { background: var(--deep); color: var(--white); }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  p { margin: 0 0 18px; }
+  ol, ul { margin: 0 0 22px; padding-left: 24px; }
+  li { margin: 6px 0; }
+
+  /* ─────────────── reading-progress bar ─────────────── */
+  .progress {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 2px; background: transparent; z-index: 1000;
+    pointer-events: none;
+  }
+  .progress::before {
+    content: ''; display: block;
+    height: 100%; width: var(--p, 0%);
+    background: var(--blue);
+    transition: width 80ms linear;
+  }
+
+  /* ─────────────── TITLE PAGE (full-bleed) ─────────────── */
+  .title-page {
+    background: var(--deep);
+    color: var(--white);
+    min-height: 100vh;
+    padding: 56px 48px 48px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 32px;
+    position: relative;
+  }
+  .title-page::after {
+    content: ''; position: absolute;
+    left: 0; right: 0; bottom: 0; height: 2px;
+    background: var(--blue);
+  }
+  .title-page .mast {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .title-page .mast .mark { color: var(--white); font-weight: 600; }
+  .title-page .mast .meta { color: var(--stone); }
+  .title-page .hero {
+    align-self: center;
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .title-page .kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--lt-blue);
+    font-weight: 600;
+    margin: 0 0 24px;
+    display: flex; align-items: center; gap: 16px;
+    animation: fadeUp 700ms cubic-bezier(.2,.7,.2,1) both;
+  }
+  .title-page .kicker::before {
+    content: ''; width: 56px; height: 1px; background: var(--lt-blue);
+  }
+  .title-page h1 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+    font-weight: 380;
+    font-size: clamp(48px, 8vw, 108px);
+    line-height: 0.98;
+    letter-spacing: -0.028em;
+    margin: 0 0 36px;
+    color: var(--white);
+    max-width: 18ch;
+    animation: fadeUp 900ms cubic-bezier(.2,.7,.2,1) 100ms both;
+  }
+  .title-page h1 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+    color: var(--lt-blue);
+    font-weight: 380;
+  }
+  .title-page .deck {
+    font-family: var(--body);
+    font-size: clamp(18px, 1.6vw, 22px);
+    line-height: 1.5;
+    font-weight: 400;
+    color: var(--stone);
+    max-width: 62ch;
+    margin: 0;
+    animation: fadeUp 1000ms cubic-bezier(.2,.7,.2,1) 240ms both;
+  }
+  .title-page .deck em { font-style: italic; color: var(--white); }
+  .title-page .byline {
+    border-top: 1px solid rgba(255,255,255,0.12);
+    padding-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+    animation: fadeUp 1100ms cubic-bezier(.2,.7,.2,1) 420ms both;
+  }
+  @media (max-width: 720px) { .title-page .byline { grid-template-columns: repeat(2, 1fr); } }
+  .title-page .byline .field { display: flex; flex-direction: column; gap: 6px; }
+  .title-page .byline .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--stone);
+    font-weight: 600;
+  }
+  .title-page .byline .value {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 30, "SOFT" 60, "WONK" 0;
+    font-size: 17px;
+    color: var(--white);
+    line-height: 1.3;
+  }
+
+  /* ═════════════════════ MAIN LAYOUT ═════════════════════ */
+  .layout {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+    gap: 0;
+    position: relative;
+  }
+  @media (max-width: 920px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  /* ─────────────── SIDEBAR ─────────────── */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 36px 28px 32px;
+    border-right: 1px solid var(--rule);
+    background: var(--white);
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule) transparent;
+  }
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+  @media (max-width: 920px) {
+    .sidebar {
+      position: static;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--rule);
+      padding: 28px 24px;
+    }
+  }
+
+  .sidebar .brand {
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 22px;
+  }
+  .sidebar .brand .label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sidebar .brand .label::before {
+    content: ''; width: 22px; height: 2px; background: var(--blue);
+  }
+  .sidebar .brand .doc-title {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+    font-size: 20px;
+    line-height: 1.18;
+    color: var(--deep);
+    margin: 0 0 6px;
+    letter-spacing: -0.005em;
+  }
+  .sidebar .brand .doc-title em {
+    font-style: italic;
+    font-variation-settings: "opsz" 36, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+    font-weight: 400;
+  }
+  .sidebar .brand .doc-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--slate);
+    text-transform: uppercase;
+  }
+
+  .sidebar nav .group { margin-bottom: 22px; }
+  .sidebar nav .group-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 600;
+    margin: 0 0 6px;
+    padding-left: 14px;
+  }
+  .sidebar nav ol { list-style: none; margin: 0; padding: 0; }
+  .sidebar nav li { margin: 0; }
+  .sidebar nav a {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 10px;
+    align-items: baseline;
+    padding: 7px 12px 7px 12px;
+    border-left: 2px solid transparent;
+    color: var(--pavement);
+    font-family: var(--body);
+    font-size: 14px;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+    font-weight: 400;
+  }
+  .sidebar nav a:hover {
+    color: var(--blue);
+    background: var(--tint-blue);
+    text-decoration: none;
+  }
+  .sidebar nav a.active {
+    color: var(--blue);
+    border-left-color: var(--blue);
+    background: var(--tint-blue);
+    font-weight: 500;
+  }
+  .sidebar nav .num {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 24, "SOFT" 100, "WONK" 1;
+    font-size: 14px;
+    color: var(--blue);
+    line-height: 1;
+    font-weight: 400;
+  }
+  .sidebar nav a.appendix .num {
+    font-family: var(--mono);
+    font-style: normal;
+    color: var(--stone);
+    font-size: 12px;
+  }
+
+  .sidebar .foot {
+    margin-top: 32px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--slate);
+    line-height: 1.7;
+  }
+  .sidebar .foot a { color: var(--blue); font-weight: 600; }
+
+  /* ─────────────── CONTENT COLUMN ─────────────── */
+  .content { min-width: 0; }
+
+  .section-header {
+    background: var(--deep);
+    color: var(--white);
+    padding: 44px 56px;
+    position: relative;
+  }
+  .section-header::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 1px;
+    background: var(--blue);
+  }
+  @media (max-width: 720px) { .section-header { padding: 32px 24px; } }
+
+  .section-header .num {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--lt-blue);
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-header .num::before {
+    content: ''; width: 28px; height: 1px; background: var(--lt-blue);
+  }
+  .section-header h2 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 96, "SOFT" 0, "WONK" 0;
+    font-weight: 380;
+    font-size: clamp(28px, 3.8vw, 44px);
+    line-height: 1.05;
+    letter-spacing: -0.018em;
+    color: var(--white);
+    margin: 0 0 12px;
+    max-width: 22ch;
+  }
+  .section-header h2 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 96, "SOFT" 100, "WONK" 1;
+    color: var(--lt-blue);
+    font-weight: 380;
+  }
+  .section-header .deck {
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--stone);
+    margin: 0;
+    max-width: 64ch;
+  }
+
+  .section-body {
+    padding: 36px 56px 48px;
+    max-width: 860px;
+  }
+  @media (max-width: 720px) { .section-body { padding: 28px 24px 36px; } }
+
+  .section-body .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-body .eyebrow::before {
+    content: ''; width: 28px; height: 3px; background: var(--blue);
+  }
+  .section-body h3 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 60, "SOFT" 0, "WONK" 0;
+    font-weight: 400;
+    font-size: clamp(24px, 2.8vw, 32px);
+    line-height: 1.14;
+    letter-spacing: -0.01em;
+    color: var(--deep);
+    margin: 0 0 14px;
+  }
+  .section-body h3 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 60, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+    font-weight: 400;
+  }
+  .section-body .deck {
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--slate);
+    margin: 0 0 24px;
+    max-width: 64ch;
+    font-weight: 400;
+  }
+
+  .section-body p {
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--pavement);
+    font-weight: 400;
+  }
+  .section-body p strong { color: var(--deep); font-weight: 600; }
+  .section-body p em { font-style: italic; color: var(--deep); }
+  .section-body h4 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 30, "SOFT" 0, "WONK" 0;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--deep);
+    margin: 36px 0 12px;
+    letter-spacing: -0.008em;
+    line-height: 1.25;
+  }
+  .section-body h5 {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 28px 0 10px;
+  }
+  .section-body ul, .section-body ol {
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--pavement);
+  }
+  .section-body ul { list-style: none; padding-left: 0; }
+  .section-body ul li {
+    position: relative;
+    padding-left: 24px;
+    margin: 6px 0;
+  }
+  .section-body ul li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0.62em;
+    width: 12px; height: 1px;
+    background: var(--blue);
+  }
+  .section-body ol { padding-left: 28px; }
+  .section-body ol li { margin: 6px 0; }
+
+  /* Inline term emphasis (was em.term in original) */
+  .term {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--blue);
+  }
+
+  /* Drop cap for chapter openers */
+  .drop-cap::first-letter {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1;
+    font-weight: 400;
+    color: var(--blue);
+    float: left;
+    font-size: 78px;
+    line-height: 0.85;
+    padding: 6px 12px 0 0;
+    margin-top: 4px;
+  }
+
+  /* Pull quote */
+  .pull {
+    margin: 36px 0;
+    padding: 4px 0 4px 24px;
+    border-left: 2px solid var(--blue);
+    font-family: var(--display);
+    font-variation-settings: "opsz" 60, "SOFT" 60, "WONK" 0;
+    font-style: italic;
+    font-weight: 360;
+    font-size: 24px;
+    line-height: 1.24;
+    color: var(--deep);
+    letter-spacing: -0.01em;
+  }
+  .pull .src {
+    display: block;
+    margin-top: 12px;
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 600;
+  }
+
+  /* Inline code */
+  code.inline, .section-body code {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: var(--tint-blue);
+    color: var(--blue);
+    padding: 1px 6px;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+
+  /* Notes / callouts */
+  .note {
+    margin: 28px 0;
+    padding: 20px 24px;
+    background: var(--tint-blue);
+    border-left: 2px solid var(--blue);
+    border-radius: 0 2px 2px 0;
+  }
+  .note .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  .note h6 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 30, "SOFT" 0, "WONK" 0;
+    font-style: italic;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--deep);
+    margin: 0 0 6px;
+  }
+  .note p { margin: 0; font-size: 15px; color: var(--pavement); line-height: 1.6; }
+  .note p + p { margin-top: 10px; }
+  .note ul, .note ol { font-size: 15px; margin-top: 8px; }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 22px 0;
+    font-family: var(--body);
+    font-size: 14.5px;
+    border: 1px solid var(--rule);
+  }
+  thead th {
+    background: var(--tint-stone);
+    color: var(--pavement);
+    text-align: left;
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-bottom: 1px solid var(--rule);
+    border-right: 1px solid var(--rule);
+  }
+  thead th:last-child { border-right: none; }
+  tbody td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--rule);
+    border-right: 1px solid var(--rule);
+    vertical-align: top;
+    color: var(--pavement);
+    line-height: 1.5;
+  }
+  tbody td:last-child { border-right: none; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:nth-child(even) td { background: var(--tint-stone); }
+  tbody td.row-label { font-weight: 600; color: var(--deep); white-space: nowrap; }
+
+  /* Stages (numbered cards) */
+  .stages {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 24px 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (max-width: 720px) { .stages { grid-template-columns: 1fr; } }
+  .stages > li {
+    padding: 16px 18px;
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-top: 2px solid var(--blue);
+    margin: 0;
+  }
+  .stages > li::before { content: none; }
+  .stages .num {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .stages h4 {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--deep);
+    margin: 0 0 8px;
+    letter-spacing: -0.008em;
+  }
+  .stages p {
+    font-size: 14px;
+    color: var(--pavement);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* Flow (lifecycle horizontal) */
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0;
+    margin: 24px 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid var(--rule);
+  }
+  @media (max-width: 920px) { .flow { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .flow { grid-template-columns: 1fr; } }
+  .flow > li {
+    padding: 14px 12px;
+    background: var(--tint-stone);
+    border-right: 1px solid var(--rule);
+    margin: 0;
+  }
+  .flow > li:last-child { border-right: none; }
+  .flow > li::before { content: none; }
+  .flow .num {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .flow .name {
+    font-family: var(--display);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--deep);
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  .flow .desc {
+    font-size: 12px;
+    color: var(--slate);
+    line-height: 1.35;
+  }
+
+  /* Scenario cards */
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 22px 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (max-width: 720px) { .scenario-grid { grid-template-columns: 1fr; } }
+  .scenario {
+    border: 1px solid var(--rule);
+    border-top: 2px solid var(--blue);
+    background: var(--white);
+    padding: 18px 20px;
+    margin: 0;
+  }
+  .scenario::before { content: none; }
+  .scenario .scenhead {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .scenario h4 {
+    margin: 0;
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--deep);
+    letter-spacing: -0.008em;
+  }
+  .scenario .sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--slate);
+    text-transform: uppercase;
+    margin: 2px 0 12px;
+    font-weight: 600;
+  }
+  .scenario .row { margin-bottom: 10px; }
+  .scenario .row:last-child { margin-bottom: 0; }
+  .scenario .k {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    color: var(--blue);
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .scenario .v {
+    font-size: 14px;
+    color: var(--pavement);
+    line-height: 1.5;
+  }
+  .scenario .row.risk .v { font-weight: 500; color: var(--deep); }
+
+  /* Severity pill — solid in blue family + status reds/amber, not deep blue */
+  .pill {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--white);
+    background: var(--slate);
+    vertical-align: middle;
+  }
+  .pill.p1 { background: #C0392B; }
+  .pill.p2 { background: #D89B1F; }
+  .pill.p3 { background: var(--blue); }
+  .pill.p4 { background: var(--slate); }
+
+  /* Example / worked walkthrough */
+  .example {
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--blue);
+    background: var(--white);
+    padding: 22px 26px;
+    margin: 28px 0;
+  }
+  .example .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .example h4 {
+    margin: 0 0 12px;
+    font-family: var(--display);
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--deep);
+    letter-spacing: -0.008em;
+    line-height: 1.25;
+  }
+  .example p, .example ol, .example ul {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--pavement);
+  }
+  .example .lessons {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--rule);
+    font-size: 15px;
+    color: var(--slate);
+    line-height: 1.6;
+  }
+  .example .lessons strong { color: var(--blue); font-weight: 600; }
+
+  /* Panel (col cards) */
+  .panel-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin: 22px 0;
+    padding: 0;
+    list-style: none;
+  }
+  .panel-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 22px 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (max-width: 720px) {
+    .panel-grid-2, .panel-grid-3 { grid-template-columns: 1fr; }
+  }
+  .panel {
+    padding: 16px 18px;
+    background: var(--tint-stone);
+    border: 1px solid var(--rule);
+    border-top: 2px solid var(--blue);
+    margin: 0;
+    list-style: none;
+  }
+  .panel::before { content: none; }
+  .panel h4 {
+    margin: 0 0 8px;
+    font-family: var(--display);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--deep);
+    letter-spacing: -0.005em;
+  }
+  .panel p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--pavement);
+  }
+  .panel.alt { background: var(--tint-blue); }
+
+  /* Glossary */
+  dl.gloss { margin: 16px 0 0; border-top: 1px solid var(--rule); }
+  dl.gloss dt {
+    font-family: var(--body);
+    font-weight: 600;
+    color: var(--deep);
+    margin-top: 16px;
+    font-size: 15px;
+  }
+  dl.gloss dd {
+    margin: 4px 0 0;
+    font-family: var(--body);
+    font-size: 14.5px;
+    color: var(--pavement);
+    line-height: 1.55;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule);
+  }
+  dl.gloss dd em { font-style: italic; color: var(--deep); }
+
+  /* References list */
+  .refs-list { padding-left: 26px; font-size: 15px; }
+  .refs-list li { margin-bottom: 12px; color: var(--pavement); line-height: 1.55; }
+  .refs-list li::before { content: none; }
+  .refs-list .src {
+    color: var(--slate);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+
+  /* Colophon */
+  footer.colophon {
+    background: var(--deep);
+    color: var(--stone);
+    padding: 44px 48px;
+  }
+  footer.colophon .inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px;
+  }
+  @media (max-width: 720px) { footer.colophon .inner { grid-template-columns: 1fr; } }
+  footer.colophon .block {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    line-height: 1.7;
+  }
+  footer.colophon .h { color: var(--blue); font-weight: 600; margin-bottom: 10px; }
+  footer.colophon .feature {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 36, "SOFT" 80, "WONK" 0;
+    font-size: 20px;
+    color: var(--white);
+    letter-spacing: -0.01em;
+    text-transform: none;
+    line-height: 1.3;
+    margin: 6px 0 4px;
+    font-weight: 400;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0ms !important;
+      transition-duration: 0ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="prog"></div>
+
+<!-- ════════════════════ TITLE PAGE ════════════════════ -->
+<section class="title-page" id="top">
+  <div class="mast">
+    <span class="mark">Infosys Consulting</span>
+    <span class="meta">Primers &nbsp;·&nbsp; Markets &nbsp;·&nbsp; May 2026</span>
+  </div>
+
+  <div class="hero">
+    <p class="kicker">A self-learning primer · No. 04</p>
+    <h1>Trade <em>surveillance</em> in banks &amp; financial institutions.</h1>
+    <p class="deck">
+      A structured walk through the detection of market abuse — <em>insider dealing</em> and
+      <em>market manipulation</em> — across equities, derivatives, FX, fixed income, commodities and
+      digital assets. Regulation, typologies, detection technique, communications surveillance,
+      vendors and the emerging trends shaping the function.
+    </p>
+  </div>
+
+  <div class="byline">
+    <div class="field"><span class="label">Audience</span><span class="value">Markets surveillance practitioners &amp; compliance leads</span></div>
+    <div class="field"><span class="label">Reading time</span><span class="value">~55 minutes</span></div>
+    <div class="field"><span class="label">Practice</span><span class="value">IC Banking · Capital Markets</span></div>
+    <div class="field"><span class="label">Edition</span><span class="value">No. 04  ·  Spring 2026</span></div>
+  </div>
+</section>
+
+<!-- ════════════════════ MAIN LAYOUT ════════════════════ -->
+<div class="layout">
+
+  <!-- ─────────────── SIDEBAR ─────────────── -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="label">Primer · No. 04</div>
+      <div class="doc-title">Trade <em>surveillance</em> in banks &amp; FIs</div>
+      <div class="doc-meta">May 2026 · ~55 min</div>
+    </div>
+
+    <nav>
+      <div class="group">
+        <p class="group-label">Foundations</p>
+        <ol>
+          <li><a href="#s1" data-section="s1"><span class="num">I</span><span>Introduction &amp; purpose</span></a></li>
+          <li><a href="#s2" data-section="s2"><span class="num">II</span><span>Regulatory landscape</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Taxonomy &amp; concepts</p>
+        <ol>
+          <li><a href="#s3" data-section="s3"><span class="num">III</span><span>Taxonomy of market abuse</span></a></li>
+          <li><a href="#s4" data-section="s4"><span class="num">IV</span><span>The surveillance lifecycle</span></a></li>
+          <li><a href="#s5" data-section="s5"><span class="num">V</span><span>Core concepts &amp; vocabulary</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Detection</p>
+        <ol>
+          <li><a href="#s6" data-section="s6"><span class="num">VI</span><span>Detection approaches</span></a></li>
+          <li><a href="#s7" data-section="s7"><span class="num">VII</span><span>Market manipulation scenarios</span></a></li>
+          <li><a href="#s8" data-section="s8"><span class="num">VIII</span><span>Insider dealing scenarios</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Worked cases &amp; data</p>
+        <ol>
+          <li><a href="#s9" data-section="s9"><span class="num">IX</span><span>Worked scenario walkthroughs</span></a></li>
+          <li><a href="#s10" data-section="s10"><span class="num">X</span><span>Communications surveillance</span></a></li>
+          <li><a href="#s11" data-section="s11"><span class="num">XI</span><span>Cross-product &amp; cross-venue</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Operations</p>
+        <ol>
+          <li><a href="#s12" data-section="s12"><span class="num">XII</span><span>Mitigation &amp; tuning</span></a></li>
+          <li><a href="#s13" data-section="s13"><span class="num">XIII</span><span>Investigation &amp; STOR filing</span></a></li>
+          <li><a href="#s14" data-section="s14"><span class="num">XIV</span><span>Technology providers</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Horizon</p>
+        <ol>
+          <li><a href="#s15" data-section="s15"><span class="num">XV</span><span>Emerging trends</span></a></li>
+          <li><a href="#s16" data-section="s16"><span class="num">XVI</span><span>Common pitfalls &amp; challenges</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Appendix</p>
+        <ol>
+          <li><a href="#appendix" data-section="appendix" class="appendix"><span class="num">—</span><span>Glossary &amp; references</span></a></li>
+        </ol>
+      </div>
+    </nav>
+
+    <div class="foot">
+      <a href="#top">↑ Back to top</a><br>
+      Infosys Consulting<br>
+      Primer · v1.0
+    </div>
+  </aside>
+
+  <!-- ─────────────── CONTENT ─────────────── -->
+  <main class="content">
+
+    <!-- ════════════ I · INTRODUCTION ════════════ -->
+    <section id="s1">
+      <div class="section-header">
+        <p class="num">Chapter I · Foundations</p>
+        <h2>Introduction &amp; <em>purpose</em>.</h2>
+        <p class="deck">What trade surveillance is, why it exists, and how it differs from the AML transaction monitoring sitting next to it on the compliance floor.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 01 · Foundations</p>
+        <h3>The continuous review of orders, trades and talk.</h3>
+        <p class="deck">A definition of trade surveillance, the question it asks, and the deliverable it produces.</p>
+
+        <p class="drop-cap"><span class="term">Trade surveillance (TS)</span> is the continuous, automated review of orders, trades, quotes, cancellations, communications, and market data to detect activity that may constitute <strong>market abuse</strong> — broadly, <em>insider dealing</em> (trading on material non-public information) and <em>market manipulation</em> (trying to move or distort market prices, volumes, or impressions for advantage). Every regulated broker-dealer, investment bank, asset manager, exchange, MTF, and many trading venues operate a TS function.</p>
+
+        <p>The TS control does not try to prove a crime. It tries to identify activity that <strong>warrants escalation</strong> to compliance and, if appropriate, a regulatory filing — a <span class="term">STOR</span> (Suspicious Transaction and Order Report) in the EU/UK, an analogous SAR/Form 1661/equivalent in other jurisdictions. The output of TS is an <span class="term">alert</span>, never a conclusion.</p>
+
+        <div class="note">
+          <p class="tag">Mental model</p>
+          <p>Trade surveillance asks two different questions in parallel: <strong>"Did this person trade on information they shouldn't have had?"</strong> (insider dealing) and <strong>"Did this trading pattern try to distort the market?"</strong> (manipulation). Different scenarios, different evidence, different investigation paths — but one platform and one team.</p>
+        </div>
+
+        <h4>TS vs AML transaction monitoring</h4>
+        <p>Both are post-event compliance controls running over transaction data, but they target different harms:</p>
+
+        <table>
+          <thead>
+            <tr><th style="width:22%;"></th><th>Trade Surveillance</th><th>AML Transaction Monitoring</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="row-label">Detects</td><td>Market abuse: manipulation + insider dealing</td><td>Money laundering, terrorist financing, sanctions evasion</td></tr>
+            <tr><td class="row-label">Victim</td><td>Market integrity, other market participants</td><td>Society (predicate offence), regulator confidence</td></tr>
+            <tr><td class="row-label">Primary data</td><td>Orders, executions, cancels, quotes, market data, communications</td><td>Customer transactions (cash, wires, ACH, card)</td></tr>
+            <tr><td class="row-label">Dominant geography concept</td><td>Trading venue / exchange / asset class</td><td>Customer location, counterparty country</td></tr>
+            <tr><td class="row-label">Output</td><td>STOR / regulator escalation / internal disciplinary action</td><td>SAR / STR filing with the FIU</td></tr>
+            <tr><td class="row-label">Key regulators</td><td>SEC, FINRA, CFTC, FCA, ESMA, MAS, ASIC, HKMA</td><td>FinCEN, FCA, MAS, AUSTRAC, RBI, EU AMLA</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ════════════ II · REGULATORY LANDSCAPE ════════════ -->
+    <section id="s2">
+      <div class="section-header">
+        <p class="num">Chapter II · Foundations</p>
+        <h2>Regulatory <em>landscape</em>.</h2>
+        <p class="deck">The principal regimes mandating trade surveillance, the obligations they impose, and the reporting outputs they expect.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 02 · Why this exists</p>
+        <h3>The rulebook every surveillance program is built against.</h3>
+        <p class="deck">Three blocs, three reporting outputs, one operating expectation: every regulator-catalogued typology should have a corresponding scenario.</p>
+
+        <h4>European Union &amp; United Kingdom</h4>
+        <ul>
+          <li><span class="term">Market Abuse Regulation (MAR, Regulation 596/2014)</span> — the cornerstone EU framework defining insider dealing, unlawful disclosure, and market manipulation, and imposing the obligation under <strong>Article 16</strong> to detect and report suspicious orders and transactions via STOR. Onshored into UK law post-Brexit as <em>UK MAR</em>.</li>
+          <li><span class="term">MiFID II / MiFIR</span> — transparency, reporting, record-keeping, and best-execution rules. <strong>Article 16(7)</strong> imposes the requirement to record telephone and electronic communications relating to transactions.</li>
+          <li><span class="term">ESMA Guidelines on MAR</span> — operational guidance including indicators of market manipulation set out in MAR Annex I and ESMA Q&amp;As.</li>
+        </ul>
+
+        <h4>United States</h4>
+        <ul>
+          <li><span class="term">Securities Exchange Act of 1934</span>, especially <strong>Section 10(b) and Rule 10b-5</strong> — the foundational antifraud and anti-manipulation provisions.</li>
+          <li><span class="term">Dodd-Frank Act §747</span> — explicit prohibition of spoofing and disruptive trading practices in commodities and futures markets, enforced by the CFTC.</li>
+          <li><span class="term">FINRA</span> rules — Rule 3110 (Supervision), Rule 4511 (Books and Records), and a deep body of guidance on supervisory systems and trade surveillance obligations.</li>
+          <li><span class="term">SEC</span> regulations — Regulation NMS, Reg SHO (short selling), Rule 15c3-5 (market access), and the broad antifraud authority.</li>
+          <li><span class="term">CAT (Consolidated Audit Trail)</span> — the SEC's comprehensive audit trail capturing every order event across US equities and options markets; reshapes how regulators detect manipulation and how firms construct their own surveillance evidence.</li>
+        </ul>
+
+        <h4>Asia-Pacific</h4>
+        <ul>
+          <li><span class="term">Singapore</span> — Securities and Futures Act (SFA); MAS guidelines on market conduct.</li>
+          <li><span class="term">Hong Kong</span> — Securities and Futures Ordinance (SFO) Parts XIII and XIV; SFC Market Misconduct Tribunal.</li>
+          <li><span class="term">Australia</span> — ASIC Market Integrity Rules; Corporations Act provisions on insider trading and market manipulation.</li>
+          <li><span class="term">Japan</span> — Financial Instruments and Exchange Act (FIEA); SESC enforcement.</li>
+          <li><span class="term">India</span> — SEBI PFUTP (Prohibition of Fraudulent and Unfair Trade Practices) Regulations; insider-trading regulations under SEBI Act.</li>
+        </ul>
+
+        <h4>The reporting obligations TS feeds</h4>
+        <ul class="panel-grid-3">
+          <li class="panel">
+            <h4>STOR (EU/UK)</h4>
+            <p><strong>Suspicious Transaction and Order Report</strong> filed under MAR Article 16 with the relevant national competent authority (FCA, BaFin, AMF, etc.) when a firm has reasonable suspicion of insider dealing or market manipulation. Confidential; the firm must not tip off the subject.</p>
+          </li>
+          <li class="panel">
+            <h4>SAR (US)</h4>
+            <p>Broker-dealers file SARs with FinCEN on certain suspicious activity per BSA. Many market-abuse escalations also flow through internal compliance to the SEC, FINRA, or CFTC as referrals.</p>
+          </li>
+          <li class="panel">
+            <h4>Internal &amp; exchange-level</h4>
+            <p>Exchanges (e.g. NYSE, LSE, SGX) also run their own surveillance and refer to regulators. Internal escalations often trigger disciplinary action, trader suspension, and Personal Account Dealing investigations.</p>
+          </li>
+        </ul>
+
+        <h4>Why this matters for surveillance design</h4>
+        <p>Regulators publish indicative lists of manipulation behaviors (MAR Annex I; ESMA Q&amp;As; the CFTC Anti-Spoofing Guidance) and expect firms to implement detection for each. A pattern catalogued by ESMA with no corresponding scenario in your TS platform is a coverage gap — and that gap is what enforcement actions over the last decade have repeatedly punished, from the LIBOR and FX fixing cases through to multiple individual spoofing prosecutions in US futures markets.</p>
+      </div>
+    </section>
+
+    <!-- ════════════ III · TAXONOMY ════════════ -->
+    <section id="s3">
+      <div class="section-header">
+        <p class="num">Chapter III · Taxonomy &amp; concepts</p>
+        <h2>Taxonomy of market <em>abuse</em>.</h2>
+        <p class="deck">Two broad families with sub-types. Knowing the taxonomy makes every scenario, every regulatory paper, and every vendor pitch instantly more legible.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 03 · What TS is detecting</p>
+        <h3>Two families, one boundary.</h3>
+        <p class="deck">Insider dealing exploits the market through information asymmetry; manipulation distorts the market for everyone. Most regimes also reach the attempts and the talk around the trade.</p>
+
+        <ul class="stages">
+          <li>
+            <div class="num">Family 01</div>
+            <h4>Insider dealing</h4>
+            <p>Trading, or recommending another to trade, while in possession of <em>material non-public information</em> (MNPI) — and the related offences of <em>unlawful disclosure</em> (tipping) and <em>information barrier breach</em> (Chinese wall failure). The act is the misuse of the information asymmetry; the trade itself need not be otherwise abnormal.</p>
+          </li>
+          <li>
+            <div class="num">Family 02</div>
+            <h4>Market manipulation</h4>
+            <p>Trading or order activity that gives or is likely to give <em>false or misleading signals</em> as to supply, demand, or price of a financial instrument — or that secures the price at an artificial level. Examples: spoofing, layering, wash trades, marking the close, benchmark manipulation, pump-and-dump.</p>
+          </li>
+          <li>
+            <div class="num">Boundary</div>
+            <h4>Attempted &amp; inchoate</h4>
+            <p>Most regimes also capture <em>attempts</em>, <em>recklessness</em>, and <em>aiding</em>. An unexecuted spoof order that was placed with no intent to trade is still manipulation under MAR. A trader who forwards MNPI without trading themselves is still in breach. Surveillance must therefore detect intent patterns, not just executed trades.</p>
+          </li>
+        </ul>
+
+        <div class="note">
+          <p class="tag">A useful frame</p>
+          <p><strong>Manipulation</strong> distorts the market for everyone; <strong>insider dealing</strong> exploits the market through information asymmetry. Different scenarios target each. A single trader can commit both simultaneously (e.g. spoof to trigger a stop run while also holding MNPI on an upcoming announcement) — your surveillance must be able to see and link both signals.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ IV · LIFECYCLE ════════════ -->
+    <section id="s4">
+      <div class="section-header">
+        <p class="num">Chapter IV · Taxonomy &amp; concepts</p>
+        <h2>The surveillance <em>lifecycle</em>.</h2>
+        <p class="deck">Seven stages every TS platform implements, from raw market data to escalation or close-out.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 04 · How TS actually works</p>
+        <h3>From the tape to the STOR.</h3>
+        <p class="deck">The processing pipeline, plus the four engineering problems that decide whether the pipeline produces usable alerts or unprovable noise.</p>
+
+        <ol class="flow">
+          <li><div class="num">01</div><div class="name">Data capture</div><div class="desc">Orders, executions, cancels, quotes, market data, e-comms, voice.</div></li>
+          <li><div class="num">02</div><div class="name">Normalization</div><div class="desc">Time-sync to microseconds; map venue-specific schemas to common model.</div></li>
+          <li><div class="num">03</div><div class="name">Enrichment</div><div class="desc">Reference data, watch/restricted lists, trader/desk hierarchies, news.</div></li>
+          <li><div class="num">04</div><div class="name">Detection</div><div class="desc">Run scenarios, behavioral models, statistical and ML detectors.</div></li>
+          <li><div class="num">05</div><div class="name">Alerting</div><div class="desc">Score, dedupe, group by trader/desk/instrument; route to investigators.</div></li>
+          <li><div class="num">06</div><div class="name">Investigation</div><div class="desc">Replay order book, link e-comms, build the timeline, evidence pack.</div></li>
+          <li><div class="num">07</div><div class="name">STOR / close</div><div class="desc">File STOR, escalate, discipline trader, or close with rationale.</div></li>
+        </ol>
+
+        <h4>The non-obvious hard parts</h4>
+        <ul>
+          <li><strong>Time synchronization.</strong> MiFID II requires venue-side timestamps accurate to 100µs for latency-sensitive trading. Your TS platform must reconcile multiple sources without drift, or replay order-book reconstructions become unusable as evidence.</li>
+          <li><strong>Order-book reconstruction.</strong> To prove spoofing you need to replay the book exactly as the venue saw it, in order, including every cancel. Most TS programs build or licence a tick-level replay engine for this.</li>
+          <li><strong>Linking trading to communications.</strong> A wash trade is rarely interesting alone; a wash trade with a Bloomberg chat thirty seconds before that says <em>"now"</em> is a case. Joining the trading record to the e-comms / voice record is the single biggest analytical leap.</li>
+          <li><strong>False positives.</strong> Many real trading behaviors look like manipulation (cancelled hedge orders, fast quoting on news, large block executions). Calibrating scenarios to the firm's actual trading is essential and ongoing.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ════════════ V · CONCEPTS ════════════ -->
+    <section id="s5">
+      <div class="section-header">
+        <p class="num">Chapter V · Taxonomy &amp; concepts</p>
+        <h2>Core concepts &amp; <em>vocabulary</em>.</h2>
+        <p class="deck">The concepts that recur across every regulation, every scenario, and every vendor demo.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 05 · Vocabulary you need</p>
+        <h3>Three vocabularies stacked on top of one another.</h3>
+        <p class="deck">Market microstructure on the bottom, information &amp; control in the middle, detection on top. Almost every TS conversation reaches into all three.</p>
+
+        <h4>Market microstructure</h4>
+        <dl class="gloss">
+          <dt>Order book</dt>
+          <dd>The venue's live list of resting buy and sell orders at each price level. Most manipulation scenarios are defined in terms of what activity does <em>to the order book</em>, not just what was executed.</dd>
+
+          <dt>Bid / Ask / Spread</dt>
+          <dd>The best buy price (bid), the best sell price (ask), and the difference. Manipulation often targets the spread or the best bid/ask specifically because that's what reference prices and trading algos key off.</dd>
+
+          <dt>NBBO (US) / EBBO (EU)</dt>
+          <dd><em>National (European) Best Bid and Offer</em> — the best available price across all lit venues for a given instrument. Manipulating the NBBO is far more damaging than manipulating a single venue.</dd>
+
+          <dt>Quote-to-trade ratio</dt>
+          <dd>Number of orders/quotes a trader places per trade executed. Extremely high ratios are a screening signal for spoofing, layering, and quote stuffing.</dd>
+
+          <dt>Latency &amp; co-location</dt>
+          <dd>Time delay between event and observation. Co-located HFTs operate in microseconds; investigators must be able to slice activity at the same resolution.</dd>
+        </dl>
+
+        <h4>Information &amp; control concepts</h4>
+        <dl class="gloss">
+          <dt>MNPI (Material Non-Public Information)</dt>
+          <dd>Information that (a) a reasonable investor would consider important and (b) has not been disseminated publicly. The "material" and "non-public" threshold definitions are the heart of insider-dealing law.</dd>
+
+          <dt>Information barrier ("Chinese wall")</dt>
+          <dd>The organizational, physical, and technical separation between business areas that hold MNPI (M&amp;A advisory, ECM, DCM, lending research) and those that trade (sales &amp; trading, prop). A breach is misconduct in itself, regardless of whether trading occurred.</dd>
+
+          <dt>Watch list / Restricted list</dt>
+          <dd>The <strong>watch list</strong> is confidential and lists names/instruments where the firm has MNPI; used to <em>monitor</em> trading. The <strong>restricted list</strong> is generally distributed and prohibits certain trading activity. Both feed the surveillance system.</dd>
+
+          <dt>Control room</dt>
+          <dd>The compliance function that maintains the watch and restricted lists and clears employee trades and research dissemination. The control room is the lifeblood of insider-dealing surveillance.</dd>
+
+          <dt>Wall-crossing</dt>
+          <dd>The deliberate, recorded act of bringing someone "over the wall" into MNPI for a specific transaction (usually pre-deal soundings). Wall-crossing logs are critical evidence in any insider-dealing investigation.</dd>
+
+          <dt>Personal Account Dealing (PAD)</dt>
+          <dd>Trading activity by employees in their personal capacity. Tightly governed: pre-clearance, holding periods, prohibited lists. PAD violations are a top finding in employee-conduct surveillance.</dd>
+        </dl>
+
+        <h4>Detection-side concepts</h4>
+        <dl class="gloss">
+          <dt>Scenario</dt>
+          <dd>An implemented detection pattern targeting one or more manipulation/insider typologies. Vendor platforms ship 30–100 out-of-the-box scenarios; firms tune them to their data.</dd>
+
+          <dt>Alert / Case</dt>
+          <dd>The output of a fired scenario. Becomes a case in the investigations workflow once acknowledged.</dd>
+
+          <dt>False positive (FP) / True positive (TP)</dt>
+          <dd>The dominant operational metric. Most trade-surveillance alerts (typically 90–98%) are closed as false positives — legitimate trading that looks like a typology. The goal is to lower FP rate without missing TPs.</dd>
+
+          <dt>STOR (Suspicious Transaction and Order Report)</dt>
+          <dd>The MAR Article 16 filing. Confidential, time-bound, addressed to the national competent authority.</dd>
+
+          <dt>Trade reconstruction</dt>
+          <dd>The reproduction of the full lifecycle of an order or trade: every order event, every venue route, every linked communication, every market data tick around it. Required by FINRA and increasingly expected in MAR-jurisdiction investigations.</dd>
+
+          <dt>Lexicon</dt>
+          <dd>A curated list of trigger phrases used in e-comms / voice surveillance ("front-run", "pump it", "guarantee", "off the record"). Most lexicons today are starting points for ML-based context classifiers rather than the sole detection mechanism.</dd>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ════════════ VI · DETECTION APPROACHES ════════════ -->
+    <section id="s6">
+      <div class="section-header">
+        <p class="num">Chapter VI · Detection</p>
+        <h2>Detection <em>approaches</em>.</h2>
+        <p class="deck">Six families of techniques, ordered roughly by adoption maturity. Real platforms blend all of them.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 06 · How detection is built</p>
+        <h3>From rules through machine learning to cross-modal context.</h3>
+        <p class="deck">No single technique covers the field. A defensible program layers them — and audits each layer independently.</p>
+
+        <h4>1 · Rules &amp; threshold scenarios</h4>
+        <p>Deterministic conditions evaluated over order, trade, and quote events: <code>cancel_rate &gt; 95% AND order_size &gt; 5× avg AND duration &lt; 500ms</code>. Easy to explain, auditable, regulator-recognized. Weak against creative manipulators and prone to noise.</p>
+
+        <h4>2 · Statistical &amp; peer-group analysis</h4>
+        <p>Compares trader behaviour to peers in the same desk, region, or strategy bucket — flag the trader whose cancel ratio or pre-news P&amp;L is several standard deviations out of line. Heart of behavioral PAD and P&amp;L review surveillance.</p>
+
+        <h4>3 · Sequence &amp; pattern matching</h4>
+        <p>Manipulation is often a <em>sequence</em>: order placed → market moves → opposing order filled → first order cancelled. Engines like complex event processing (CEP) and stateful stream processing detect these sequences in real-time or end-of-day.</p>
+
+        <h4>4 · Behavioral profiling</h4>
+        <p>Build a baseline of normal behavior per trader, desk, or algorithm; alert on material deviation. Useful for catching newly developed strategies that may shade into manipulation, and for change-of-conduct detection after personnel moves.</p>
+
+        <h4>5 · Machine learning</h4>
+        <p>Supervised models trained on historical TP/FP labels are increasingly used to (a) score alerts for investigator prioritization, (b) suppress likely-FPs, and (c) cluster similar cases. NLP and transformer models dominate communications surveillance. Explainability is mandatory under model risk management.</p>
+
+        <h4>6 · Communications &amp; cross-modal analytics</h4>
+        <p>Joining trade events to e-comms (chat, email), voice transcripts, and even calendar/wall-crossing data is now the leading frontier. The signal is rarely in the trade alone — context lives in the conversation that preceded or followed.</p>
+
+        <div class="note">
+          <p class="tag">How these layer</p>
+          <p>A typical tier-1 stack runs: (a) statistical/rule scenarios for regulatory coverage, (b) sequence detectors for manipulation typologies, (c) behavioral models for change/deviation, (d) ML triage on top to prioritize, and (e) an e-comms / voice surveillance layer joined to trading events for context. Each layer is independently auditable.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ VII · MANIPULATION SCENARIOS ════════════ -->
+    <section id="s7">
+      <div class="section-header">
+        <p class="num">Chapter VII · Detection</p>
+        <h2>Market manipulation <em>scenarios</em>.</h2>
+        <p class="deck">The canonical manipulation typologies every TS platform must cover. Each card shows the typology, the detection pattern that targets it, and the primary risk.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 07 · The work itself — part 1</p>
+        <h3>Sixteen typologies, four families.</h3>
+        <p class="deck">Order-book manipulation, wash and pre-arranged trading, price and close-time manipulation, and benchmark/supply/concealment patterns — each with its own detection fingerprint.</p>
+
+        <h4>Order-book manipulation</h4>
+        <ul class="scenario-grid">
+          <li class="scenario">
+            <div class="scenhead"><h4>Spoofing</h4><span class="pill p1">P1</span></div>
+            <div class="sub">Non-bona-fide orders</div>
+            <div class="row"><div class="k">Typology</div><div class="v">Placing one or more large orders on one side of the book with no intent to execute, to create false impression of supply/demand and induce others to trade — then cancelling the non-bona-fide orders after the genuine smaller order on the other side gets filled at a favourable price.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Large resting order on one side + opposing small fill + rapid cancellation of the large order; very high cancel-to-execute ratio; pattern repeating across instruments or sessions.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Explicitly prohibited under Dodd-Frank §747, MAR Article 12, and CFTC anti-spoofing rules; multiple criminal convictions in US futures.</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Layering</h4><span class="pill p1">P1</span></div>
+            <div class="sub">Multi-level non-genuine orders</div>
+            <div class="row"><div class="k">Typology</div><div class="v">Multiple non-genuine orders placed at successive price levels on one side of the book to amplify a misleading impression of demand or supply, then cancelled after the opposing genuine order fills.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Stacked orders at adjacent price levels with similar timestamps; rapid cancellation post-fill on opposite side; persistent imbalance signature on the trader's activity.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Same regulatory framework as spoofing; a defining typology in equities HFT manipulation.</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Quote stuffing</h4><span class="pill p2">P2</span></div>
+            <div class="sub">Order-flow flooding</div>
+            <div class="row"><div class="k">Typology</div><div class="v">High-volume submission and immediate cancellation of orders to slow down or confuse competing market participants and their algorithms, typically near the NBBO.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Extreme message rate from a single participant; near-zero execution ratio; correlation with latency spikes at the venue.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Market disruption; abuse of co-location advantage; subject to CFTC and venue enforcement.</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Momentum ignition</h4><span class="pill p2">P2</span></div>
+            <div class="sub">Triggering a price move to exit</div>
+            <div class="row"><div class="k">Typology</div><div class="v">Series of orders designed to start or accelerate a short-term price move, drawing in other market participants, so the originator can exit a pre-positioned trade at favourable prices.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Aggressive sweep of multiple price levels followed by counter-trade within seconds; correlated with a pre-existing position; pattern recurring on the same instrument.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">False supply/demand signal under MAR Annex I; HFT-typical typology.</div></div>
+          </li>
+        </ul>
+
+        <h4>Wash, mirror &amp; pre-arranged trading</h4>
+        <ul class="scenario-grid">
+          <li class="scenario">
+            <div class="scenhead"><h4>Wash trades</h4><span class="pill p1">P1</span></div>
+            <div class="sub">No change in beneficial ownership</div>
+            <div class="row"><div class="k">Typology</div><div class="v">Trades where the buyer and seller are the same person, the same legal entity, or beneficially connected — producing no real change of economic ownership but creating apparent trading volume or a misleading price print.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Buyer and seller resolve to the same UBO/account family; matched price and quantity; opposing orders within tight time windows from related identifiers (account, IP, device).</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Explicit MAR Annex I typology; extremely common as a precursor signal in crypto and small-cap markets.</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Painting the tape</h4><span class="pill p2">P2</span></div>
+            <div class="sub">Collusive volume creation</div>
+            <div class="row"><div class="k">Typology</div><div class="v">A series of trades between two or more colluding parties intended to give the false impression of active trading or rising/falling interest in a security.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Repeated executions between the same counterparty pair over a short window, with no apparent economic purpose; volume disproportionate to typical interest in the instrument.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Misleading volume signal; classic precursor to a pump-and-dump.</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Pre-arranged trading</h4><span class="pill p3">P3</span></div>
+            <div class="sub">Off-market deal printed on-market</div>
+            <div class="row"><div class="k">Typology</div><div class="v">Parties agree the terms of a trade privately and then enter matching orders to "execute" the deal on the venue — producing a market print without genuine price discovery.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Matched orders placed within milliseconds at identical price and size by unrelated counterparties; recurring pairing; off-VWAP execution timestamps.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Distorts price discovery; circumvents block-trading rules; often pairs with mismarking risk.</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Cross-trade abuse</h4><span class="pill p2">P2</span></div>
+            <div class="sub">Improper internal crosses</div>
+            <div class="row"><div class="k">Typology</div><div class="v">A broker crosses two clients' orders (or a client and its own house book) at off-market prices, benefiting one party at the expense of another or shifting losses between accounts.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Cross executed outside NBBO at the time of trade; deviation from venue-published reference price; recurring pairings between specific account combinations.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Client harm; fiduciary breach; FINRA Rule 5320 (front-running) and best-execution violations.</div></div>
+          </li>
+        </ul>
+
+        <h4>Price &amp; close-time manipulation</h4>
+        <ul class="scenario-grid">
+          <li class="scenario">
+            <div class="scenhead"><h4>Marking the close</h4><span class="pill p1">P1</span></div>
+            <div class="sub">Distorting the closing print</div>
+            <div class="row"><div class="k">Typology</div><div class="v">Trading at or near the end of the session designed to move the closing price of a financial instrument — often used to value portfolios, settle derivatives, or influence index calculations.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Aggressive orders in the final minutes/seconds of trading vs typical activity; price impact disproportionate to volume; trader holds a related position whose mark depends on the close.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Index and derivative valuation distortion; explicit MAR Annex I typology; high-impact for benchmark contracts.</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Marking the open</h4><span class="pill p2">P2</span></div>
+            <div class="sub">Distorting the opening print</div>
+            <div class="row"><div class="k">Typology</div><div class="v">Mirror of marking the close — trades or pre-open orders structured to move the opening auction print to a favourable level, often before a related instrument's settlement.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Outsized pre-open orders relative to trader's history; orders cancelled or reduced immediately after open; related position with sensitivity to the open price.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Auction-price distortion; gaming of cross-venue arbitrage and ETF NAVs.</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Ramping / bear raiding</h4><span class="pill p2">P2</span></div>
+            <div class="sub">Sustained directional pressure</div>
+            <div class="row"><div class="k">Typology</div><div class="v">Deliberate, sustained buying (ramping) or selling (bear raiding) of an instrument to push its price up or down without a fundamental basis — often combined with coordinated communications.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Outsized one-directional flow over an extended window; price impact persistent rather than reverting; correlation with e-comms or social-media chatter.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">False price signal; market-integrity damage; particular concern in small-cap and emerging-markets equities.</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Pump and dump</h4><span class="pill p1">P1</span></div>
+            <div class="sub">Hype-and-exit scheme</div>
+            <div class="row"><div class="k">Typology</div><div class="v">Promoters acquire a position, then drive up price and interest through misleading communications (social media, chat rooms, Telegram, paid promotion) — exiting positions into the resulting retail rally.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Concentrated positioning by linked accounts; correlated social-media volume spike; rapid post-rally exit; venue-side small-cap or crypto context.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Retail investor harm; the dominant manipulation typology in crypto and penny-stock markets; rising in social-driven equities post-2021.</div></div>
+          </li>
+        </ul>
+
+        <h4>Benchmark, supply &amp; concealment</h4>
+        <ul class="scenario-grid">
+          <li class="scenario">
+            <div class="scenhead"><h4>Benchmark manipulation</h4><span class="pill p1">P1</span></div>
+            <div class="sub">LIBOR, FX fix, gold, oil</div>
+            <div class="row"><div class="k">Typology</div><div class="v">Submissions or trading near the fixing window deliberately calibrated to move a benchmark (LIBOR, EURIBOR, the WM/Reuters 4pm FX fix, gold fix, oil price assessments) for the benefit of related positions.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Trading concentration in the fix window; submission patterns inconsistent with the firm's actual cost of funding; e-comms references to "the fix" or coordinating with rival firms.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Resulted in multi-billion-dollar global fines (LIBOR 2012–2016, FX 2014–2017) and individual criminal convictions; reshaped surveillance industry post-2014.</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Cornering / squeezing</h4><span class="pill p2">P2</span></div>
+            <div class="sub">Control of deliverable supply</div>
+            <div class="row"><div class="k">Typology</div><div class="v">Acquiring a dominant position in the deliverable supply of an instrument (commodity, bond issue, stock-loan inventory) to control settlement price and force counterparties to settle at distorted levels.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Concentrated long position vs available float; rising borrow costs in the instrument; venue concentration metrics breached.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Settlement distortion; classic commodity-market typology (the historical Hunt silver corner being the canonical example).</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Front-running</h4><span class="pill p1">P1</span></div>
+            <div class="sub">Trading ahead of a client order</div>
+            <div class="row"><div class="k">Typology</div><div class="v">A broker, trader, or affiliated account trades for their own benefit ahead of a known pending client order (or block, research recommendation, or index reconstitution) that will move price.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Personal-account or house-book trade in the same instrument within minutes of a client order; consistent profitable pattern; matching trade direction.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">FINRA Rule 5270 and MAR violations; client fiduciary breach; pre-research-publication trading is a major sub-category.</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Mismarking</h4><span class="pill p2">P2</span></div>
+            <div class="sub">Hidden P&amp;L manipulation</div>
+            <div class="row"><div class="k">Typology</div><div class="v">Trader records inventory at unrepresentative prices to overstate P&amp;L, hide losses, or smooth earnings — typically in illiquid OTC products where independent price observation is hard.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">EOD marks materially deviating from independent price verification (IPV); persistent positive/negative bias; large mark adjustments by specific traders.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Misstated financial results; precursor to large hidden losses (the 2008 Soc Gen Kerviel and 2012 JPMorgan London Whale cases involved mismarking).</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Improper allocation</h4><span class="pill p2">P2</span></div>
+            <div class="sub">Cherry-picking trades</div>
+            <div class="row"><div class="k">Typology</div><div class="v">A trader allocates winning trades to favoured accounts (personal, related, fee-paying) and losing trades to others, typically using a "house" or "error" account as the staging point.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Statistically improbable P&amp;L outperformance by certain accounts; time gap between execution and allocation; recurring use of error account as intermediate.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">SEC and FINRA enforcement; client trust failure; common in PM &amp; alternative-asset settings.</div></div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ════════════ VIII · INSIDER DEALING SCENARIOS ════════════ -->
+    <section id="s8">
+      <div class="section-header">
+        <p class="num">Chapter VIII · Detection</p>
+        <h2>Insider dealing <em>scenarios</em>.</h2>
+        <p class="deck">The scenarios targeting trading on, and disclosure of, material non-public information. Smaller scenario set than manipulation, but each one is regulator-sensitive.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 08 · The work itself — part 2</p>
+        <h3>Where the trade is normal but the information was not.</h3>
+        <p class="deck">Detection lives less in the order book and more in the join between trading, watch-list status, communications and timing.</p>
+
+        <ul class="scenario-grid">
+          <li class="scenario">
+            <div class="scenhead"><h4>Trading ahead of material news</h4><span class="pill p1">P1</span></div>
+            <div class="sub">MNPI-driven positioning</div>
+            <div class="row"><div class="k">Typology</div><div class="v">A trader (employee, client, or related account) takes a position in an instrument shortly before a price-sensitive announcement — earnings surprise, M&amp;A, regulatory action, clinical trial result — that moves the price in the expected direction.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Position established within a defined pre-announcement window; abnormal trade size vs trader history; profitable post-announcement; correlation with watch-list or restricted-list status of the issuer.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Core insider-dealing offence under MAR Article 8, Section 10(b)/Rule 10b-5, and equivalents.</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Information barrier breach</h4><span class="pill p1">P1</span></div>
+            <div class="sub">Chinese-wall failure</div>
+            <div class="row"><div class="k">Typology</div><div class="v">Sales &amp; trading, prop, or research activity in an instrument the firm has MNPI on through its private side (advisory, lending, ECM/DCM, restructuring).</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Trading on the public side in instruments currently on the firm watch list maintained by the control room; trade timing aligned with private-side milestones.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Direct regulatory violation; firm-wide governance failure; cited in major SEC and FCA enforcement actions.</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Unlawful disclosure ("tipping")</h4><span class="pill p1">P1</span></div>
+            <div class="sub">Passing MNPI to a tippee</div>
+            <div class="row"><div class="k">Typology</div><div class="v">An employee passes MNPI to another person (colleague, friend, family member, external party) who then trades — or who simply receives the information regardless of trading.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">E-comms / voice mentioning a restricted-list instrument outside authorized channels; calls/messages between insider and external account immediately preceding their trade; lexicon hits combined with timing.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Criminal offence in most jurisdictions even without trading by the discloser; a sub-typology heavily reliant on communications surveillance.</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Pre-research-publication trading</h4><span class="pill p2">P2</span></div>
+            <div class="sub">Front-running internal research</div>
+            <div class="row"><div class="k">Typology</div><div class="v">Sales, trading, or PAD activity ahead of an internal analyst's upgrade/downgrade or initiation report that materially moves price upon dissemination.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Trades within hours/days before research publication, in the direction of the recommendation; profitability vs base rate; trader's access to draft research.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">FINRA Rule 5270 violation; reputation risk; client fairness failure.</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Personal account dealing breach</h4><span class="pill p2">P2</span></div>
+            <div class="sub">Employee PAD violations</div>
+            <div class="row"><div class="k">Typology</div><div class="v">Employee trades in their personal account without pre-clearance, during a restricted period, in a restricted instrument, or below mandatory holding periods. Often combined with insider risk if the instrument is on the firm watch list.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">PAD broker feed reconciled to employee trade pre-clearance records; restricted-list match; instrument hold period violation.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Conduct breach; precursor to more serious insider-dealing exposure.</div></div>
+          </li>
+          <li class="scenario">
+            <div class="scenhead"><h4>Wall-crossing failure</h4><span class="pill p3">P3</span></div>
+            <div class="sub">MNPI handling control breakdown</div>
+            <div class="row"><div class="k">Typology</div><div class="v">An employee or external party is brought across the wall to receive MNPI (e.g. for a pre-deal sounding) but the wall-crossing is not logged, the recipient is not bound, or the recipient subsequently trades.</div></div>
+            <div class="row"><div class="k">Detection pattern</div><div class="v">Wall-crossing register reconciled against e-comms and call records; trades by named individuals while their wall-crossing was active.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">MAR Article 11 obligations; firm-side governance failure; precursor to leakage.</div></div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ════════════ IX · WORKED WALKTHROUGHS ════════════ -->
+    <section id="s9">
+      <div class="section-header">
+        <p class="num">Chapter IX · Worked cases &amp; data</p>
+        <h2>Worked scenario <em>walkthroughs</em>.</h2>
+        <p class="deck">Three concrete examples showing how typology maps to detection logic, what the alert looks like, and how an investigator should think about it.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 09 · From signal to alert</p>
+        <h3>Three patterns, three lessons.</h3>
+        <p class="deck">A spoofing case in futures; a wash-trade case in crypto; an insider-dealing case ahead of M&amp;A. The first two are caught firm-internally; the third tells you why some cases never are.</p>
+
+        <div class="example">
+          <div class="label">Walkthrough 01 · Spoofing in E-mini futures</div>
+          <h4>Trader B repeatedly cancels a large sell order after a small buy fills.</h4>
+          <p><strong>Setup.</strong> Trader B operates a proprietary book trading E-mini S&amp;P 500 futures. Average order size historically 5–10 contracts; cancel rate ~30%.</p>
+          <p><strong>Activity over a 4-minute window:</strong></p>
+          <ol>
+            <li>09:14:02 — Sell order for 250 contracts placed two ticks above the market</li>
+            <li>09:14:05 — Buy order for 8 contracts placed at the market, filled immediately</li>
+            <li>09:14:06 — The 250-contract sell order cancelled</li>
+            <li>Pattern repeats 27 times over 8 trading sessions; each time the small buy fills profitably</li>
+          </ol>
+          <p><strong>Detection logic that fires.</strong> Spoofing scenario: alerts when (a) a single order &gt; 5× trader's typical size is placed and cancelled within 30 seconds, (b) an opposing smaller order is filled in the window between placement and cancellation, and (c) the large order's execution ratio is below 5%, with a minimum count of 5 such patterns over 5 trading days.</p>
+          <div class="lessons">
+            <strong>Why it works.</strong> No individual cancel is suspicious — cancellation is normal market behaviour. The fingerprint is the <em>sequence</em>: large resting order, opposing small fill, immediate cancellation, and recurrence. Investigators reconstruct the order book at each event, build the price impact chart, and pull the trader's e-comms for the period — looking for explicit acknowledgement of the strategy.
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="label">Walkthrough 02 · Wash trades in an illiquid OTC token</div>
+          <h4>Two related accounts trade with each other 14 times in one afternoon.</h4>
+          <p><strong>Setup.</strong> An institutional trading platform offers a small-cap crypto token. Two accounts — A and B — both opened in the same week, same legal entity declared, similar IP fingerprints during onboarding.</p>
+          <p><strong>Activity over a 6-hour window:</strong></p>
+          <ol>
+            <li>14 trades between accounts A and B, each ~$80,000 in notional</li>
+            <li>Price drifts 8% upward as published market data over the same window</li>
+            <li>External retail volume in the token spikes 4× as the price trend continues</li>
+            <li>A and B exit their joint position into the retail flow over the following day</li>
+          </ol>
+          <p><strong>Detection logic that fires.</strong> Wash-trade scenario: alerts when (a) buyer and seller share KYC attributes (legal entity, address, beneficial owner, device fingerprint, or persistent IP) and (b) the executed price + quantity match within tight tolerance and (c) the pattern repeats &gt; 3 times within a defined window.</p>
+          <div class="lessons">
+            <strong>Why it works.</strong> The wash signal lives at the <em>relationship</em> between accounts, not in either account alone. Without KYC-driven entity resolution your scenario will miss this — and in crypto markets the entity-resolution layer is often the limiting factor on detection quality. The follow-up case likely also touches AML (the apparent price drift may have been part of a pump-and-dump).
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="label">Walkthrough 03 · Insider dealing ahead of M&amp;A announcement</div>
+          <h4>A junior analyst's friend buys deep out-of-the-money calls on a target three days before announcement.</h4>
+          <p><strong>Setup.</strong> The firm is advising Acquirer Inc on the acquisition of Target Co. The mandate is added to the watch list at 09:00 on Monday; public announcement is scheduled for Thursday 18:00.</p>
+          <p><strong>Signals available:</strong></p>
+          <ol>
+            <li>Monday 17:30 — A junior analyst on the deal team has 4 short Bloomberg chats with a personal contact (no firm relationship)</li>
+            <li>Tuesday 10:15 — That contact opens a fresh brokerage account at another broker (visible only later via SAR data-sharing)</li>
+            <li>Tuesday 14:20 — The contact buys 800 of the cheapest Target Co weekly calls, struck 12% out-of-the-money</li>
+            <li>Thursday 18:00 — Announcement; Target Co shares jump 26%</li>
+            <li>Thursday 18:05 — The calls expire deep in-the-money; contact realizes ~ $310k profit</li>
+          </ol>
+          <p><strong>Detection logic that fires.</strong> Two scenarios fire in combination: (a) <em>communications-link scenario</em> alerts on personal-contact chats during a watch-list deal window from a deal-team member; (b) <em>insider-pattern scenario</em> at the regulator side (or post-incident at the firm) alerts on out-of-the-money option positioning ahead of a price-moving event in a watch-list instrument.</p>
+          <div class="lessons">
+            <strong>Why it works (and where it fails).</strong> The firm sees the e-comms signal but not the external trade — that side appears only when the regulator or another broker's surveillance flags it. This is why regulator-side surveillance (CAT, MAR public-side data) plays a critical role insider-dealing investigations cannot rely on firm-internal surveillance alone, and why robust wall-crossing logs, deal-team lists, and PAD discipline are the firm's first lines of defence.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ X · COMMS SURVEILLANCE ════════════ -->
+    <section id="s10">
+      <div class="section-header">
+        <p class="num">Chapter X · Worked cases &amp; data</p>
+        <h2>Communications <em>surveillance</em>.</h2>
+        <p class="deck">The body of practice covering email, chat (Bloomberg, Symphony, MS Teams), voice, video, and SMS surveillance — typically run by a sister team and platform but increasingly converging with trade surveillance.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 10 · The other half of surveillance</p>
+        <h3>The trade record shows <em>what</em>; the chat record shows <em>why</em>.</h3>
+        <p class="deck">Almost every major case of the last fifteen years turned on the talk around the trade. Modern programs are fusing the two records.</p>
+
+        <p class="pull">
+          The trade record showed what happened; the communications record showed intent. Modern surveillance increasingly seeks to fuse the two.
+          <span class="src">A mental model</span>
+        </p>
+
+        <h4>Why it matters</h4>
+        <p>Almost every major market-abuse enforcement action of the last 15 years — LIBOR, FX fixing, ISDAFIX, US Treasury auction collusion, multiple individual spoofing cases — pivoted on evidence drawn from chat rooms and recorded phone lines. The trade record showed <em>what happened</em>; the communications record showed <em>intent</em>. Modern surveillance increasingly seeks to fuse the two.</p>
+
+        <h4>The data sources</h4>
+        <ul>
+          <li><strong>Email</strong> — corporate email (Exchange/Outlook, Google Workspace) and any approved external channels. The original e-comms data type and still the highest-volume.</li>
+          <li><strong>Chat</strong> — Bloomberg chat and IB, Symphony, Refinitiv Eikon Messenger, Microsoft Teams, Slack, WhatsApp/Signal where approved or banned (the unapproved-channels enforcement wave 2022–2024 produced ~$3bn+ in US fines).</li>
+          <li><strong>Voice</strong> — turret lines, mobile, conference bridges. Transcribed via speech-to-text and then searchable via NLP.</li>
+          <li><strong>Video</strong> — increasingly important post-Covid; Zoom, Teams, Webex recordings.</li>
+          <li><strong>SMS / messaging</strong> — particularly relevant after the off-channel comms enforcement wave.</li>
+        </ul>
+
+        <h4>Detection approaches</h4>
+        <ul class="panel-grid-2">
+          <li class="panel">
+            <h4>Lexicon-based</h4>
+            <p>Search for curated trigger phrases — "front-run", "don't tell", "between us", "off the record", "do me a favour", "the cartel", "I've got the order". Still the regulatory baseline but FP-heavy in isolation. Lexicons evolve constantly based on emerging cases.</p>
+          </li>
+          <li class="panel">
+            <h4>NLP / ML classifiers</h4>
+            <p>Trained models classify communications by intent and context — sentiment, role identification, topic clustering, anomaly detection. Major vendors (Behavox, Shield, Symphony AI, Theta Lake) have shifted heavily here; transformer-based classifiers now lead lexicon-only approaches by significant margins.</p>
+          </li>
+          <li class="panel">
+            <h4>Entity &amp; network analytics</h4>
+            <p>Who is talking to whom, how often, with whom externally — surfacing new communication patterns and unusual external contacts. Critical for tipping and collusion detection.</p>
+          </li>
+          <li class="panel">
+            <h4>Trade-comms correlation</h4>
+            <p>Tie an alerted trade to communications in a tight window — calls, chats, emails involving the trader, the desk, and external parties. The defining frontier of unified surveillance.</p>
+          </li>
+        </ul>
+
+        <div class="note">
+          <p class="tag">Off-channel communications</p>
+          <p>Between 2022 and 2024 the SEC, CFTC, and other regulators imposed more than USD 3bn in fines on global banks for staff using WhatsApp, iMessage, and personal text channels to discuss business — bypassing the firm's record-keeping. Off-channel comms is now a top supervisory focus, and TS programs are expected to surface evidence of off-channel use (mentions in monitored channels of "let's take this to WhatsApp", device-level signals where MDM permits).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ XI · CROSS-PRODUCT ════════════ -->
+    <section id="s11">
+      <div class="section-header">
+        <p class="num">Chapter XI · Worked cases &amp; data</p>
+        <h2>Cross-product &amp; cross-venue <em>surveillance</em>.</h2>
+        <p class="deck">Modern manipulation routinely crosses instruments, venues, and asset classes. So must the surveillance.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 11 · Next-level surveillance</p>
+        <h3>Four ways the picture is broken across boundaries.</h3>
+        <p class="deck">Cross-product, cross-venue, cross-asset-class, and cross-firm. Each one is invisible to a surveillance program scoped to a single instrument or venue.</p>
+
+        <h4>Cross-product manipulation</h4>
+        <p>A trader influences the price of one instrument by trading another correlated instrument. Classic examples: moving the underlying equity price into option-expiry to make in-the-money options pay out; pushing the cash bond around a CDS auction date; influencing the futures price near settlement to mark a related swap. Detection requires correlated-instrument awareness — the platform must <em>know</em> that this option is written on this underlying and that this futures contract settles to this index.</p>
+
+        <h4>Cross-venue manipulation</h4>
+        <p>Placing the spoof on Venue A to move the NBBO, then taking the favourable execution on Venue B. Each venue sees only half of the picture. Detection requires consolidated tape data — in the US, the Consolidated Audit Trail (CAT) gives regulators this view; firms must build their own consolidated view from their order routing record and venue feeds.</p>
+
+        <h4>Cross-asset-class</h4>
+        <p>Increasingly common: equity activity used to move related ETF flows; crypto-spot activity used to move crypto-futures positions; spot-FX activity in support of FX option positions. Surveillance platforms must cover the full set of instruments traded by a single trader or desk to catch these.</p>
+
+        <h4>Cross-firm collusion</h4>
+        <p>The hardest pattern of all — multiple firms colluding (the "cartel" chat rooms in the FX-fixing cases, ISDAFIX, US Treasury auctions). No single firm sees the full picture; detection has historically depended on whistleblowers, internal e-comms hits, or regulator-side cross-firm data. Industry consortia (e.g. SteelEye Connect, vendor benchmarking) are exploring federated approaches but adoption is early.</p>
+      </div>
+    </section>
+
+    <!-- ════════════ XII · MITIGATION ════════════ -->
+    <section id="s12">
+      <div class="section-header">
+        <p class="num">Chapter XII · Operations</p>
+        <h2>Mitigation &amp; <em>tuning</em>.</h2>
+        <p class="deck">The repertoire used to make a TS program defensible and operationally manageable — same lever set as TM, but the calibration mechanics differ.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 12 · Making TS actually work</p>
+        <h3>The seven levers a defensible program pulls.</h3>
+        <p class="deck">Threshold tuning, segmentation, typology coverage, replay discipline, governed suppression, backtesting, and independent model validation. None is optional.</p>
+
+        <h4>Threshold &amp; parameter tuning</h4>
+        <p>Scenario thresholds (cancel ratio, time window, size multiplier, price-impact threshold) must reflect the firm's actual trading. Tuning uses above-the-line / below-the-line sampling — pull alerts just above and just below threshold, manually review, and adjust to maximize TP density without losing recall.</p>
+
+        <h4>Trader segmentation</h4>
+        <p>A market maker is supposed to quote both sides aggressively and cancel often; a low-touch execution algo is supposed to trade quietly. Applying the same spoofing threshold to both produces either over-alerting on market makers or under-detection on the algo. Segment by role, strategy, instrument class.</p>
+
+        <h4>Scenario library to typology map</h4>
+        <p>Maintain a live map of MAR Annex I / ESMA Q&amp;A typologies / CFTC anti-spoofing examples to your implemented scenarios. Gaps become risk findings; closing them becomes the workplan.</p>
+
+        <h4>Replay &amp; reconstruction discipline</h4>
+        <p>Every alert investigation should be able to produce a full order-book reconstruction at the relevant time stamps, plus a linked communications view. Firms that cannot do this fail FINRA / FCA examinations.</p>
+
+        <h4>Suppression with governance</h4>
+        <p>Known benign patterns can be suppressed (e.g. cancel-heavy market-maker quoting that meets defined criteria) — but every suppression must be approved, logged, reviewed periodically, and unwound when conditions change. Regulators ask exactly that.</p>
+
+        <h4>Backtesting against past cases</h4>
+        <p>When a public enforcement action emerges (a spoofing conviction, a new manipulation typology), run the new detection logic over the firm's own historical data. Many programs catch dormant cases this way; it is also regulator-expected diligence.</p>
+
+        <h4>Independent model validation</h4>
+        <p>Under SR 11-7 (US) and equivalent model-risk frameworks, every scenario and ML model must be independently validated for design, data quality, threshold appropriateness, and ongoing performance — usually by a Model Risk team outside the development line.</p>
+
+        <div class="note">
+          <p class="tag">A regulatory trap</p>
+          <p>Raising thresholds simply to reduce alert volume is one of the most-common findings in FCA and FINRA supervisory reviews. Any threshold movement must be supported by ATL/BTL evidence, documented in the model inventory, approved by model governance, and re-tested afterwards. "We were drowning" is not a defence.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ XIII · INVESTIGATION ════════════ -->
+    <section id="s13">
+      <div class="section-header">
+        <p class="num">Chapter XIII · Operations</p>
+        <h2>Investigation &amp; STOR <em>filing</em>.</h2>
+        <p class="deck">Most of the cost in a TS program is in this stage. The technology helps but doesn't replace the human judgement.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 13 · What happens after an alert</p>
+        <h3>Three tiers of judgement, one piece of paper.</h3>
+        <p class="deck">L1 triage, L2 deep-dive, L3 sign-off — culminating in a STOR narrative the regulator can act on without re-doing the firm's work.</p>
+
+        <h4>Investigator hierarchy</h4>
+        <ul class="panel-grid-3">
+          <li class="panel">
+            <h4>L1 — Surveillance analyst</h4>
+            <p>Triages alerts; validates data; reviews trader and desk context; pulls quick order-book replay and relevant chats. Most alerts close here with a documented rationale.</p>
+          </li>
+          <li class="panel">
+            <h4>L2 — Senior investigator</h4>
+            <p>Handles escalations. Deep-dives on order-book reconstruction, cross-product/cross-venue analysis, full communications review, trader interviews if needed. Produces the draft STOR narrative.</p>
+          </li>
+          <li class="panel">
+            <h4>L3 — Compliance officer / senior management</h4>
+            <p>Reviews STOR filings, takes firm-disciplinary decisions, manages regulator relationships. In the UK and similar regimes the firm's Money Laundering Reporting Officer may also be the conduit for STOR-style filings.</p>
+          </li>
+        </ul>
+
+        <h4>The investigator's toolkit</h4>
+        <ul>
+          <li><strong>Order-book replay</strong> — tick-by-tick reconstruction of the venue book at the relevant times, with the trader's events highlighted.</li>
+          <li><strong>Communications timeline</strong> — every chat, email, call relevant to the trader, the desk, and the instrument, joined to the trade record on a single time axis.</li>
+          <li><strong>Trader profile</strong> — historical activity, watch/restricted-list exposures, prior cases, peer comparisons, PAD history.</li>
+          <li><strong>Reference data</strong> — issuer, sector, correlated instruments, news, corporate actions in the window.</li>
+          <li><strong>GenAI assistants</strong> — emerging across vendors (Behavox Quantos AI, SteelEye, Symphony AI, Shield) to draft narratives, summarize evidence, and surface relevant prior cases.</li>
+        </ul>
+
+        <h4>The STOR itself</h4>
+        <p>A STOR is filed with the national competent authority (FCA, BaFin, AMF, CONSOB, etc.) under MAR Article 16 when the firm has <strong>reasonable suspicion</strong> of insider dealing, market manipulation, or unlawful disclosure. The narrative must explain the activity, the basis of suspicion, the relevant trades and orders, the timing, and the parties — typically in tens of pages with attachments. Tipping off the subject is prohibited. Failure to file is itself a serious breach.</p>
+
+        <div class="note">
+          <p class="tag">STOR narrative — key elements</p>
+          <p>Identity of suspected person/entity; description of the conduct; trades and orders that gave rise to suspicion (with exchange-side timestamps); other relevant activity (e-comms, voice, prior cases); the reasoning behind suspicion; supporting data and documents. The narrative must be specific enough that the regulator can act on it without re-doing the firm's analysis.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ XIV · VENDORS ════════════ -->
+    <section id="s14">
+      <div class="section-header">
+        <p class="num">Chapter XIV · Operations</p>
+        <h2>Technology <em>providers</em>.</h2>
+        <p class="deck">A non-exhaustive landscape across trade surveillance, communications surveillance, voice, market data, and converged platforms. Positioning changes rapidly — verify current capability before procurement.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 14 · Who builds the tools</p>
+        <h3>Five segments, dozens of vendors, very few full-stack winners.</h3>
+        <p class="deck">Most tier-1 programs run multiple vendors in parallel with an in-house data lake stitching them together. The shape of that stack is changing fast.</p>
+
+        <h4>Trade surveillance platforms</h4>
+        <table>
+          <thead><tr><th style="width:24%;">Vendor / product</th><th>Positioning</th><th style="width:26%;">Typical customers</th></tr></thead>
+          <tbody>
+            <tr><td class="row-label">Nasdaq SMARTS</td><td>Long-standing market leader; broad scenario library across asset classes and venues; used by exchanges and tier-1 banks; deep regulator familiarity.</td><td>Exchanges, tier-1 banks, regulators (SEC, FINRA, ASIC, others).</td></tr>
+            <tr><td class="row-label">NICE Actimize Markets Surveillance</td><td>Part of NICE Actimize's wider financial-crime suite; integrates with their AML/case management; strong equity, derivatives, FX coverage.</td><td>Large banks, broker-dealers.</td></tr>
+            <tr><td class="row-label">Eventus Validus</td><td>Modern cloud-native, multi-asset platform; rapid scenario deployment; popular with crypto exchanges and modern broker-dealers as well as traditional banks.</td><td>Crypto exchanges, banks, broker-dealers, prop firms.</td></tr>
+            <tr><td class="row-label">OneTick / OneMarketData (LSEG)</td><td>Tick-database plus surveillance application; strong on HFT, low-latency replay and time-series analytics.</td><td>Latency-sensitive firms, capital-markets desks.</td></tr>
+            <tr><td class="row-label">b-next CMC:Surveillance</td><td>European-headquartered TS suite; modular and broadly deployed in Europe.</td><td>European banks, asset managers.</td></tr>
+            <tr><td class="row-label">Trading Technologies (TT) Score</td><td>Native surveillance for futures markets; tightly integrated with TT's broader trading platform.</td><td>Futures-focused broker-dealers and prop firms.</td></tr>
+            <tr><td class="row-label">Software AG Apama / Cumulocity</td><td>Complex event processing engine used as the substrate for in-house surveillance builds.</td><td>Banks with in-house TS platforms.</td></tr>
+            <tr><td class="row-label">FIS Protegent</td><td>Trade surveillance and PAD compliance; common in capital markets.</td><td>Broker-dealers, asset managers.</td></tr>
+            <tr><td class="row-label">Scila Surveillance</td><td>Cross-asset surveillance for venues and intermediaries.</td><td>Exchanges, ATSs, banks.</td></tr>
+            <tr><td class="row-label">Aquis Technologies</td><td>Surveillance plus venue technology; sister to the Aquis Exchange.</td><td>European venues, brokers.</td></tr>
+            <tr><td class="row-label">TradingHub</td><td>Heavily quantitative TS engine; strong on derivatives and complex products.</td><td>Tier-1 banks, complex-products desks.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Communications surveillance &amp; e-comms archiving</h4>
+        <table>
+          <thead><tr><th style="width:24%;">Vendor / product</th><th>Positioning</th><th style="width:26%;">Typical customers</th></tr></thead>
+          <tbody>
+            <tr><td class="row-label">Behavox</td><td>AI-first communications surveillance; transformer-based contextual models; Quantos AI assistant.</td><td>Banks, hedge funds, asset managers.</td></tr>
+            <tr><td class="row-label">Shield (Shield FC)</td><td>Cloud-native compliance for chat, voice, video; pre-built risk taxonomies.</td><td>Banks, fintechs, broker-dealers.</td></tr>
+            <tr><td class="row-label">Bloomberg Vault</td><td>Capture, archiving, and surveillance for Bloomberg chat plus other channels; native data advantage for Bloomberg-heavy firms.</td><td>Bloomberg Terminal users (most of the sell side).</td></tr>
+            <tr><td class="row-label">Symphony Communication Services / Symphony AI</td><td>Symphony chat platform; AI-driven surveillance via Symphony AI.</td><td>Sell-side and buy-side firms using Symphony.</td></tr>
+            <tr><td class="row-label">Smarsh</td><td>Comprehensive archiving across email, IM, social media, voice, and mobile; common as the system-of-record layer.</td><td>Broker-dealers, banks, RIAs.</td></tr>
+            <tr><td class="row-label">Theta Lake</td><td>Specialized in collaboration-platform compliance — Zoom, Teams, Webex, Slack — including voice and video.</td><td>Firms with heavy collaboration-tool usage.</td></tr>
+            <tr><td class="row-label">Global Relay</td><td>Archiving and surveillance for e-comms; long-established player.</td><td>Banks, broker-dealers, asset managers.</td></tr>
+            <tr><td class="row-label">SteelEye</td><td>Unified compliance platform — e-comms, trade surveillance, transaction reporting on one data lake.</td><td>Mid-size banks, brokers, asset managers.</td></tr>
+            <tr><td class="row-label">RelativityOne</td><td>eDiscovery and investigations platform; often used in deep-dive surveillance cases.</td><td>Legal/compliance teams in larger firms.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Voice surveillance</h4>
+        <table>
+          <thead><tr><th style="width:24%;">Vendor / product</th><th>Positioning</th><th style="width:26%;">Typical customers</th></tr></thead>
+          <tbody>
+            <tr><td class="row-label">NICE Engage / NICE Trading Recording</td><td>Industry-standard turret/voice recording with integrated transcription and surveillance hooks.</td><td>Trading floors globally.</td></tr>
+            <tr><td class="row-label">Verint</td><td>Voice and contact-centre compliance; financial-services and broader enterprise.</td><td>Banks, contact centres.</td></tr>
+            <tr><td class="row-label">Theta Lake</td><td>Voice and video for collaboration platforms (as above).</td><td>Cross-section of firms with hybrid voice.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Crypto / digital-asset market surveillance</h4>
+        <table>
+          <thead><tr><th style="width:24%;">Vendor / product</th><th>Positioning</th><th style="width:26%;">Typical customers</th></tr></thead>
+          <tbody>
+            <tr><td class="row-label">Solidus Labs</td><td>Crypto-native market surveillance; manipulation and AML overlap; deployed across crypto venues and traditional banks with digital-asset offerings.</td><td>Crypto exchanges, digital-asset desks at banks.</td></tr>
+            <tr><td class="row-label">Eventus Validus</td><td>Strong installed base in crypto in addition to traditional markets (as above).</td><td>Tier-1 crypto venues, brokers.</td></tr>
+            <tr><td class="row-label">Chainalysis Market Integrity / Crystal Blockchain</td><td>On-chain analytics adjacent to trade surveillance — useful for joining off-exchange flows to on-exchange manipulation patterns.</td><td>Crypto venues, banks, regulators.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Data &amp; market-data infrastructure</h4>
+        <table>
+          <thead><tr><th style="width:24%;">Vendor / product</th><th>Positioning</th><th style="width:26%;">Typical customers</th></tr></thead>
+          <tbody>
+            <tr><td class="row-label">Refinitiv (LSEG)</td><td>Reference and market data; Tick History; corporate actions; news feeds — feeders for almost every TS platform.</td><td>Universal.</td></tr>
+            <tr><td class="row-label">Bloomberg</td><td>Reference data, news, and chat — the most-cited feed in surveillance investigations.</td><td>Universal sell side.</td></tr>
+            <tr><td class="row-label">Cboe DataShop / NYSE TAQ</td><td>Historical tick and order-book data for US venues — essential for backtesting and reconstruction.</td><td>Surveillance teams running backtests.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="note">
+          <p class="tag">Choosing a vendor</p>
+          <p>Right vendor depends on (a) asset-class mix (an FX desk needs different scenarios than an equity HFT), (b) regulatory geography, (c) data architecture and tick-data availability, (d) integration with the firm's e-comms and PAD stack, and (e) appetite for ML versus rules-led approaches. Most tier-1 banks today run <strong>multiple vendors in parallel</strong> — Nasdaq SMARTS or Actimize for trade surveillance, a dedicated e-comms vendor (Behavox, Shield, Symphony AI), and a voice-recording vendor (NICE, Verint) — often with an in-house data lake stitching them together.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ XV · TRENDS ════════════ -->
+    <section id="s15">
+      <div class="section-header">
+        <p class="num">Chapter XV · Horizon</p>
+        <h2>Emerging <em>trends</em>.</h2>
+        <p class="deck">The dominant directions of change in trade surveillance as of 2024–2026.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 15 · Where TS is heading</p>
+        <h3>Seven currents reshaping the function.</h3>
+        <p class="deck">Holistic data, explainable ML, GenAI investigation, crypto maturity, off-channel discipline, real-time controls, and the slow convergence with conduct surveillance.</p>
+
+        <h4>Holistic surveillance (trade + comms + voice on one data layer)</h4>
+        <p>The defining direction. Tier-1 banks are consolidating onto a single data lake holding trades, orders, chats, emails, voice transcripts, market data, and trader hierarchies — then running detection across all of it. SteelEye, Symphony AI, Behavox, and tier-1 build-your-own programs all converge here.</p>
+
+        <h4>Machine learning with explainability</h4>
+        <p>ML is now mainstream in TS for alert prioritization, FP suppression, and e-comms classification — but only with SR 11-7-style validation and SHAP/LIME-style explainability. Black-box vendor models are no longer acceptable to model risk committees.</p>
+
+        <h4>Generative AI for investigation</h4>
+        <p>GenAI is being deployed not in detection (explainability constraints) but in investigation: drafting STOR narratives, summarizing trader history, surfacing similar prior cases, generating investigator briefs. Behavox Quantos AI, SteelEye, Symphony AI, Shield, and others all have GenAI copilots shipping or in pilot.</p>
+
+        <h4>Crypto market surveillance maturing</h4>
+        <p>Spot-crypto trading is now subject to MAR-equivalent expectations under the EU's <span class="term">MiCA</span> regulation (2024). Crypto venues that previously operated with minimal surveillance must build TS programs; banks with digital-asset desks face the same expectations.</p>
+
+        <h4>Off-channel comms enforcement</h4>
+        <p>The 2022–2024 enforcement wave on personal-device messaging (WhatsApp, iMessage) has forced firms to invest heavily in (a) approved channels with full archiving, (b) device-level controls, and (c) detection of hints in monitored channels of off-channel migration.</p>
+
+        <h4>Real-time and pre-trade surveillance</h4>
+        <p>Historically T+1 (overnight). Increasingly, scenarios run intraday — and a small but growing share run pre-trade as risk-management controls (rejecting orders that look like spoofing before they reach the venue). Rule 15c3-5 (market access) drives this in the US.</p>
+
+        <h4>Cross-firm consortium &amp; federated approaches</h4>
+        <p>Inter-firm collusion (the FX-fixing cartels) is invisible to any single firm. Vendor-led benchmarking and regulator-sponsored data-sharing pilots are exploring federated approaches — early, but the direction is clear.</p>
+
+        <h4>Convergence with conduct surveillance</h4>
+        <p>Increasingly, trade surveillance is one input into a wider <em>conduct surveillance</em> view of each trader and desk — combining market-abuse alerts, PAD violations, gifts/entertainment, regulatory attestations, complaint history, HR signals. The FCA's <em>SM&amp;CR</em> regime and DOJ individual-accountability focus push firms in this direction.</p>
+      </div>
+    </section>
+
+    <!-- ════════════ XVI · PITFALLS ════════════ -->
+    <section id="s16">
+      <div class="section-header">
+        <p class="num">Chapter XVI · Horizon</p>
+        <h2>Common pitfalls &amp; <em>challenges</em>.</h2>
+        <p class="deck">Patterns recurring across enforcement actions, audit findings, and consulting engagements.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 16 · What goes wrong</p>
+        <h3>Eight failure modes worth memorising.</h3>
+        <p class="deck">Almost every supervisory finding lands in one of these eight buckets. Reading them is also the fastest way to set the priorities for a new program.</p>
+
+        <ul class="panel-grid-2">
+          <li class="panel"><h4>1 · Data quality &amp; time-sync</h4><p>Microsecond mis-synchronization between venue, OMS, and TS clocks breaks order-book reconstruction. Many programs build TS before solving this — and find their alerts are unprovable.</p></li>
+          <li class="panel"><h4>2 · Coverage gaps to ESMA/CFTC catalogues</h4><p>A typology exists in the regulator's catalogue; no scenario implements it. Classic finding in supervisory reviews; usually triggers remediation orders.</p></li>
+          <li class="panel"><h4>3 · Drowning in false positives</h4><p>Without segmentation and behavioral baselines, market-maker activity floods spoofing alerts. Investigator capacity becomes the binding constraint; real signals get buried.</p></li>
+          <li class="panel"><h4>4 · Trade-comms isolation</h4><p>Trade and e-comms surveillance run on separate platforms with no join. Most major cases turn on the link between trade and message; isolation destroys it.</p></li>
+          <li class="panel"><h4>5 · Off-channel comms blind spot</h4><p>Activity migrates to personal WhatsApp / iMessage and disappears from surveillance. Multi-billion-dollar enforcement category 2022–2024.</p></li>
+          <li class="panel"><h4>6 · Watch/restricted-list hygiene</h4><p>Lists not maintained in real-time; instruments not removed; mappings stale. Insider-dealing surveillance is no better than the lists feeding it.</p></li>
+          <li class="panel"><h4>7 · STOR-filing reluctance</h4><p>Firms either over-file (defensive) or under-file (institutional reluctance to escalate). Regulators publish STOR-volume statistics and notice outliers.</p></li>
+          <li class="panel"><h4>8 · Model decay</h4><p>Scenario tuned years ago no longer fits current trading mix, venue mix, or typologies. Periodic re-tuning is not optional.</p></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ════════════ APPENDIX ════════════ -->
+    <section id="appendix">
+      <div class="section-header">
+        <p class="num">Appendix · Quick reference</p>
+        <h2>Glossary &amp; <em>references</em>.</h2>
+        <p class="deck">The acronyms you will see most often, the texts to read first, and the enforcement orders that show what actually gets punished.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ A · Glossary</p>
+        <h3>Quick reference.</h3>
+        <p class="deck">The acronyms you will see most often.</p>
+
+        <dl class="gloss">
+          <dt>ASIC</dt><dd>Australian Securities and Investments Commission.</dd>
+          <dt>BCN</dt><dd>Broker Crossing Network — venue-like internal matching.</dd>
+          <dt>CAT</dt><dd>US Consolidated Audit Trail.</dd>
+          <dt>CEP</dt><dd>Complex Event Processing — the streaming-engine architecture under most TS platforms.</dd>
+          <dt>CFTC</dt><dd>US Commodity Futures Trading Commission.</dd>
+          <dt>EBBO</dt><dd>European Best Bid and Offer.</dd>
+          <dt>ESMA</dt><dd>European Securities and Markets Authority.</dd>
+          <dt>FCA</dt><dd>UK Financial Conduct Authority.</dd>
+          <dt>FIEA</dt><dd>Japan Financial Instruments and Exchange Act.</dd>
+          <dt>FINRA</dt><dd>US Financial Industry Regulatory Authority.</dd>
+          <dt>HFT</dt><dd>High-Frequency Trading.</dd>
+          <dt>IPV</dt><dd>Independent Price Verification — control over mismarking.</dd>
+          <dt>MAR</dt><dd>EU Market Abuse Regulation (596/2014); UK MAR post-Brexit.</dd>
+          <dt>MiFID II / MiFIR</dt><dd>EU markets framework, including transaction reporting and e-comms recording.</dd>
+          <dt>MiCA</dt><dd>EU Markets in Crypto-Assets Regulation (2024).</dd>
+          <dt>MNPI</dt><dd>Material Non-Public Information.</dd>
+          <dt>NBBO</dt><dd>US National Best Bid and Offer.</dd>
+          <dt>OMS / EMS</dt><dd>Order Management System / Execution Management System.</dd>
+          <dt>PAD</dt><dd>Personal Account Dealing.</dd>
+          <dt>SEC</dt><dd>US Securities and Exchange Commission.</dd>
+          <dt>SFO</dt><dd>Hong Kong Securities and Futures Ordinance.</dd>
+          <dt>SM&amp;CR</dt><dd>UK Senior Managers and Certification Regime.</dd>
+          <dt>STOR</dt><dd>Suspicious Transaction and Order Report (MAR Article 16).</dd>
+          <dt>VWAP / TWAP</dt><dd>Volume- / Time-Weighted Average Price.</dd>
+        </dl>
+
+        <p class="eyebrow" style="margin-top:44px;">§ B · References &amp; further reading</p>
+        <h3>Primary sources, then enforcement orders.</h3>
+        <p class="deck">Primary sources first; secondary literature second; enforcement orders to see what actually gets punished.</p>
+
+        <h4>EU &amp; UK framework</h4>
+        <ol class="refs-list">
+          <li>European Parliament &amp; Council — <em>Regulation (EU) No 596/2014 on Market Abuse (MAR)</em>. The single most important text in trade surveillance. <span class="src">eur-lex.europa.eu</span></li>
+          <li>European Securities and Markets Authority — <em>MAR Q&amp;As</em> and <em>Guidelines on MAR</em>. <span class="src">esma.europa.eu</span></li>
+          <li>UK FCA — <em>Market Watch</em> newsletters (especially issues on STORs, market-abuse trends, off-channel comms). <span class="src">fca.org.uk</span></li>
+          <li>UK FCA Handbook — <em>SYSC</em> and <em>MAR</em> sourcebooks; <em>SUP 15.10</em> on STOR. <span class="src">handbook.fca.org.uk</span></li>
+        </ol>
+
+        <h4>US framework</h4>
+        <ol class="refs-list" start="5">
+          <li>US Securities Exchange Act 1934 — Sections 9, 10(b), 15(c), and Rules thereunder (10b-5 especially). <span class="src">sec.gov &rsaquo; regulation</span></li>
+          <li>Dodd-Frank Wall Street Reform and Consumer Protection Act — Section 747 (Disruptive Trading Practices). <span class="src">cftc.gov</span></li>
+          <li>FINRA Rulebook — Rules <strong>3110</strong> (Supervision), <strong>4511</strong> (Books and Records), <strong>5270</strong> (Front Running of Block Transactions), <strong>5320</strong> (Prohibition Against Trading Ahead of Customer Orders). <span class="src">finra.org</span></li>
+          <li>SEC Regulation NMS, Regulation SHO, and Rule 15c3-5 (Market Access). <span class="src">sec.gov</span></li>
+          <li>CFTC — <em>Anti-Disruptive Practices Authority Interpretive Guidance</em> (2013) and subsequent enforcement orders. <span class="src">cftc.gov</span></li>
+        </ol>
+
+        <h4>Asia-Pacific</h4>
+        <ol class="refs-list" start="10">
+          <li>MAS (Singapore) — Securities and Futures Act; SFA Guidelines on Market Conduct. <span class="src">mas.gov.sg</span></li>
+          <li>SFC (Hong Kong) — <em>Code of Conduct</em>; Market Misconduct Tribunal reports. <span class="src">sfc.hk</span></li>
+          <li>ASIC (Australia) — <em>Market Integrity Rules</em>; <em>Regulatory Guide 265</em> on supervisory practices. <span class="src">asic.gov.au</span></li>
+          <li>SEBI (India) — <em>PFUTP Regulations 2003</em>; <em>SEBI (Prohibition of Insider Trading) Regulations 2015</em>. <span class="src">sebi.gov.in</span></li>
+        </ol>
+
+        <h4>Industry &amp; standard-setter</h4>
+        <ol class="refs-list" start="14">
+          <li>IOSCO — <em>Investigation and Sharing of Information for the Purposes of Market Abuse Detection</em> and related reports. <span class="src">iosco.org</span></li>
+          <li>ISDA — <em>Surveillance Standards for the FX Market</em> and other market-conduct guidance. <span class="src">isda.org</span></li>
+          <li>FX Global Code — <em>Code of Conduct for the wholesale FX market</em>; outcome of the post-fixing reforms. <span class="src">globalfxc.org</span></li>
+        </ol>
+
+        <h4>Major enforcement actions worth reading the orders on</h4>
+        <ol class="refs-list" start="17">
+          <li><strong>LIBOR &amp; EURIBOR</strong> — Barclays, UBS, RBS, Deutsche Bank, others (2012–2016). The defining benchmark-manipulation cases of the modern era; reshaped surveillance budgets and tooling globally.</li>
+          <li><strong>FX fixing</strong> — Citi, JPM, RBS, UBS, Barclays, BofA (2014–2017); the WM/Reuters 4pm fix and the "Cartel" chat room cases. ~USD 10bn aggregate fines.</li>
+          <li><strong>US v. Coscia</strong> (2015) — first US spoofing conviction; framework for proving non-bona-fide intent.</li>
+          <li><strong>US v. Sarao</strong> (2015) — the Flash Crash spoofer; key case in retail spoofing prosecution.</li>
+          <li><strong>JPMorgan precious-metals spoofing</strong> (DOJ / CFTC 2020) — multi-year, multi-trader manipulation; ~USD 920m settlement.</li>
+          <li><strong>Off-channel communications</strong> — SEC and CFTC actions 2022–2024 against ~20 firms; WhatsApp / personal-device record-keeping failures; ~USD 3bn+ aggregate.</li>
+          <li><strong>JPMorgan "London Whale"</strong> (2012–2013) — mismarking and risk-control failure case study.</li>
+          <li><strong>UBS / Kerviel (Soc Gen)</strong> — rogue-trading and mismarking cases that reshaped supervision.</li>
+        </ol>
+
+        <h4>Books &amp; further reading</h4>
+        <ol class="refs-list" start="25">
+          <li>Aitken, M. &amp; Cumming, D. — <em>The Economics of Market Surveillance</em>.</li>
+          <li>Putninš, T.J. — <em>What Do Price Discovery Metrics Really Measure?</em></li>
+          <li>FCA <em>Market Watch</em> 56–70 — focused, practitioner-readable on STOR practice, equity manipulation, FX conduct, off-channel comms.</li>
+        </ol>
+
+        <div class="note">
+          <p class="tag">Suggested reading order</p>
+          <p>Start with <em>MAR Articles 7–16</em> (definitions of insider dealing and manipulation; the STOR obligation), the <em>FINRA Rule 3110 supervisory framework</em>, then read at least two enforcement orders (LIBOR Barclays 2012 and JPMorgan precious-metals 2020). That sequence gives you the conceptual frame plus the view from the prosecutor's bench — and is enough to navigate any vendor demo or consulting deck on the topic.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ════════════════════ COLOPHON FOOTER ════════════════════ -->
+<footer class="colophon">
+  <div class="inner">
+    <div class="block">
+      <div class="h">Document</div>
+      <div class="feature">Trade surveillance in banks &amp; FIs.</div>
+      <div>Primer · No. 04 · May 2026</div>
+    </div>
+    <div class="block">
+      <div class="h">Practice</div>
+      <div class="feature">Infosys Consulting · Banking &amp; Capital Markets.</div>
+      <div>Self-learning · Internal use</div>
+    </div>
+    <div class="block">
+      <div class="h">Set in</div>
+      <div class="feature">Fraunces &amp; IBM Plex Sans &amp; JetBrains Mono.</div>
+      <div>Designed by IC</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    // Reading-progress bar
+    var prog = document.getElementById('prog');
+    var onScroll = function () {
+      var h = document.documentElement;
+      var scrolled = h.scrollTop;
+      var max = h.scrollHeight - h.clientHeight;
+      var p = max > 0 ? (scrolled / max) * 100 : 0;
+      prog.style.setProperty('--p', p.toFixed(2) + '%');
+    };
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Active-section tracking in the sidebar via IntersectionObserver.
+    if ('IntersectionObserver' in window) {
+      var links = document.querySelectorAll('.sidebar nav a[data-section]');
+      var linkMap = {};
+      links.forEach(function (a) { linkMap[a.dataset.section] = a; });
+
+      var setActive = function (id) {
+        links.forEach(function (a) { a.classList.remove('active'); });
+        if (linkMap[id]) linkMap[id].classList.add('active');
+      };
+
+      var observer = new IntersectionObserver(function (entries) {
+        var best = null;
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            if (!best || e.boundingClientRect.top < best.boundingClientRect.top) {
+              best = e;
+            }
+          }
+        });
+        if (best) setActive(best.target.id);
+      }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+
+      document.querySelectorAll('main.content > section[id]').forEach(function (s) {
+        observer.observe(s);
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

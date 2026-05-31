@@ -1,0 +1,2230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Transaction Monitoring in Banks &amp; Financial Institutions — A self-learning primer · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  /* ─────────────── IC tokens ─────────────── */
+  :root {
+    --white:      #FFFFFF;
+    --deep:       #182534;
+    --pavement:   #404040;
+    --blue:       #007CC3;
+    --stone:      #A7A9AC;
+    --slate:      #6D6E71;
+    --lt-blue:    #3699DA;
+    --tint-blue:  #E6F2FA;
+    --tint-stone: #F2F2F3;
+    --rule:       #E2E4E7;
+
+    --display: 'Fraunces', 'Times New Roman', serif;
+    --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+    --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+    --sidebar-w: 280px;
+  }
+
+  /* ─────────────── reset / base ─────────────── */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--pavement);
+    background: var(--white);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern", "liga";
+  }
+  ::selection { background: var(--deep); color: var(--white); }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  p { margin: 0 0 18px; }
+  ol, ul { margin: 0 0 22px; padding-left: 24px; }
+  li { margin: 6px 0; }
+
+  /* ─────────────── reading-progress bar ─────────────── */
+  .progress {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 2px; background: transparent; z-index: 1000;
+    pointer-events: none;
+  }
+  .progress::before {
+    content: ''; display: block;
+    height: 100%; width: var(--p, 0%);
+    background: var(--blue);
+    transition: width 80ms linear;
+  }
+
+  /* ─────────────── TITLE PAGE (full-bleed) ─────────────── */
+  .title-page {
+    background: var(--deep);
+    color: var(--white);
+    min-height: 100vh;
+    padding: 56px 48px 48px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 32px;
+    position: relative;
+  }
+  .title-page::after {
+    content: ''; position: absolute;
+    left: 0; right: 0; bottom: 0; height: 2px;
+    background: var(--blue);
+  }
+  .title-page .mast {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .title-page .mast .mark { color: var(--white); font-weight: 600; }
+  .title-page .mast .meta { color: var(--stone); }
+  .title-page .hero {
+    align-self: center;
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .title-page .kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--lt-blue);
+    font-weight: 600;
+    margin: 0 0 24px;
+    display: flex; align-items: center; gap: 16px;
+    animation: fadeUp 700ms cubic-bezier(.2,.7,.2,1) both;
+  }
+  .title-page .kicker::before {
+    content: ''; width: 56px; height: 1px; background: var(--lt-blue);
+  }
+  .title-page h1 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+    font-weight: 380;
+    font-size: clamp(44px, 7.4vw, 104px);
+    line-height: 0.98;
+    letter-spacing: -0.028em;
+    margin: 0 0 36px;
+    color: var(--white);
+    max-width: 18ch;
+    animation: fadeUp 900ms cubic-bezier(.2,.7,.2,1) 100ms both;
+  }
+  .title-page h1 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+    color: var(--lt-blue);
+    font-weight: 380;
+  }
+  .title-page .deck {
+    font-family: var(--body);
+    font-size: clamp(18px, 1.6vw, 22px);
+    line-height: 1.5;
+    font-weight: 400;
+    color: var(--stone);
+    max-width: 60ch;
+    margin: 0;
+    animation: fadeUp 1000ms cubic-bezier(.2,.7,.2,1) 240ms both;
+  }
+  .title-page .deck em { font-style: italic; color: var(--white); }
+  .title-page .byline {
+    border-top: 1px solid rgba(255,255,255,0.12);
+    padding-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+    animation: fadeUp 1100ms cubic-bezier(.2,.7,.2,1) 420ms both;
+  }
+  @media (max-width: 720px) { .title-page .byline { grid-template-columns: repeat(2, 1fr); } }
+  .title-page .byline .field { display: flex; flex-direction: column; gap: 6px; }
+  .title-page .byline .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--stone);
+    font-weight: 600;
+  }
+  .title-page .byline .value {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 30, "SOFT" 60, "WONK" 0;
+    font-size: 17px;
+    color: var(--white);
+    line-height: 1.3;
+  }
+
+  /* ═════════════════════ MAIN LAYOUT ═════════════════════ */
+  .layout {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+    gap: 0;
+    position: relative;
+  }
+  @media (max-width: 920px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  /* ─────────────── SIDEBAR (sticky TOC) ─────────────── */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 36px 28px 32px;
+    border-right: 1px solid var(--rule);
+    background: var(--white);
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule) transparent;
+  }
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+  @media (max-width: 920px) {
+    .sidebar {
+      position: static;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--rule);
+      padding: 28px 24px;
+    }
+  }
+
+  .sidebar .brand {
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 22px;
+  }
+  .sidebar .brand .label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sidebar .brand .label::before {
+    content: ''; width: 22px; height: 2px; background: var(--blue);
+  }
+  .sidebar .brand .doc-title {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+    font-size: 19px;
+    line-height: 1.18;
+    color: var(--deep);
+    margin: 0 0 6px;
+    letter-spacing: -0.005em;
+  }
+  .sidebar .brand .doc-title em {
+    font-style: italic;
+    font-variation-settings: "opsz" 36, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+    font-weight: 400;
+  }
+  .sidebar .brand .doc-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--slate);
+    text-transform: uppercase;
+  }
+
+  .sidebar nav .group { margin-bottom: 22px; }
+  .sidebar nav .group-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 600;
+    margin: 0 0 6px;
+    padding-left: 14px;
+  }
+  .sidebar nav ol { list-style: none; margin: 0; padding: 0; }
+  .sidebar nav li { margin: 0; }
+  .sidebar nav a {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 10px;
+    align-items: baseline;
+    padding: 7px 12px 7px 12px;
+    border-left: 2px solid transparent;
+    color: var(--pavement);
+    font-family: var(--body);
+    font-size: 14px;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+    font-weight: 400;
+  }
+  .sidebar nav a:hover {
+    color: var(--blue);
+    background: var(--tint-blue);
+    text-decoration: none;
+  }
+  .sidebar nav a.active {
+    color: var(--blue);
+    border-left-color: var(--blue);
+    background: var(--tint-blue);
+    font-weight: 500;
+  }
+  .sidebar nav .num {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 24, "SOFT" 100, "WONK" 1;
+    font-size: 14px;
+    color: var(--blue);
+    line-height: 1;
+    font-weight: 400;
+  }
+  .sidebar nav a.appendix .num {
+    font-family: var(--mono);
+    font-style: normal;
+    color: var(--stone);
+    font-size: 12px;
+  }
+
+  .sidebar .foot {
+    margin-top: 32px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--slate);
+    line-height: 1.7;
+  }
+  .sidebar .foot a { color: var(--blue); font-weight: 600; }
+
+  /* ─────────────── CONTENT COLUMN ─────────────── */
+  .content { min-width: 0; }
+
+  .section-header {
+    background: var(--deep);
+    color: var(--white);
+    padding: 44px 56px;
+    position: relative;
+  }
+  .section-header::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 1px;
+    background: var(--blue);
+  }
+  @media (max-width: 720px) { .section-header { padding: 32px 24px; } }
+
+  .section-header .num {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--lt-blue);
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-header .num::before {
+    content: ''; width: 28px; height: 1px; background: var(--lt-blue);
+  }
+  .section-header h2 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 96, "SOFT" 0, "WONK" 0;
+    font-weight: 380;
+    font-size: clamp(28px, 3.8vw, 44px);
+    line-height: 1.05;
+    letter-spacing: -0.018em;
+    color: var(--white);
+    margin: 0 0 12px;
+    max-width: 24ch;
+  }
+  .section-header h2 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 96, "SOFT" 100, "WONK" 1;
+    color: var(--lt-blue);
+    font-weight: 380;
+  }
+  .section-header .deck {
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--stone);
+    margin: 0;
+    max-width: 64ch;
+  }
+
+  .section-body {
+    padding: 36px 56px 48px;
+    max-width: 880px;
+  }
+  @media (max-width: 720px) { .section-body { padding: 28px 24px 36px; } }
+
+  .section-body .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-body .eyebrow::before {
+    content: ''; width: 28px; height: 3px; background: var(--blue);
+  }
+  .section-body h3 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 60, "SOFT" 0, "WONK" 0;
+    font-weight: 400;
+    font-size: clamp(24px, 2.8vw, 32px);
+    line-height: 1.14;
+    letter-spacing: -0.01em;
+    color: var(--deep);
+    margin: 0 0 14px;
+  }
+  .section-body h3 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 60, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+    font-weight: 400;
+  }
+  .section-body .deck {
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--slate);
+    margin: 0 0 24px;
+    max-width: 64ch;
+    font-weight: 400;
+  }
+
+  .section-body p {
+    font-family: var(--body);
+    font-size: 16.5px;
+    line-height: 1.65;
+    color: var(--pavement);
+    font-weight: 400;
+  }
+  .section-body p strong { color: var(--deep); font-weight: 600; }
+  .section-body p em { font-style: italic; color: var(--deep); }
+  .section-body h4 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 30, "SOFT" 0, "WONK" 0;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--deep);
+    margin: 36px 0 12px;
+    letter-spacing: -0.008em;
+    line-height: 1.25;
+  }
+  .section-body h5 {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 28px 0 10px;
+  }
+  .section-body ul, .section-body ol {
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--pavement);
+  }
+  .section-body ul { list-style: none; padding-left: 0; }
+  .section-body ul li {
+    position: relative;
+    padding-left: 24px;
+    margin: 6px 0;
+  }
+  .section-body ul li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0.62em;
+    width: 12px; height: 1px;
+    background: var(--blue);
+  }
+  .section-body ol li { margin: 6px 0; }
+
+  /* Drop cap on chapter openers */
+  .section-body .lead { margin-top: 0; }
+  .section-body .lead::first-letter {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1;
+    color: var(--blue);
+    font-weight: 400;
+    font-size: 4.6em;
+    line-height: 0.86;
+    float: left;
+    padding: 6px 12px 0 0;
+  }
+
+  /* Inline term emphasis — soft Fraunces italic */
+  .term {
+    font-style: italic;
+    color: var(--deep);
+  }
+
+  /* Pull quote */
+  .pull {
+    margin: 36px 0;
+    padding: 4px 0 4px 24px;
+    border-left: 2px solid var(--blue);
+    font-family: var(--display);
+    font-variation-settings: "opsz" 60, "SOFT" 60, "WONK" 0;
+    font-style: italic;
+    font-weight: 360;
+    font-size: 26px;
+    line-height: 1.22;
+    color: var(--deep);
+    letter-spacing: -0.01em;
+  }
+  .pull .src {
+    display: block;
+    margin-top: 12px;
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 600;
+  }
+
+  /* Inline code */
+  code {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: var(--tint-blue);
+    color: var(--blue);
+    padding: 1px 6px;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+
+  /* Notes / callouts */
+  .note {
+    margin: 28px 0;
+    padding: 20px 24px;
+    background: var(--tint-blue);
+    border-left: 2px solid var(--blue);
+    border-radius: 0 2px 2px 0;
+  }
+  .note .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 8px;
+  }
+  .note h6 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 30, "SOFT" 0, "WONK" 0;
+    font-style: italic;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--deep);
+    margin: 0 0 6px;
+  }
+  .note p { margin: 0; font-size: 15px; color: var(--pavement); line-height: 1.55; }
+  .note p + p { margin-top: 10px; }
+  .note ol, .note ul { font-size: 14.5px; margin-top: 6px; margin-bottom: 0; }
+
+  /* Tables */
+  .section-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0 28px;
+    font-family: var(--body);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--pavement);
+  }
+  .section-body table thead th {
+    text-align: left;
+    background: var(--tint-stone);
+    color: var(--pavement);
+    font-family: var(--body);
+    font-weight: 600;
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+    padding: 12px 14px;
+    border-top: 1px solid var(--rule);
+    border-bottom: 2px solid var(--blue);
+  }
+  .section-body table tbody td {
+    padding: 12px 14px;
+    border-top: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  .section-body table tbody tr:nth-child(even) td {
+    background: var(--tint-stone);
+  }
+  .section-body table tbody td strong { color: var(--deep); }
+  .section-body table tbody td em { font-style: italic; color: var(--deep); }
+
+  /* Three-/two-column panels */
+  .three-col, .two-col {
+    display: grid;
+    gap: 14px;
+    margin: 24px 0 28px;
+  }
+  .three-col { grid-template-columns: repeat(3, 1fr); }
+  .two-col { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 720px) {
+    .three-col, .two-col { grid-template-columns: 1fr; }
+  }
+  .panel {
+    padding: 16px 18px;
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--blue);
+    background: var(--white);
+  }
+  .panel h4 {
+    margin: 0 0 8px;
+    font-family: var(--display);
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--deep);
+    letter-spacing: -0.005em;
+  }
+  .panel p { margin: 0; font-size: 14px; color: var(--pavement); line-height: 1.55; }
+
+  /* Stages (three-stage ML diagram) */
+  .stages {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 24px 0 28px;
+  }
+  @media (max-width: 720px) { .stages { grid-template-columns: 1fr; } }
+  .stage {
+    padding: 18px 18px 16px;
+    background: var(--tint-stone);
+    border-top: 2px solid var(--blue);
+  }
+  .stage .num {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  .stage h4 {
+    margin: 0 0 8px;
+    font-family: var(--display);
+    font-size: 19px;
+    font-style: italic;
+    font-variation-settings: "opsz" 30, "SOFT" 80, "WONK" 0;
+    font-weight: 500;
+    color: var(--deep);
+  }
+  .stage p { margin: 0; font-size: 14px; color: var(--pavement); line-height: 1.55; }
+  .stage p strong { color: var(--deep); }
+
+  /* Lifecycle flow */
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin: 24px 0 28px;
+  }
+  @media (max-width: 980px) { .flow { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 540px) { .flow { grid-template-columns: 1fr; } }
+  .flow .node {
+    padding: 14px 12px;
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--blue);
+    background: var(--white);
+    display: flex; flex-direction: column;
+  }
+  .flow .num {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .flow .name {
+    font-family: var(--display);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--deep);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+  .flow .desc {
+    font-family: var(--body);
+    font-size: 12px;
+    color: var(--slate);
+    line-height: 1.45;
+  }
+
+  /* Glossary / definition lists */
+  .gloss { border-top: 1px solid var(--rule); margin: 12px 0 24px; }
+  .gloss dt {
+    font-family: var(--body);
+    font-weight: 600;
+    color: var(--deep);
+    margin-top: 16px;
+    font-size: 15px;
+  }
+  .gloss dd {
+    margin: 4px 0 0;
+    font-family: var(--body);
+    font-size: 14.5px;
+    color: var(--pavement);
+    line-height: 1.55;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* Scenario cards */
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin: 20px 0 28px;
+  }
+  @media (max-width: 720px) { .scenario-grid { grid-template-columns: 1fr; } }
+  .scenario {
+    padding: 16px 18px 14px;
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--blue);
+    background: var(--white);
+  }
+  .scenario .head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 10px; gap: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .scenario .head h4 {
+    margin: 0 0 2px;
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--deep);
+    letter-spacing: -0.005em;
+    line-height: 1.2;
+  }
+  .scenario .head .sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 500;
+  }
+  .scenario .row { display: grid; grid-template-columns: 110px 1fr; gap: 10px; margin: 7px 0; }
+  .scenario .row .k {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    padding-top: 3px;
+  }
+  .scenario .row .v {
+    font-family: var(--body);
+    font-size: 13px;
+    color: var(--pavement);
+    line-height: 1.5;
+  }
+  .scenario .row.risk .v { color: var(--deep); font-weight: 500; }
+
+  .pill {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 3px 8px;
+    border: 1px solid var(--rule);
+    color: var(--pavement);
+    background: var(--white);
+    border-radius: 2px;
+  }
+  .pill.p1 { color: var(--blue); border-color: var(--blue); background: var(--tint-blue); }
+  .pill.p2 { color: var(--lt-blue); border-color: var(--lt-blue); background: var(--tint-blue); }
+  .pill.p3 { color: var(--slate); border-color: var(--rule); background: var(--tint-stone); }
+  .pill.p4 { color: var(--stone); border-color: var(--rule); background: var(--white); }
+
+  /* Worked-example block */
+  .example {
+    padding: 22px 24px;
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--blue);
+    background: var(--white);
+    margin: 24px 0;
+  }
+  .example .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .example h4 {
+    margin: 0 0 10px;
+    font-family: var(--display);
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--deep);
+    letter-spacing: -0.005em;
+  }
+  .example p, .example ol { font-size: 13.5px; line-height: 1.55; color: var(--pavement); }
+  .example .lessons {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: var(--tint-blue);
+    border-left: 2px solid var(--blue);
+    font-family: var(--body);
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--pavement);
+  }
+  .example .lessons strong { color: var(--deep); }
+
+  /* References list */
+  .refs-list ol {
+    list-style: decimal;
+    padding-left: 22px;
+  }
+  .refs-list ol li {
+    font-family: var(--body);
+    font-size: 14.5px;
+    color: var(--pavement);
+    line-height: 1.55;
+    margin: 8px 0;
+  }
+  .refs-list ol li em { color: var(--deep); font-style: italic; }
+  .refs-list .src {
+    display: block;
+    margin-top: 2px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--slate);
+    letter-spacing: 0.04em;
+  }
+
+  /* Appendix headers within section-body */
+  .appendix-body .group { margin-bottom: 44px; }
+  .appendix-body .group h5 {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0 0 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .appendix-body .group h5::before {
+    content: ''; width: 28px; height: 3px; background: var(--blue);
+  }
+  .appendix-body .group .grouptitle {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 36, "SOFT" 0, "WONK" 0;
+    font-size: 24px;
+    line-height: 1.15;
+    color: var(--deep);
+    margin: 0 0 18px;
+    letter-spacing: -0.008em;
+  }
+
+  /* Colophon */
+  footer.colophon {
+    background: var(--deep);
+    color: var(--stone);
+    padding: 44px 48px;
+  }
+  footer.colophon .inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px;
+  }
+  @media (max-width: 720px) { footer.colophon .inner { grid-template-columns: 1fr; } }
+  footer.colophon .block {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    line-height: 1.7;
+  }
+  footer.colophon .h { color: var(--blue); font-weight: 600; margin-bottom: 10px; }
+  footer.colophon .feature {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 36, "SOFT" 80, "WONK" 0;
+    font-size: 20px;
+    color: var(--white);
+    letter-spacing: -0.01em;
+    text-transform: none;
+    line-height: 1.3;
+    margin: 6px 0 4px;
+    font-weight: 400;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0ms !important;
+      transition-duration: 0ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="prog"></div>
+
+<!-- ════════════════════ TITLE PAGE ════════════════════ -->
+<section class="title-page" id="top">
+  <div class="mast">
+    <span class="mark">Infosys Consulting</span>
+    <span class="meta">Primers &nbsp;·&nbsp; Compliance &nbsp;·&nbsp; May 2026</span>
+  </div>
+
+  <div class="hero">
+    <p class="kicker">A self-learning primer</p>
+    <h1>Transaction <em>monitoring</em> in banks &amp; financial institutions.</h1>
+    <p class="deck">
+      The continuous, automated control that converts raw payment data into
+      <em>suspicion</em> — the regulations behind it, the typologies it must
+      detect, the platforms that run it, and the operating discipline that keeps
+      it defensible in front of a regulator.
+    </p>
+  </div>
+
+  <div class="byline">
+    <div class="field"><span class="label">Audience</span><span class="value">AML / FCC analysts and practitioners</span></div>
+    <div class="field"><span class="label">Reading time</span><span class="value">~55 minutes</span></div>
+    <div class="field"><span class="label">Practice</span><span class="value">IC Banking · Financial Crime</span></div>
+    <div class="field"><span class="label">Edition</span><span class="value">No. 03  ·  Spring 2026</span></div>
+  </div>
+</section>
+
+<!-- ════════════════════ MAIN LAYOUT (sidebar + content) ════════════════════ -->
+<div class="layout">
+
+  <!-- ─────────────── SIDEBAR / TOC ─────────────── -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="label">Primers · No. 03</div>
+      <div class="doc-title">Transaction <em>monitoring</em> in banks &amp; FIs</div>
+      <div class="doc-meta">May 2026 · ~55 min</div>
+    </div>
+
+    <nav>
+      <div class="group">
+        <p class="group-label">Foundations</p>
+        <ol>
+          <li><a href="#s1" data-section="s1"><span class="num">I</span><span>Introduction &amp; purpose</span></a></li>
+          <li><a href="#s2" data-section="s2"><span class="num">II</span><span>Regulatory landscape</span></a></li>
+          <li><a href="#s3" data-section="s3"><span class="num">III</span><span>Three stages of money laundering</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Lifecycle &amp; method</p>
+        <ol>
+          <li><a href="#s4" data-section="s4"><span class="num">IV</span><span>The TM lifecycle</span></a></li>
+          <li><a href="#s5" data-section="s5"><span class="num">V</span><span>Core concepts &amp; vocabulary</span></a></li>
+          <li><a href="#s6" data-section="s6"><span class="num">VI</span><span>Detection approaches</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Typologies</p>
+        <ol>
+          <li><a href="#s7" data-section="s7"><span class="num">VII</span><span>Scenarios &amp; typologies</span></a></li>
+          <li><a href="#s8" data-section="s8"><span class="num">VIII</span><span>Worked scenario walkthroughs</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Operations</p>
+        <ol>
+          <li><a href="#s9" data-section="s9"><span class="num">IX</span><span>Fraud monitoring vs AML TM</span></a></li>
+          <li><a href="#s10" data-section="s10"><span class="num">X</span><span>Mitigation &amp; tuning techniques</span></a></li>
+          <li><a href="#s11" data-section="s11"><span class="num">XI</span><span>Investigation &amp; case management</span></a></li>
+          <li><a href="#s12" data-section="s12"><span class="num">XII</span><span>SAR / CTR / STR reporting</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Ecosystem &amp; pitfalls</p>
+        <ol>
+          <li><a href="#s13" data-section="s13"><span class="num">XIII</span><span>Technology providers</span></a></li>
+          <li><a href="#s14" data-section="s14"><span class="num">XIV</span><span>Emerging trends</span></a></li>
+          <li><a href="#s15" data-section="s15"><span class="num">XV</span><span>Common pitfalls &amp; challenges</span></a></li>
+        </ol>
+      </div>
+
+      <div class="group">
+        <p class="group-label">Appendix</p>
+        <ol>
+          <li><a href="#s16" data-section="s16" class="appendix"><span class="num">—</span><span>Glossary</span></a></li>
+          <li><a href="#s17" data-section="s17" class="appendix"><span class="num">—</span><span>References &amp; further reading</span></a></li>
+        </ol>
+      </div>
+    </nav>
+
+    <div class="foot">
+      <a href="#top">↑ Back to top</a><br>
+      Infosys Consulting<br>
+      Internal · Self-learning
+    </div>
+  </aside>
+
+  <!-- ─────────────── CONTENT ─────────────── -->
+  <main class="content">
+
+    <!-- SECTION I — INTRODUCTION & PURPOSE -->
+    <section id="s1">
+      <div class="section-header">
+        <p class="num">Chapter I · Foundations</p>
+        <h2>Introduction &amp; <em>purpose</em>.</h2>
+        <p class="deck">What transaction monitoring is, why it exists, and where it sits inside the broader financial-crime control framework.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 01 · Foundations</p>
+        <h3>From raw payments to <em>reasonable suspicion</em>.</h3>
+
+        <p class="lead"><em class="term">Transaction monitoring (TM)</em> is the continuous, automated review of customer activity — deposits, withdrawals, wires, ACH, card, securities trades, journal entries, internal book transfers — against pre-defined detection logic to identify activity that may indicate <strong>money laundering, terrorist financing, sanctions evasion, fraud, or market abuse</strong>. It is a regulatory obligation for virtually every regulated financial institution (FI) in the world and is one of the three pillars of an AML program, alongside <em class="term">Customer Due Diligence (CDD/KYC)</em> and <em class="term">Sanctions Screening</em>.</p>
+
+        <p>The TM control does not try to prove a crime. It tries to detect a <strong>reasonable suspicion</strong> that warrants human investigation and, if appropriate, a regulatory filing (a Suspicious Activity Report in the US, a Suspicious Transaction Report in most other jurisdictions). The output of TM is therefore an <em class="term">alert</em> — not a conclusion.</p>
+
+        <div class="note">
+          <p class="tag">Mental model</p>
+          <h6>A two-stage funnel.</h6>
+          <p>Think of TM as a <strong>two-stage funnel</strong>. Stage 1 is detection logic (rules, scenarios, models) that converts raw transactions into alerts. Stage 2 is human investigation that converts alerts into either <em>cleared</em>, <em>escalated</em>, or <em>reported</em> outcomes. Most regulatory criticism — and most vendor competition — targets the conversion ratios between these stages.</p>
+        </div>
+
+        <h4>Why it exists</h4>
+        <ul>
+          <li><strong>Legal obligation.</strong> The <em class="term">Bank Secrecy Act (1970)</em> in the US, and equivalents globally, require regulated FIs to report suspicious activity. Failure to monitor is a violation in itself — independent of whether laundering actually occurred.</li>
+          <li><strong>Societal harm.</strong> The UN Office on Drugs and Crime estimates global money laundering at 2–5% of world GDP annually — roughly USD 800bn–2tn. TM is the front-line technical control.</li>
+          <li><strong>Bank protection.</strong> Effective TM protects FIs from being used as conduits for proceeds of crime — which carries fines (multi-billion-dollar in extreme cases), consent orders, and reputational loss.</li>
+        </ul>
+
+        <h4>Scope &amp; adjacent controls</h4>
+        <p>TM does not operate in isolation. The full financial-crime stack typically includes:</p>
+
+        <table>
+          <thead>
+            <tr><th style="width: 26%;">Control</th><th>Purpose</th><th style="width: 26%;">When it fires</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>KYC / CDD</td><td>Establish and maintain the identity, ownership and risk profile of every customer.</td><td>Onboarding + periodic refresh</td></tr>
+            <tr><td>Sanctions screening</td><td>Block payments to/from sanctioned parties (OFAC, UN, EU, HMT, etc.).</td><td>Real-time, pre-execution</td></tr>
+            <tr><td>Watchlist / PEP / adverse media screening</td><td>Flag exposure to politically exposed persons and reputational risks.</td><td>Onboarding + ongoing</td></tr>
+            <tr><td><strong>Transaction monitoring</strong></td><td>Detect suspicious patterns of activity post-transaction.</td><td>Typically batch + intra-day</td></tr>
+            <tr><td>Fraud monitoring</td><td>Detect unauthorized or fraudulent transactions in real-time.</td><td>Real-time, sub-second</td></tr>
+            <tr><td>Trade surveillance</td><td>Detect market abuse (insider trading, spoofing, wash trades).</td><td>End of day + intraday</td></tr>
+            <tr><td>Case management &amp; SAR filing</td><td>Triage alerts, document investigations, file regulatory reports.</td><td>Post-alert</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION II — REGULATORY -->
+    <section id="s2">
+      <div class="section-header">
+        <p class="num">Chapter II · Foundations</p>
+        <h2>Regulatory <em>landscape</em>.</h2>
+        <p class="deck">The rules that mandate transaction monitoring — international standards, regional frameworks, national regulators, and the reporting regimes they enforce.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 02 · Why this exists</p>
+        <h3>FATF sets the floor; national regulators do the <em>enforcing</em>.</h3>
+
+        <h4>International standards</h4>
+        <p>The global AML/CFT framework is set by the <em class="term">Financial Action Task Force (FATF)</em>, an inter-governmental body whose <strong>40 Recommendations</strong> are the universal reference for national laws. FATF doesn't regulate FIs directly — it evaluates countries. But every national regulator implements FATF requirements, so understanding the 40 Recommendations gives you the conceptual ground floor for every jurisdiction.</p>
+
+        <p>Other international bodies worth knowing:</p>
+        <ul>
+          <li><em class="term">Basel Committee on Banking Supervision (BCBS)</em> — issues supervisory guidance on sound AML/CFT risk management for banks.</li>
+          <li><em class="term">Wolfsberg Group</em> — a private association of 12 global banks that publishes industry guidance on KYC, correspondent banking, payment transparency, and the use of AI in financial crime. Often cited in regulatory examinations.</li>
+          <li><em class="term">Egmont Group</em> — global network of Financial Intelligence Units (FIUs); coordinates cross-border SAR exchange.</li>
+        </ul>
+
+        <h4>Regional &amp; national frameworks</h4>
+        <table>
+          <thead>
+            <tr><th>Jurisdiction</th><th>Primary law(s)</th><th>Lead regulator(s)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>United States</td><td>Bank Secrecy Act (BSA, 1970); USA PATRIOT Act (2001); Anti-Money Laundering Act (AMLA, 2020)</td><td>FinCEN, OCC, Federal Reserve, FDIC, NCUA, OFAC (sanctions), SEC/FINRA (broker-dealers)</td></tr>
+            <tr><td>European Union</td><td>4AMLD (2015), 5AMLD (2018), 6AMLD (2018), the EU AML Package (2024) creating AMLA and a single rulebook (AMLR/AMLD6)</td><td>National competent authorities + the new EU <em>Anti-Money Laundering Authority (AMLA)</em>, based in Frankfurt, with direct supervisory powers from 2028</td></tr>
+            <tr><td>United Kingdom</td><td>Proceeds of Crime Act 2002 (POCA); Money Laundering Regulations 2017; Sanctions and Anti-Money Laundering Act 2018</td><td>FCA, PRA, HMRC, NCA (UKFIU), OFSI (sanctions)</td></tr>
+            <tr><td>Singapore</td><td>Corruption, Drug Trafficking and Other Serious Crimes Act (CDSA); MAS Notice 626</td><td>Monetary Authority of Singapore (MAS); Suspicious Transaction Reporting Office (STRO)</td></tr>
+            <tr><td>Hong Kong</td><td>Anti-Money Laundering and Counter-Terrorist Financing Ordinance (AMLO)</td><td>HKMA, SFC, IA, CR</td></tr>
+            <tr><td>India</td><td>Prevention of Money Laundering Act 2002 (PMLA)</td><td>RBI, SEBI, IRDAI; FIU-IND for STR receipt</td></tr>
+            <tr><td>Australia</td><td>AML/CTF Act 2006</td><td>AUSTRAC</td></tr>
+            <tr><td>Canada</td><td>Proceeds of Crime (Money Laundering) and Terrorist Financing Act (PCMLTFA)</td><td>FINTRAC, OSFI</td></tr>
+          </tbody>
+        </table>
+
+        <h4>The reporting obligations TM feeds</h4>
+        <div class="three-col">
+          <div class="panel">
+            <h4>SAR / STR</h4>
+            <p><strong>Suspicious Activity Report</strong> (US) / <strong>Suspicious Transaction Report</strong> (rest of world). Filed when an FI has a reasonable suspicion that activity relates to money laundering, terrorist financing, or other predicate offences. Typically due within 30 days of detection in the US; 24 hours to a few days in many other jurisdictions. The FI cannot tip off the customer.</p>
+          </div>
+          <div class="panel">
+            <h4>CTR</h4>
+            <p><strong>Currency Transaction Report</strong> (US). Mandatory filing for any cash transaction exceeding USD 10,000 in a single business day per customer. Not a suspicion-based report — it is mechanical and threshold-driven. Drives the <em>structuring</em> typology (see §7).</p>
+          </div>
+          <div class="panel">
+            <h4>Other</h4>
+            <p>Cross-border wire reports (FBAR, FATCA, CRS), monetary instrument logs (≥ USD 3,000), <em>Section&nbsp;314(a)/(b)</em> information-sharing requests in the US, and country-specific large-value transaction reports (e.g. AUSTRAC's TTR threshold of AUD 10,000).</p>
+          </div>
+        </div>
+
+        <h4>Why this matters for TM design</h4>
+        <p>Detection logic must <strong>cover the typologies the regulator expects you to cover</strong>. Examiners will ask: "Show us your scenarios for structuring. For rapid movement of funds. For high-risk geography activity. For PEP exposure. For pass-through behavior." If a typology is documented in FATF or FinCEN guidance and your platform does not detect it, the gap is a finding. Most enforcement actions over the last decade — HSBC 2012, Standard Chartered 2012/2019, Danske Bank 2018, Westpac 2020, TD Bank 2024 — turned on missing or mis-tuned scenarios, not on missing CDD.</p>
+      </div>
+    </section>
+
+    <!-- SECTION III — THREE STAGES OF ML -->
+    <section id="s3">
+      <div class="section-header">
+        <p class="num">Chapter III · Foundations</p>
+        <h2>Three <em>stages</em> of money laundering.</h2>
+        <p class="deck">The canonical model used in every FATF document and AML training. Different TM scenarios target different stages.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 03 · The problem TM is detecting</p>
+        <h3>Placement, layering, <em>integration</em>.</h3>
+
+        <div class="stages">
+          <div class="stage">
+            <div class="num">STAGE 01</div>
+            <h4>Placement</h4>
+            <p>Illicit cash enters the financial system — cash deposits, prepaid cards, money services businesses, casinos, real-estate down-payments. Most vulnerable stage for the launderer; most-detectable stage for the bank because cash is involved. <strong>Targeted by: structuring, cash-intensive business, smurfing scenarios.</strong></p>
+          </div>
+          <div class="stage">
+            <div class="num">STAGE 02</div>
+            <h4>Layering</h4>
+            <p>Funds are moved through complex sequences of transfers to obscure origin — wire chains, shell companies, trade-based laundering, securities trades, cross-border flows, crypto on/off-ramps. <strong>Targeted by: rapid movement of funds, pass-through, journal entries, network/graph scenarios, offsetting trades.</strong></p>
+          </div>
+          <div class="stage">
+            <div class="num">STAGE 03</div>
+            <h4>Integration</h4>
+            <p>Now-cleaned funds re-enter the legitimate economy as apparently legal income — real estate, luxury goods, business investments, loans repaid from offshore accounts. Hardest to detect because the trail is broken. <strong>Targeted by: anticipatory profiling, change-in-behavior, source-of-wealth review scenarios.</strong></p>
+          </div>
+        </div>
+
+        <div class="note">
+          <p class="tag">Note</p>
+          <h6>Terrorist financing reverses the model.</h6>
+          <p><strong>Terrorist financing (TF)</strong> often reverses the model: small amounts of <em>legitimate</em> money are funnelled toward an illicit end. Classic TF typologies — donations to charities of concern, hawala-style transfers, small repeated wires — therefore look nothing like classical ML and require their own scenarios.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION IV — TM LIFECYCLE -->
+    <section id="s4">
+      <div class="section-header">
+        <p class="num">Chapter IV · Lifecycle &amp; method</p>
+        <h2>The TM <em>lifecycle</em>.</h2>
+        <p class="deck">From raw transaction to filed SAR — the seven canonical stages every TM platform implements, regardless of vendor.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 04 · How TM actually works</p>
+        <h3>Seven stages, <em>every</em> platform.</h3>
+
+        <div class="flow">
+          <div class="node"><div class="num">01</div><div class="name">Data ingestion</div><div class="desc">Pull transactions, customer profiles, watchlists, reference data into the TM platform.</div></div>
+          <div class="node"><div class="num">02</div><div class="name">Enrichment</div><div class="desc">Join with KYC, risk rating, geography, peer group, prior history.</div></div>
+          <div class="node"><div class="num">03</div><div class="name">Detection</div><div class="desc">Run scenarios / rules / models. Emit candidate alerts.</div></div>
+          <div class="node"><div class="num">04</div><div class="name">Alert generation</div><div class="desc">Score, dedupe, group, prioritize. Route to case management.</div></div>
+          <div class="node"><div class="num">05</div><div class="name">L1 triage</div><div class="desc">Analyst clears, closes, or escalates with disposition rationale.</div></div>
+          <div class="node"><div class="num">06</div><div class="name">L2 investigation</div><div class="desc">Deep-dive on escalated cases. EDD, 314(b), pattern review.</div></div>
+          <div class="node"><div class="num">07</div><div class="name">SAR / close</div><div class="desc">File SAR/STR, or close with documented reasoning. Feedback loop to tuning.</div></div>
+        </div>
+
+        <h4>Where each stage tends to fail</h4>
+        <table>
+          <thead>
+            <tr><th style="width: 20%;">Stage</th><th>Common failure mode</th><th>Typical mitigation</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Data ingestion</td><td>Missing source systems, late files, schema drift, broken ETL.</td><td>Data lineage, reconciliation controls, daily completeness checks.</td></tr>
+            <tr><td>Enrichment</td><td>Stale KYC, missing UBO, no peer group assigned, country code gaps.</td><td>Perpetual KYC (pKYC), reference data SLAs, mandatory CDD refresh.</td></tr>
+            <tr><td>Detection</td><td>Mis-calibrated thresholds, scenarios coverage gaps, model decay.</td><td>Above-the-line / below-the-line testing, scenario inventory mapped to FATF typologies.</td></tr>
+            <tr><td>Alert generation</td><td>Duplicate alerts; no risk-based prioritization.</td><td>Alert hibernation, dedup logic, risk-scoring layer over raw alerts.</td></tr>
+            <tr><td>L1 triage</td><td>Inconsistent disposition quality, productivity-driven closures.</td><td>QA sampling, structured rationale templates, calibration sessions.</td></tr>
+            <tr><td>L2 investigation</td><td>Slow EDD, fragmented data access, weak 314(b) usage.</td><td>Investigator workbench, one-click data pulls, embedded graph view.</td></tr>
+            <tr><td>SAR / close</td><td>Low-quality narratives, SARs filed late, no feedback loop to tuning.</td><td>Narrative templates, SLAs, model-tuning fed by disposition feedback.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION V — CORE CONCEPTS -->
+    <section id="s5">
+      <div class="section-header">
+        <p class="num">Chapter V · Lifecycle &amp; method</p>
+        <h2>Core concepts &amp; <em>vocabulary</em>.</h2>
+        <p class="deck">The fifteen-or-so concepts you'll see in every regulatory exam, vendor pitch, and consulting deck. Internalize these before reading scenarios.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 05 · Vocabulary you need</p>
+        <h3>Customer-side and <em>detection-side</em> language.</h3>
+
+        <h4>Customer-side concepts</h4>
+        <dl class="gloss">
+          <dt>KYC (Know Your Customer)</dt>
+          <dd>The process of identifying, verifying, and risk-rating a customer at onboarding and on an ongoing basis.</dd>
+
+          <dt>CDD (Customer Due Diligence)</dt>
+          <dd>Same as KYC but emphasized as a continuous process, not a one-off event. Required by FATF Rec. 10.</dd>
+
+          <dt>EDD (Enhanced Due Diligence)</dt>
+          <dd>Heightened CDD applied to higher-risk customers — PEPs, customers in high-risk geographies, complex ownership structures, correspondent banking relationships. Includes source-of-wealth and source-of-funds analysis.</dd>
+
+          <dt>UBO (Ultimate Beneficial Owner)</dt>
+          <dd>The natural person who ultimately owns or controls a legal entity (typically defined as ≥25% ownership, but stricter in some jurisdictions). The lynchpin for detecting shell-company misuse.</dd>
+
+          <dt>PEP (Politically Exposed Person)</dt>
+          <dd>Individuals entrusted with prominent public functions and their close associates/family. Not inherently suspicious, but warrant EDD due to elevated bribery / corruption / sanctions risk.</dd>
+
+          <dt>CRR (Customer Risk Rating)</dt>
+          <dd>A composite score (typically L / M / H) used to drive monitoring intensity, threshold calibration, and refresh cadence. Inputs: customer type, geography, product, channel, history.</dd>
+
+          <dt>Peer group / segmentation</dt>
+          <dd>Customers grouped by similar risk profile and activity expectation, so that scenarios can compare each customer to "people like them" rather than to a global average. Critical for behavioral and anomaly-based detection.</dd>
+        </dl>
+
+        <h4>Detection-side concepts</h4>
+        <dl class="gloss">
+          <dt>Typology</dt>
+          <dd>A pattern of behavior associated with a known laundering or financing technique (e.g. structuring, funnel accounts, trade-based laundering). Typologies are catalogued by FATF, Wolfsberg, FinCEN, etc.</dd>
+
+          <dt>Scenario</dt>
+          <dd>An implemented detection logic that targets one or more typologies. Most TM platforms ship with 25–100 out-of-the-box scenarios that institutions tune to their data.</dd>
+
+          <dt>Rule</dt>
+          <dd>The most granular piece of detection logic — a single condition or threshold ("cash deposit &gt; $9,500 within 24 hours of a wire out"). Scenarios are composed of rules.</dd>
+
+          <dt>Threshold</dt>
+          <dd>A numeric value that controls when a scenario fires. The most-tuned parameter in any TM platform — too low and you drown in false positives, too high and you miss real activity.</dd>
+
+          <dt>Alert</dt>
+          <dd>The output of detection logic. A package of: customer ID, scenario name, time period, transaction set, a calculated value, and any risk attributes. Becomes a case in the investigation workflow.</dd>
+
+          <dt>False positive (FP) / True positive (TP)</dt>
+          <dd>An alert that, after investigation, turns out not to be (FP) or to be (TP) genuinely suspicious. In most production TM platforms, the FP rate runs at 90–99%. Reducing FP rate without reducing TP recall is the central engineering problem.</dd>
+
+          <dt>SAR conversion rate</dt>
+          <dd>The proportion of alerts that result in a filed SAR. Industry-typical figures sit at 1–5%.</dd>
+
+          <dt>Above-the-line / Below-the-line (ATL / BTL) testing</dt>
+          <dd>A regulatory expectation: periodically test the scenarios just above (ATL) and just below (BTL) the threshold to confirm the threshold is set at the right point. Above-the-line should be productive; below-the-line should be clean of obvious typology activity.</dd>
+
+          <dt>Disposition</dt>
+          <dd>The investigator's recorded decision on an alert — typically "Closed — No SAR", "Closed — SAR Filed", "Escalated", or "Continue Monitoring". The disposition history is gold-dust for model tuning and ML.</dd>
+
+          <dt>Model risk / Model governance</dt>
+          <dd>The regulatory framework (US: SR 11-7) requiring documented validation, ongoing performance monitoring, and independent challenge for every model — including TM scenarios. Driven by the Model Risk Management function inside the bank.</dd>
+        </dl>
+      </div>
+    </section>
+
+    <!-- SECTION VI — DETECTION APPROACHES -->
+    <section id="s6">
+      <div class="section-header">
+        <p class="num">Chapter VI · Lifecycle &amp; method</p>
+        <h2>Detection <em>approaches</em>.</h2>
+        <p class="deck">The six families of techniques that produce TM alerts today, ordered roughly by adoption maturity. Most production platforms blend several.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 06 · How detection is built</p>
+        <h3>Rules to ML, with <em>graph</em> in the middle.</h3>
+
+        <h4>1 · Rules / Threshold-based detection</h4>
+        <p>The oldest and still-most-common approach. A scenario fires when one or more numeric conditions are met (e.g. <code>cash_in_24h &gt;= $9,500 AND wire_out_72h &gt;= $9,000 AND wire_dest_country IN high_risk_list</code>). Outputs are deterministic, auditable, and easy to explain to a regulator — but rigid, prone to false positives, and easily gamed by anyone who learns the threshold.</p>
+
+        <h4>2 · Statistical / scenario-based detection</h4>
+        <p>Adds statistical aggregation to rules: standard-deviation bands, ratio analysis, peer-group comparisons, time-windowed deltas. The Oracle/Mantas scenario library is the canonical example — most banks operate on this approach today, often with hundreds of tuned scenarios.</p>
+
+        <h4>3 · Behavioral profiling</h4>
+        <p>Establishes a per-customer baseline of <em>expected</em> activity (volume, geography, counterparties, channels) from KYC and historical data, then alerts on material deviation. Sometimes called <em>anticipatory profiling</em>. Strong for catching evolving behavior; weak when the baseline itself is compromised (e.g. customer was a mule from day one).</p>
+
+        <h4>4 · Network / Graph analytics</h4>
+        <p>Treats parties, accounts, devices, IPs, addresses, and transactions as nodes-and-edges in a graph, and runs multi-hop traversals or community-detection algorithms to surface schemes that would be invisible to single-account scenarios. Mule networks, hub-and-spoke structuring, and round-tripping are the canonical use cases. Vendors: <em>Quantexa, TigerGraph, Neo4j, SymphonyAI Sensa</em>. Now the dominant differentiator in new TM platform builds.</p>
+
+        <h4>5 · Machine Learning — Supervised</h4>
+        <p>Trains models on labelled historical alerts (TP vs FP, or SAR-filed vs not) to predict alert quality ("alert risk scoring"), to suppress likely-FPs, or to triage cases. Common architectures: gradient-boosted trees, neural nets, graph neural nets. Heavily regulated under model-risk frameworks — requires explainability, validation, and ongoing performance monitoring. Watch for the <em>label leakage</em> problem: yesterday's false negatives don't appear in your training labels.</p>
+
+        <h4>6 · Machine Learning — Unsupervised &amp; anomaly detection</h4>
+        <p>Used when labels are scarce: isolation forests, autoencoders, clustering, density-based anomaly detection. Surfaces customers or transactions that don't resemble their peer group or their own history. Strong for novel typologies; weak on explainability. Often deployed as a <em>scenario complement</em>, not a replacement.</p>
+
+        <div class="note">
+          <p class="tag">In practice</p>
+          <h6>How these combine in production.</h6>
+          <p>A mature TM stack typically runs (a) a base layer of statistical/threshold scenarios for regulatory coverage, (b) a graph layer for network and multi-hop typologies, (c) a behavioral profiling layer for change-detection, and (d) an ML scoring layer on top of all generated alerts to drive risk-based investigator prioritization. Each layer's output is auditable and tied to a documented typology.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION VII — SCENARIOS / TYPOLOGIES -->
+    <section id="s7">
+      <div class="section-header">
+        <p class="num">Chapter VII · Typologies</p>
+        <h2>Scenarios &amp; <em>typologies</em>.</h2>
+        <p class="deck">The catalogue of laundering / financing patterns most TM programs must cover. Each card carries the typology, the detection pattern that targets it, and the primary risk it addresses. Priority bars reflect typical regulatory and impact weighting.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 07 · The work itself</p>
+        <h3>What a regulator expects you to <em>detect</em>.</h3>
+
+        <h4>Placement-stage scenarios</h4>
+        <div class="scenario-grid">
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Structuring</h4>
+                <div class="sub">CTR threshold evasion</div>
+              </div>
+              <span class="pill p1">P1</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Cash deposits or withdrawals deliberately broken below the USD 10,000 CTR threshold (or USD 3,000 monetary-instrument log threshold) to avoid reporting.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Same-customer, same-day aggregation across branches and account numbers; cluster on amounts just below threshold bands ($9,000–$9,999, $4,500–$4,999).</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">31 USC §5324 BSA reporting evasion; placement of illicit cash.</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Microstructuring (Smurfing)</h4>
+                <div class="sub">Coordinated multi-actor structuring</div>
+              </div>
+              <span class="pill p1">P1</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Multiple individuals ("smurfs") each depositing small amounts that aggregate to a large sum at a common beneficiary. Defeats single-customer aggregation.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Many-to-one beneficiary detection across distinct depositors; link via shared device, IP, branch, address, or coordinated timing windows.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Coordinated placement of illicit cash; mule recruitment networks.</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Cash-intensive Business Misuse</h4>
+                <div class="sub">Front-business laundering</div>
+              </div>
+              <span class="pill p2">P2</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Legitimate cash-handling business (laundromat, car wash, restaurant) used to commingle illicit cash with real revenue.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Cash deposits inconsistent with declared business turnover; volume/seasonality mismatches; comparison to industry peer benchmarks.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Classic placement laundering; revenue inflation for tax fraud.</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Funnel Accounts</h4>
+                <div class="sub">Multi-state cash collection</div>
+              </div>
+              <span class="pill p3">P3</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Cash deposited in multiple geographies into a single account and withdrawn from a single distant location — classic for narcotics proceeds and human trafficking.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Geographic dispersion of cash deposits over short windows; deposit-state vs withdrawal-state mismatch; high velocity through a single low-balance account.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Drug trafficking proceeds; human trafficking proceeds.</div></div>
+          </div>
+
+        </div>
+
+        <h4>Layering-stage scenarios</h4>
+        <div class="scenario-grid">
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Rapid Movement of Funds</h4>
+                <div class="sub">Pass-through / funnel activity</div>
+              </div>
+              <span class="pill p1">P1</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Funds in and out within a short window with no economic purpose — a classic layering signature.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Time-windowed in/out edge analysis at the account level; net position ≈ 0 with high throughput; low day-end balance vs high daily flow.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Layering; pass-through laundering through a custodial account.</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Network of Accounts / Customers</h4>
+                <div class="sub">Mule rings &amp; coordinated schemes</div>
+              </div>
+              <span class="pill p1">P1</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Interconnected accounts sharing identifiers (address, phone, IP, device) acting in concert despite no documented relationship.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Graph community detection on shared-attribute and transaction edges; hub-and-spoke and round-tripping motifs.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Mule networks; organized fraud and laundering rings.</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>External Pattern of Funds Transfer</h4>
+                <div class="sub">Customer ↔ external entity</div>
+              </div>
+              <span class="pill p3">P3</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Unusual flows to/from an external counterparty — incomplete originator/beneficiary data, repetitive transfers via different accounts to the same destination.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Multi-hop traversal across wire/ACH edges; aggregate by external counterparty across all customer accounts.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Layering; sanctions evasion via intermediaries.</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Journal Entries — Unrelated Accounts</h4>
+                <div class="sub">Internal transfers without purpose</div>
+              </div>
+              <span class="pill p4">P4</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Internal book transfers between accounts with no documented relationship or economic rationale.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Internal-transfer edges enriched with CDD-relationship signal; flag where graph distance is high but flow is large.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Internal layering; insider fraud.</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Movement Without Trade Purpose</h4>
+                <div class="sub">Conduit / shell-style flows</div>
+              </div>
+              <span class="pill p3">P3</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Transactions inconsistent with stated business — shell-style accounts acting as conduits with no commercial substance.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Business-profile mismatch on the customer node combined with high pass-through ratio across counterparty edges.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Shell company misuse; tax evasion; sanctions evasion.</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Trade-Based Money Laundering (TBML)</h4>
+                <div class="sub">Over/under-invoicing in trade finance</div>
+              </div>
+              <span class="pill p3">P3</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Mis-pricing, phantom shipments, or multiple-invoicing of goods to move value across borders disguised as legitimate trade.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Price-vs-market-reference deviation; container-volume vs invoice-value mismatch; counterparty country vs commodity type mismatch.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Cross-border laundering; sanctions evasion; trade fraud. Estimated to be one of the largest ML channels globally.</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Offsetting Trades</h4>
+                <div class="sub">Wash / mirror / pre-arranged trades</div>
+              </div>
+              <span class="pill p3">P3</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Trades that cancel out across accounts or jurisdictions — value transfer disguised as market activity (the technique exposed by Deutsche Bank's Russian mirror-trade scandal).</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Cross-account trade-pair detection on instrument + time + price; UBO-clustered traversal across related accounts.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Cross-border value transfer; market manipulation.</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Currency Exchange — Multi-Listed</h4>
+                <div class="sub">Cross-market value transfer</div>
+              </div>
+              <span class="pill p3">P3</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Buying/selling ADRs, GDRs, or dual-listed shares across markets and currencies primarily to convert currency or move value.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Link instrument nodes across exchanges; correlate cross-currency leg pairs by UBO and time.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Value transfer; capital control evasion.</div></div>
+          </div>
+
+        </div>
+
+        <h4>Integration-stage &amp; behavioral scenarios</h4>
+        <div class="scenario-grid">
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Anticipatory Profiling</h4>
+                <div class="sub">Deviation from expected behavior</div>
+              </div>
+              <span class="pill p2">P2</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Activity diverging from the CDD-derived baseline of expected volume, geography, products, or counterparties.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Per-customer baseline computed on graph-aggregated features; alert on statistical drift versus baseline + peer group.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Novel typologies; evolving risk; integration-stage activity.</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Significant Change in Behavior</h4>
+                <div class="sub">Unexplained pattern shift</div>
+              </div>
+              <span class="pill p2">P2</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Material, unexplained shift in volume, geography, product mix, or interaction channel versus history.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Temporal feature comparison on the customer node — current window vs trailing baseline, peer-group adjusted.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Account compromise; evolving misuse; mule recruitment after a clean onboarding period.</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>High-Risk Transaction Monitoring</h4>
+                <div class="sub">Entity &amp; counterparty</div>
+              </div>
+              <span class="pill p4">P4</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Scrutiny of activity by or with parties carrying elevated ML/TF risk — high-risk geos, PEPs, opaque ownership, adverse media.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Risk-attributed nodes for parties + jurisdictions; alert on edges that cross from low-risk to high-risk subgraphs.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Sanctions exposure; PEP misuse; corruption proceeds.</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Dormant Account Reactivation</h4>
+                <div class="sub">Unused account suddenly active</div>
+              </div>
+              <span class="pill p3">P3</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">An account that has been inactive for months or years suddenly shows large or rapid activity — a hallmark of account takeover, identity theft, or mule reactivation.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Dormancy-window state machine on account; alert on first transaction above peer-threshold after defined inactivity period.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Account takeover; mule reactivation; identity fraud.</div></div>
+          </div>
+
+        </div>
+
+        <h4>Specialized &amp; emerging scenarios</h4>
+        <div class="scenario-grid">
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Cuckoo Smurfing</h4>
+                <div class="sub">Hijacking legitimate remittances</div>
+              </div>
+              <span class="pill p3">P3</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Launderer's cash is paid into the account of an unwitting third party who was expecting a legitimate inbound remittance, while the launderer collects the real overseas funds in cash. Particularly seen in Australian and South Asian corridors.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Inbound cash deposit timing matches an expected international remittance; deposit channel/branch does not match remitter profile.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Cross-border laundering; victim is often unaware until investigated.</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Black-Market Peso Exchange</h4>
+                <div class="sub">Parallel-market currency conversion</div>
+              </div>
+              <span class="pill p3">P3</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Drug proceeds in USD are sold to Latin-American businesses needing dollars, in exchange for pesos delivered in country — laundering and currency conversion in one move.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">US-dollar payments from unconnected US sources to Latin-American businesses inconsistent with declared trade flow.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Drug-trafficking proceeds laundering; trade-finance abuse.</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Crypto On/Off-Ramp Activity</h4>
+                <div class="sub">Bank ↔ VASP flows</div>
+              </div>
+              <span class="pill p2">P2</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Frequent, structured, or large flows between bank accounts and virtual-asset service providers (VASPs) — exchanges, OTC desks, mixers, peer-to-peer markets — used as on/off-ramps in layering.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">VASP-counterparty edge enrichment; pair with blockchain-analytics signal (Chainalysis, TRM, Elliptic) to identify sanctioned or high-risk wallets at the other end.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Crypto-enabled laundering; sanctions evasion via privacy tools.</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>APP Scam / Authorized Push Payment Fraud</h4>
+                <div class="sub">Social-engineered transfers</div>
+              </div>
+              <span class="pill p2">P2</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Customer is socially engineered into authorizing a payment to a fraudster (romance scam, investment scam, impersonation). The transaction looks legitimate at the rail because the customer authorized it.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Behavioral biometrics (hesitation, navigation patterns); new payee + large amount + uncharacteristic destination; mule-account intelligence at the beneficiary side.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Consumer harm; reimbursement liability under regimes like the UK PSR mandatory reimbursement scheme (2024).</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Terrorist Financing Indicators</h4>
+                <div class="sub">Low-value, high-purpose flows</div>
+              </div>
+              <span class="pill p3">P3</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Small, repeated transfers to or from individuals/charities in conflict-zone jurisdictions; donations clustering around known event dates; flows to NGO-fronts under sanction.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Geography + counterparty + amount fingerprinting against FATF/national TF typology lists; time-clustering on known dates.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Terrorist financing — criminally severe and the most regulator-sensitive of all typologies.</div></div>
+          </div>
+
+          <div class="scenario">
+            <div class="head">
+              <div>
+                <h4>Round-Tripping</h4>
+                <div class="sub">Funds return via foreign loop</div>
+              </div>
+              <span class="pill p3">P3</span>
+            </div>
+            <div class="row"><div class="k">Typology</div><div class="v">Funds leave the country via a customer/related entity and return as foreign direct investment or "loan" from an offshore vehicle — disguising the source and gaining tax/regulatory benefit.</div></div>
+            <div class="row"><div class="k">Detection</div><div class="v">Outbound + inbound leg pairing through related parties; offshore-jurisdiction concentration; corporate-structure overlap.</div></div>
+            <div class="row risk"><div class="k">Primary risk</div><div class="v">Tax evasion; concealment of beneficial ownership; capital control evasion.</div></div>
+          </div>
+
+        </div>
+
+        <div class="note">
+          <p class="tag">Priority code</p>
+          <h6>How to read the P1–P4 pills.</h6>
+          <p><span class="pill p1">P1</span> highest regulatory weight and operational impact &nbsp;·&nbsp; <span class="pill p2">P2</span> high &nbsp;·&nbsp; <span class="pill p3">P3</span> medium &nbsp;·&nbsp; <span class="pill p4">P4</span> coverage / context. Specific weighting will vary by institution, regulator, and product mix.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION VIII — WORKED WALKTHROUGHS -->
+    <section id="s8">
+      <div class="section-header">
+        <p class="num">Chapter VIII · Typologies</p>
+        <h2>Worked scenario <em>walkthroughs</em>.</h2>
+        <p class="deck">Three concrete examples showing how typology maps to detection logic, what an alert looks like, and how the investigator should think about it.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 08 · From signal to alert</p>
+        <h3>Three traces, three lessons in <em>detection</em>.</h3>
+
+        <div class="example">
+          <div class="label">Walkthrough 01 · Structuring</div>
+          <h4>Customer Maria deposits cash at three branches in one week</h4>
+          <p><strong>Setup.</strong> Maria has a personal checking account, low-risk CRR, declared occupation "retail clerk", typical monthly inflow ~$3,000.</p>
+          <p><strong>Activity over 5 business days:</strong></p>
+          <ol>
+            <li>Monday — $9,500 cash deposit at Branch A</li>
+            <li>Wednesday — $9,200 cash deposit at Branch B</li>
+            <li>Thursday — $9,800 cash deposit at Branch C</li>
+            <li>Friday — $9,300 cash deposit at Branch A</li>
+          </ol>
+          <p><strong>Detection logic that fires.</strong> Scenario: <em>Same-customer cash deposit aggregation</em>. Aggregates all cash deposits across branches within a 7-day rolling window, alerts if total ≥ 2× declared monthly inflow AND average individual deposit is &gt; 85% of the $10,000 CTR threshold AND no CTRs were triggered.</p>
+          <div class="lessons">
+            <strong>Why it works.</strong> Each individual deposit was below the CTR threshold (so no automatic CTR), but the aggregation pattern is a textbook smurf signature: every amount in the 90–98% band of the threshold, multiple branches (to defeat single-teller recognition), and dramatically inconsistent with the declared income profile. The investigator should pull cash-source documentation, request EDD, and consider whether a SAR is appropriate even before EDD completes.
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="label">Walkthrough 02 · Rapid movement of funds</div>
+          <h4>The pass-through account — $0 balance, $4M throughput</h4>
+          <p><strong>Setup.</strong> ABC Trading Ltd, business account, declared activity "import-export consultancy", typical monthly turnover ~$200k.</p>
+          <p><strong>Activity over 30 days:</strong></p>
+          <ol>
+            <li>28 inbound wires totaling $4.1M, from 11 distinct counterparties across 6 jurisdictions</li>
+            <li>26 outbound wires totaling $4.08M, to 9 distinct counterparties across 5 jurisdictions</li>
+            <li>Day-end balance never exceeded $30k; ended the month at $18k</li>
+            <li>No commercial documentation (invoices, bills of lading) referenced in payment messages</li>
+          </ol>
+          <p><strong>Detection logic that fires.</strong> Scenario: <em>High-turnover / low-balance pass-through</em>. Alerts when (monthly throughput / average daily balance) exceeds peer-group threshold AND net position is within ±5% of zero AND payment-message commercial reference is empty.</p>
+          <div class="lessons">
+            <strong>Why it works.</strong> A genuine consultancy holds working capital. A pass-through layering vehicle does not — funds enter, route, exit, and the account never "rests". The huge throughput-to-balance ratio is the smoking gun, and the missing trade documentation rules out trade-finance explanations. A graph view of counterparties typically reveals a hub-and-spoke topology with shared UBO at the spoke ends.
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="label">Walkthrough 03 · Network of accounts (graph)</div>
+          <h4>Mule ring detected via shared device fingerprint</h4>
+          <p><strong>Setup.</strong> Bank operates a graph layer enriched with login device fingerprints, IPs, and shared static identifiers (phone, address).</p>
+          <p><strong>Signal extracted by graph traversal:</strong></p>
+          <ol>
+            <li>17 personal accounts, opened across 4 months at 6 branches, with no documented relationship in KYC</li>
+            <li>All 17 logged in from the same 3 mobile devices (device-fingerprint match)</li>
+            <li>Each account receives a single inbound P2P transfer of $1,800–$2,300 within 24 hours of opening</li>
+            <li>Each account then sends a single outbound transfer to one of two destination accounts within 48 hours</li>
+            <li>Average lifetime activity per account: 3 transactions, ~$2,000 net throughput, then dormant</li>
+          </ol>
+          <p><strong>Detection logic that fires.</strong> Graph community-detection scenario alerts when ≥ 5 accounts share a device fingerprint AND share no KYC-documented relationship AND each account exhibits a single high-velocity in/out pattern AND outbound destinations cluster to ≤ 3 endpoints.</p>
+          <div class="lessons">
+            <strong>Why it works.</strong> No single account would have triggered a rules-based scenario — each one transacted small amounts, briefly. The signal lives at the network level, not the account level. This is the canonical case where graph analytics finds patterns that flat-rule scenarios cannot, and why most new TM builds in 2024–2026 emphasize a graph layer.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION IX — FRAUD vs AML -->
+    <section id="s9">
+      <div class="section-header">
+        <p class="num">Chapter IX · Operations</p>
+        <h2>Fraud monitoring vs AML <em>TM</em>.</h2>
+        <p class="deck">Often run on separate platforms, separate teams, and separate regulatory drivers — but the underlying transaction data is the same, and convergence is the dominant industry trend.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 09 · Adjacent but different</p>
+        <h3>Same data, <em>different</em> question.</h3>
+
+        <table>
+          <thead>
+            <tr><th style="width: 22%;"></th><th>AML TM</th><th>Fraud Monitoring</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Primary question</td><td>Is this customer laundering money or financing a prohibited activity?</td><td>Is this transaction unauthorized or initiated under deception?</td></tr>
+            <tr><td>Victim</td><td>Society (predicate offence victim); the FI's regulatory standing.</td><td>The customer (or the bank, when liability falls there).</td></tr>
+            <tr><td>Timing</td><td>Typically batch (overnight), some intraday. Hours to days from event.</td><td>Real-time, sub-second, pre-authorization at the rail.</td></tr>
+            <tr><td>Outcome</td><td>SAR / STR filing; possible account closure; regulator-facing.</td><td>Block, hold, customer notification; reimbursement; customer-facing.</td></tr>
+            <tr><td>Key regulators</td><td>FinCEN, FCA, MAS, AUSTRAC, RBI, EU AMLA.</td><td>FFIEC, FCA Consumer Duty, CFPB, EU PSD2 / PSR.</td></tr>
+            <tr><td>Dominant tech</td><td>Scenarios + graph + ML risk-scoring; batch pipelines.</td><td>Real-time ML; behavioral biometrics; device intelligence.</td></tr>
+            <tr><td>Tipping-off rules</td><td>FI cannot tell customer they are being SAR'd.</td><td>FI must tell customer fraud has occurred — customer-protection regime.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Why convergence is happening</h4>
+        <p>Three forces are pushing fraud and AML TM together. <strong>(1) The same transaction often has both signals</strong> — APP scam victims are paying mules, and the mule side is an AML problem. <strong>(2) Customer-level risk cuts across both</strong> — a mule account is risky for fraud detection on inbound flows and risky for AML on outbound flows. <strong>(3) Cost.</strong> Banks operate two separate stacks today; consolidating yields shared data, shared modeling, and reduced TCO. Vendors like <em>Featurespace</em>, <em>SymphonyAI Sensa</em>, and <em>Quantexa</em> are explicitly positioning as fraud + AML platforms.</p>
+      </div>
+    </section>
+
+    <!-- SECTION X — MITIGATION / TUNING -->
+    <section id="s10">
+      <div class="section-header">
+        <p class="num">Chapter X · Operations</p>
+        <h2>Mitigation &amp; <em>tuning</em>.</h2>
+        <p class="deck">The repertoire of methods used to reduce false positives, raise true-positive recall, and stay defensible in front of a regulator. Every TM program is in a permanent tuning loop on these levers.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 10 · Making TM actually work</p>
+        <h3>The permanent <em>tuning</em> loop.</h3>
+
+        <h4>Threshold tuning</h4>
+        <p>Scenarios fire on numeric thresholds (amount, count, ratio, time window). Tuning means choosing thresholds that are sensitive enough to catch real activity but specific enough to suppress noise. The regulator-accepted method is <em class="term">Above-the-Line / Below-the-Line (ATL/BTL) testing</em>: take a sample of activity just above and just below the threshold, manually review, and confirm the threshold sits at the right productive-vs-noise transition.</p>
+
+        <h4>Segmentation</h4>
+        <p>Apply different thresholds to different customer segments based on expected behavior. A "small-business retail" segment will tolerate higher cash-deposit thresholds than a "personal-account low-income" segment. Without segmentation, you either over-alert on retail or under-alert on small business.</p>
+
+        <h4>Suppression and hibernation</h4>
+        <p><em class="term">Suppression rules</em> — automatic close-out of alert patterns the institution has previously dispositioned as benign (e.g. "scheduled monthly payroll inbound &gt; threshold"). <em class="term">Alert hibernation</em> — temporarily suspend a scenario for a customer after a certain number of recent investigated-and-cleared alerts. Both must be governed: a regulator will ask how suppression is approved, reviewed, and unwound.</p>
+
+        <h4>Risk-based prioritization</h4>
+        <p>Score every alert by predicted suspicion likelihood, customer risk, amount, and counterparty risk; route high-score alerts to senior investigators and let low-score alerts auto-close with sampling. ML alert triage is the most common production application of supervised learning in TM today.</p>
+
+        <h4>Coverage assessment vs typology library</h4>
+        <p>Map every implemented scenario to one or more FATF / FinCEN / national typologies. If a typology has no scenario, that gap is documented, risk-rated, and remediated on a plan. This is the single most common regulator-facing artifact in TM model risk management.</p>
+
+        <h4>Lookbacks</h4>
+        <p>When a coverage gap is discovered or a scenario is added, run it historically over 12–24 months of past transactions to find activity that would have been alerted. Lookbacks are sometimes mandated by consent orders (the famous HSBC and Standard Chartered lookbacks ran into tens of millions of transactions and hundreds of millions of dollars in cost).</p>
+
+        <h4>Model validation &amp; governance</h4>
+        <p>Under model-risk frameworks (US: SR 11-7), every scenario and model must be independently validated at implementation and re-validated periodically. Validation tests: design soundness, data quality, threshold appropriateness, performance vs benchmark, ongoing monitoring. The validation function reports to the Chief Risk Officer and is structurally independent from development.</p>
+
+        <h4>Feedback loop from disposition</h4>
+        <p>The investigator's disposition (cleared / SAR-filed) is the highest-quality label data the institution will ever produce. Feed it back into ML triage, scenario tuning, threshold review, and analyst training. Programs without this loop tune scenarios on the basis of opinion rather than evidence.</p>
+
+        <h4>Parallel running ("shadow alerts")</h4>
+        <p>When replacing a scenario or migrating from one platform to another (e.g. <em>Mantas → in-house graph platform</em>), run the new logic in parallel with the legacy for 4–12 weeks. Compare alerts case-by-case. A new scenario should achieve ≥ 100% recall of legacy true positives before being allowed to retire the legacy scenario.</p>
+
+        <div class="note">
+          <p class="tag">A regulatory trap</p>
+          <h6>"We were drowning in alerts" is not a defence.</h6>
+          <p>Tuning that <em>raises</em> thresholds (and so reduces alert volume) without documented justification is one of the most-common findings in regulatory exams. Any threshold movement must be supported by ATL/BTL testing, documented in the model inventory, and approved by model governance. "We were drowning in alerts" is not a defensible reason.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION XI — INVESTIGATION -->
+    <section id="s11">
+      <div class="section-header">
+        <p class="num">Chapter XI · Operations</p>
+        <h2>Investigation &amp; case <em>management</em>.</h2>
+        <p class="deck">The human side of TM. Most of the cost in a TM program is in this stage, not in detection.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 11 · What happens after an alert</p>
+        <h3>L1, L2, <em>MLRO</em>.</h3>
+
+        <h4>Investigator hierarchy</h4>
+        <div class="three-col">
+          <div class="panel">
+            <h4>L1 — Triage analyst</h4>
+            <p>First touch on every alert. Validates the data, checks recent history, reviews customer profile, runs basic web/adverse-media checks. Most L1 alerts close at this stage with a documented rationale. Productivity often measured in alerts/day (50–150 typical).</p>
+          </div>
+          <div class="panel">
+            <h4>L2 — Investigator</h4>
+            <p>Handles escalations from L1. Performs deep-dive: full transaction history, EDD review, source-of-funds analysis, counterparty review, 314(b) requests where applicable. Often produces the draft SAR narrative.</p>
+          </div>
+          <div class="panel">
+            <h4>L3 — SAR officer / MLRO</h4>
+            <p>Senior officer (in many jurisdictions, the <em>Money Laundering Reporting Officer</em>) who reviews and approves SAR filings, manages regulator relationships, owns program-level metrics, and signs off on policy.</p>
+          </div>
+        </div>
+
+        <h4>The investigator's toolkit</h4>
+        <ul>
+          <li><strong>Case management system</strong> — single workspace for the alert, customer, transactions, prior history, and disposition record. Common platforms: <em>Actimize, Pega, Oracle FCCM Case Manager, Bottomline, Verafin, Lucinity Studio.</em></li>
+          <li><strong>Investigator workbench / "360 view"</strong> — pulls KYC, transactions, sanctions hits, prior alerts, related parties into one screen.</li>
+          <li><strong>Graph view</strong> — visualizes the customer's network of counterparties, shared identifiers, and prior alert history. Most powerful when the underlying detection layer is also graph-native.</li>
+          <li><strong>Adverse media &amp; web search</strong> — increasingly automated via vendors like ComplyAdvantage, Refinitiv World-Check, Dow Jones, LexisNexis Bridger.</li>
+          <li><strong>314(b) channel</strong> (US-specific) — voluntary information-sharing between FIs on suspected ML/TF. Hugely under-used.</li>
+          <li><strong>GenAI assistants</strong> — emerging in 2024–2026 from vendors like <em>Lucinity</em>, <em>Hawk AI</em>, <em>SAS</em>, drafting narratives, summarizing customer history, surfacing relevant typologies.</li>
+        </ul>
+
+        <h4>What a good disposition looks like</h4>
+        <div class="note">
+          <p class="tag">Disposition rationale — example</p>
+          <h6>The pattern of a defensible close-out.</h6>
+          <p><em>"Alert triggered by Same-Customer Cash Deposit Aggregation scenario covering 5 deposits totaling $36,700 over 7 days. Customer is a self-employed contractor; deposits align with three documented invoices provided on EDD request (attached). Source of funds verified against contractor's bank statements from prior payer. No structuring intent indicated — individual deposits range $4,800 to $8,500 with no clustering near threshold band. Cleared. No SAR filed. Monitoring continues."</em></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION XII — REPORTING -->
+    <section id="s12">
+      <div class="section-header">
+        <p class="num">Chapter XII · Operations</p>
+        <h2>SAR / CTR / STR <em>reporting</em>.</h2>
+        <p class="deck">The three primary forms that flow from a TM program into the financial intelligence ecosystem, and the rules that govern each.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 12 · The regulatory outputs</p>
+        <h3>Suspicion-based and <em>threshold-based</em>.</h3>
+
+        <h4>SAR / STR — the suspicion-based filing</h4>
+        <p>In the US, a <em class="term">Suspicious Activity Report</em> is filed with FinCEN within 30 calendar days of detecting suspicious activity (extendable to 60 days if no suspect has been identified). The filing is strictly confidential — <strong>tipping off the customer is itself a criminal offense</strong>. In the UK, the equivalent is a <em class="term">Suspicious Activity Report</em> filed with the NCA via UKFIU; in most other jurisdictions, the equivalent is a <em class="term">Suspicious Transaction Report (STR)</em> filed with the national FIU. Filing thresholds and timing vary, but the principle — reasonable suspicion, confidential, timely — is universal.</p>
+
+        <p>The quality of the SAR narrative matters enormously. Regulators have been increasingly explicit that "checkbox" SARs with no useful narrative do not satisfy the obligation. A good SAR narrative explains <em>who, what, when, where, why, and how</em>, with specific transaction details and the basis of suspicion.</p>
+
+        <h4>CTR — the threshold-based filing</h4>
+        <p>In the US, a <em class="term">Currency Transaction Report</em> must be filed for any cash transaction (or aggregated same-day transactions by/for one customer) exceeding USD 10,000. CTRs are not suspicion-based — they are mechanical. The threshold is the entire reason <em>structuring</em> is a typology: a launderer who breaks deposits below $10,000 is specifically trying to avoid CTR generation.</p>
+
+        <h4>Other notable reports</h4>
+        <ul>
+          <li><strong>Section 314(a) requests</strong> — FinCEN-issued requests asking FIs to search records for named subjects in active investigations. Mandatory response.</li>
+          <li><strong>Section 314(b) sharing</strong> — voluntary inter-FI sharing on suspected ML/TF subjects, with a safe harbor from liability.</li>
+          <li><strong>FBAR / FATCA / CRS</strong> — cross-border account and tax-information reporting (not strictly TM but draws on the same data).</li>
+          <li><strong>OFAC blocking reports</strong> — when a sanctions hit blocks a payment, the FI files within 10 days.</li>
+          <li><strong>Country-specific large-value transaction reports</strong> — e.g. AUSTRAC TTR (AUD 10,000), FINTRAC LCTR (CAD 10,000), India CTR/CCR.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION XIII — TECHNOLOGY PROVIDERS -->
+    <section id="s13">
+      <div class="section-header">
+        <p class="num">Chapter XIII · Ecosystem &amp; pitfalls</p>
+        <h2>Technology <em>providers</em>.</h2>
+        <p class="deck">A non-exhaustive landscape of vendors operating in TM, sanctions screening, case management, watchlists, graph analytics, and crypto monitoring. Vendor positioning shifts rapidly — verify current capability before procurement.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 13 · Who builds the tools</p>
+        <h3>From incumbents to <em>graph-native</em>.</h3>
+
+        <h4>Incumbent enterprise TM platforms</h4>
+        <table>
+          <thead>
+            <tr><th style="width: 24%;">Vendor / Product</th><th>Positioning</th><th style="width: 26%;">Typical customers</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Oracle FCCM (Mantas)</td><td>Long-established statistical-scenario platform; very wide installed base in tier-1 banks; deep regulatory familiarity. "Mantas" is colloquially synonymous with rules-based TM.</td><td>Most US/EU tier-1 banks.</td></tr>
+            <tr><td>NICE Actimize</td><td>Suite covering AML, fraud, market abuse and case management; modular and widely deployed.</td><td>Large banks, broker-dealers, insurers.</td></tr>
+            <tr><td>SAS AML / SAS Viya</td><td>Analytics-heavy platform; strong on statistical detection and model governance; pairing with SAS's broader analytics ecosystem.</td><td>Large banks, government, regulators.</td></tr>
+            <tr><td>FIS Protegent / Prime Compliance</td><td>Trade surveillance and AML; common in capital-markets contexts.</td><td>Broker-dealers, asset managers.</td></tr>
+            <tr><td>Fiserv FCRM</td><td>Mid-market AML/fraud platform; common in US community banks and credit unions.</td><td>Community/regional banks, credit unions.</td></tr>
+            <tr><td>FICO TONBELLER Siron</td><td>European AML/CTF platform; modular suite for KYC, screening, TM.</td><td>European banks, insurers.</td></tr>
+            <tr><td>Pega Customer Decision Hub / KYC</td><td>Case management and workflow; often layered on top of detection from another vendor.</td><td>Tier-1 banks for case workflow.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Modern / cloud-native &amp; AI-first platforms</h4>
+        <table>
+          <thead>
+            <tr><th style="width: 24%;">Vendor / Product</th><th>Positioning</th><th style="width: 26%;">Typical customers</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Quantexa</td><td>Decision Intelligence platform built on contextual entity-resolution and graph; widely cited as best-in-class for network detection. Strong fraud + AML convergence story.</td><td>HSBC, Standard Chartered, Danske, BNY, Allied Irish, NAB.</td></tr>
+            <tr><td>SymphonyAI Sensa (formerly NetReveal)</td><td>End-to-end AML/fraud platform with predictive and generative AI; large installed base from BAE Systems heritage.</td><td>Tier-1 and tier-2 banks globally.</td></tr>
+            <tr><td>Featurespace ARIC</td><td>Adaptive behavioral analytics; strong real-time fraud, expanding into AML; acquired by Visa in 2024.</td><td>HSBC, NatWest, Worldpay, TSYS, many issuers and acquirers.</td></tr>
+            <tr><td>ComplyAdvantage</td><td>Cloud-first AML data + screening + monitoring; popular with fintechs and digital banks.</td><td>Fintechs, digital banks, payment platforms.</td></tr>
+            <tr><td>Verafin (Nasdaq)</td><td>Cloud-native AML+fraud for North-American community/regional banks; acquired by Nasdaq in 2021.</td><td>US/Canada community and regional banks.</td></tr>
+            <tr><td>Hawk AI</td><td>European cloud-native AML+fraud + sanctions screening; explainable-AI positioning.</td><td>Fintechs, neobanks, mid-market banks.</td></tr>
+            <tr><td>Lucinity</td><td>"Human AI" platform; GenAI investigator copilot; Icelandic / global.</td><td>Banks, fintechs investing in GenAI workflows.</td></tr>
+            <tr><td>ThetaRay</td><td>Unsupervised ML for cross-border payments and correspondent banking.</td><td>Correspondent banks, payment platforms.</td></tr>
+            <tr><td>Napier</td><td>UK-based AML platform; modular and cloud-native.</td><td>Banks, e-money, payment institutions.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Graph databases used as TM detection engines</h4>
+        <table>
+          <thead>
+            <tr><th style="width: 24%;">Vendor</th><th>Positioning</th><th style="width: 26%;">Typical customers</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>TigerGraph</td><td>Native parallel graph DB; performant on multi-hop traversal at billions-of-edges scale. Used as the substrate for in-house TM builds (e.g. Raymond James, Intuit's fraud graph).</td><td>Banks building in-house graph TM.</td></tr>
+            <tr><td>Neo4j</td><td>The most-widely-adopted graph DB overall; Cypher query language; mature partner ecosystem.</td><td>Many banks and fintechs.</td></tr>
+            <tr><td>Amazon Neptune / Azure Cosmos DB Gremlin</td><td>Cloud-managed graph services; common when the bank's data stack is already in AWS/Azure.</td><td>Cloud-native banks/fintechs.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Watchlists, screening &amp; adverse media data</h4>
+        <table>
+          <thead>
+            <tr><th style="width: 24%;">Vendor</th><th>Positioning</th><th style="width: 26%;">Typical customers</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Refinitiv (LSEG) World-Check</td><td>Industry-standard sanctions, PEP, adverse media database.</td><td>Almost all tier-1 banks.</td></tr>
+            <tr><td>Dow Jones Risk &amp; Compliance</td><td>Competing global sanctions / PEP / adverse media data set.</td><td>Banks, asset managers, corporates.</td></tr>
+            <tr><td>LexisNexis Risk Solutions (Bridger, WorldCompliance)</td><td>Screening + risk data + identity verification.</td><td>Banks, insurers, US-heavy distribution.</td></tr>
+            <tr><td>Moody's GRID / Bureau van Dijk</td><td>Risk data and corporate ownership data — strong for UBO investigation.</td><td>Compliance / KYC functions.</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Crypto / blockchain monitoring</h4>
+        <table>
+          <thead>
+            <tr><th style="width: 24%;">Vendor</th><th>Positioning</th><th style="width: 26%;">Typical customers</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Chainalysis</td><td>Market leader in blockchain analytics and VASP risk scoring; KYT product for transaction monitoring on-chain.</td><td>Exchanges, banks dealing with VASPs, law enforcement.</td></tr>
+            <tr><td>TRM Labs</td><td>Blockchain intelligence platform; sanctions screening on-chain; strong wallet-risk scoring.</td><td>Exchanges, fintechs, banks.</td></tr>
+            <tr><td>Elliptic</td><td>UK-headquartered blockchain analytics; sanctions and counterparty risk on-chain.</td><td>Exchanges, banks, payment providers.</td></tr>
+            <tr><td>Merkle Science</td><td>Predictive blockchain risk monitoring.</td><td>VASPs, regulators.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="note">
+          <p class="tag">Choosing a vendor</p>
+          <h6>Hybrid is the default.</h6>
+          <p>The right vendor depends on (a) bank size and complexity, (b) existing tech stack and data architecture, (c) regulatory geography, (d) build vs buy philosophy. Most tier-1 banks today run a hybrid: a legacy enterprise platform (Mantas/Actimize/SAS) for regulatory coverage, plus a modern graph or AI layer (Quantexa/SymphonyAI/in-house) for differentiated detection. Pure rip-and-replace migrations are rare and expensive; most programs migrate scenario-by-scenario under parallel running.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION XIV — EMERGING TRENDS -->
+    <section id="s14">
+      <div class="section-header">
+        <p class="num">Chapter XIV · Ecosystem &amp; pitfalls</p>
+        <h2>Emerging <em>trends</em>.</h2>
+        <p class="deck">The dominant directions of change in TM as of 2024–2026. None of these are speculative — all are visible in regulatory papers, vendor roadmaps, and tier-1 bank programs today.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 14 · Where TM is heading</p>
+        <h3>Graph, ML, federation, <em>real-time</em>.</h3>
+
+        <h4>Graph &amp; network analytics as a first-class layer</h4>
+        <p>Single-account scenarios miss schemes that live at the network level. Graph-native TM (TigerGraph, Neo4j, Quantexa) is now the default for new builds, with statistical scenarios still doing the regulatory-coverage work underneath. Mule networks, hub-and-spoke layering, and round-tripping are the canonical wins.</p>
+
+        <h4>Machine learning, explainability, and model governance</h4>
+        <p>ML in TM is increasingly mainstream — but only with full explainability and SR 11-7-style validation. Black-box vendor models are no longer defensible. SHAP values, decision trees on top of neural networks, and rule-extraction from ML models are common patterns.</p>
+
+        <h4>Federated learning &amp; consortium models</h4>
+        <p>Most laundering crosses bank boundaries — but no single bank sees the full network. Federated models (where banks contribute encrypted signals to a shared model without sharing raw data) and regulator-sponsored consortium models (e.g. the UK's <em>Future of Payments</em> work, MAS's <em>COSMIC</em> platform in Singapore) are the next frontier.</p>
+
+        <h4>Perpetual KYC (pKYC)</h4>
+        <p>Traditional KYC refresh cycles (1/3/5 years by risk tier) are too slow. <em class="term">Perpetual KYC</em> uses ongoing data signals — transaction patterns, public information, screening hits — to refresh customer risk continuously. Strong implication for TM: scenarios fire on a customer with a always-current risk rating rather than a stale one.</p>
+
+        <h4>Real-time TM</h4>
+        <p>Increasing share of payments moves on real-time rails (FedNow, FPS, UPI, Pix, SEPA Instant). Batch-overnight TM is too slow to prevent fund movement, so banks are pushing detection logic upstream to pre-authorization windows of milliseconds — converging with fraud monitoring architecturally.</p>
+
+        <h4>Generative AI for investigation</h4>
+        <p>GenAI is being deployed not in detection (where explainability is a hard constraint) but in <strong>investigator productivity</strong>: drafting SAR narratives, summarizing customer history, surfacing relevant typologies, generating EDD checklists. Lucinity, SAS, Hawk AI, and SymphonyAI all have announced or shipping GenAI copilots.</p>
+
+        <h4>Crypto, stablecoins, and VASP integration</h4>
+        <p>Bank exposure to virtual-asset service providers is growing — both as customers and counterparties. Integrating blockchain analytics (Chainalysis, TRM, Elliptic) into bank-side TM lets the bank evaluate the <em>off-chain</em> risk of an <em>on-chain</em> counterparty's wallet history.</p>
+
+        <h4>EU AML Authority (AMLA)</h4>
+        <p>From 2028, AMLA will directly supervise a designated set of cross-border EU FIs and will set the EU-wide single rulebook. This will materially reshape TM practice in Europe — moving away from fragmented national implementation toward a single, examiner-uniform standard.</p>
+      </div>
+    </section>
+
+    <!-- SECTION XV — PITFALLS -->
+    <section id="s15">
+      <div class="section-header">
+        <p class="num">Chapter XV · Ecosystem &amp; pitfalls</p>
+        <h2>Common <em>pitfalls</em> &amp; challenges.</h2>
+        <p class="deck">Patterns visible across enforcement actions, audit findings, and consulting engagements. Most are operational, not technical.</p>
+      </div>
+      <div class="section-body">
+        <p class="eyebrow">§ 15 · What goes wrong</p>
+        <h3>Eight failure modes you will <em>recognise</em>.</h3>
+
+        <div class="two-col">
+          <div class="panel">
+            <h4>1 · Drowning in false positives</h4>
+            <p>FP rates of 95–99% are common. Investigator capacity becomes the binding constraint; real signals get lost in the noise; threshold-tuning becomes a continuous fire-fight. Mitigation: ML triage, segmentation, ATL/BTL discipline, suppression governance.</p>
+          </div>
+          <div class="panel">
+            <h4>2 · Coverage gaps to typology library</h4>
+            <p>A typology exists in FATF guidance, no scenario implements it. The gap becomes a regulator finding, then a consent order, then a multi-year remediation. Mitigation: live typology-to-scenario coverage map, quarterly review.</p>
+          </div>
+          <div class="panel">
+            <h4>3 · Data quality &amp; fragmentation</h4>
+            <p>Wires in one system, deposits in another, customer profiles in a third, no unified ID. Scenarios miss multi-system patterns. Mitigation: a true customer-360 layer, enterprise data lineage.</p>
+          </div>
+          <div class="panel">
+            <h4>4 · Stale CDD / KYC</h4>
+            <p>Customer's documented activity profile is 4 years old; the scenario compares today's behavior to a baseline that no longer applies. Mitigation: pKYC, event-driven refresh.</p>
+          </div>
+          <div class="panel">
+            <h4>5 · Model decay</h4>
+            <p>A scenario tuned in 2019 is no longer optimal in 2026 — customer mix changed, payment rails changed, typologies evolved. Mitigation: ongoing performance monitoring with predefined re-tune triggers.</p>
+          </div>
+          <div class="panel">
+            <h4>6 · Investigator turnover</h4>
+            <p>L1 attrition is high; disposition quality degrades; case backlog grows. Mitigation: GenAI copilots, structured rationale templates, training calibration, automation of low-risk closures.</p>
+          </div>
+          <div class="panel">
+            <h4>7 · Vendor lock-in</h4>
+            <p>Legacy platform is expensive and inflexible but rip-and-replace is risky and migration takes years. Mitigation: parallel-run discipline, scenario-by-scenario migration, API-fronted detection layer.</p>
+          </div>
+          <div class="panel">
+            <h4>8 · Weak feedback loop</h4>
+            <p>Disposition data doesn't make it back to tuning or ML. The program improves slowly or not at all. Mitigation: disposition data pipeline, model governance forum attended by detection and investigations together.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION XVI — GLOSSARY -->
+    <section id="s16">
+      <div class="section-header">
+        <p class="num">— Appendix</p>
+        <h2><em>Glossary</em>.</h2>
+        <p class="deck">The acronyms you'll see most often. Useful to refer back to.</p>
+      </div>
+      <div class="section-body appendix-body">
+
+        <div class="group">
+          <h5>Glossary</h5>
+          <p class="grouptitle">Quick reference on the acronyms used throughout this primer.</p>
+          <dl class="gloss">
+            <dt>AMLA</dt><dd>EU Anti-Money Laundering Authority (operational from 2028).</dd>
+            <dt>AML / CFT</dt><dd>Anti-Money Laundering / Counter Financing of Terrorism.</dd>
+            <dt>ATL / BTL</dt><dd>Above-the-Line / Below-the-Line threshold testing.</dd>
+            <dt>BSA</dt><dd>US Bank Secrecy Act (1970).</dd>
+            <dt>CDD / EDD</dt><dd>Customer Due Diligence / Enhanced Due Diligence.</dd>
+            <dt>CRR</dt><dd>Customer Risk Rating.</dd>
+            <dt>CTR</dt><dd>Currency Transaction Report (US, USD 10k threshold).</dd>
+            <dt>FATF</dt><dd>Financial Action Task Force — the global AML/CFT standard setter.</dd>
+            <dt>FCA</dt><dd>UK Financial Conduct Authority.</dd>
+            <dt>FinCEN</dt><dd>US Financial Crimes Enforcement Network.</dd>
+            <dt>FIU</dt><dd>Financial Intelligence Unit (national; receives SARs/STRs).</dd>
+            <dt>KYC / KYB</dt><dd>Know Your Customer / Know Your Business.</dd>
+            <dt>MLRO</dt><dd>Money Laundering Reporting Officer.</dd>
+            <dt>OFAC</dt><dd>US Office of Foreign Assets Control (sanctions).</dd>
+            <dt>pKYC</dt><dd>Perpetual KYC.</dd>
+            <dt>PEP</dt><dd>Politically Exposed Person.</dd>
+            <dt>SAR / STR</dt><dd>Suspicious Activity Report (US) / Suspicious Transaction Report (rest of world).</dd>
+            <dt>SR 11-7</dt><dd>US Federal Reserve model risk management guidance.</dd>
+            <dt>TBML</dt><dd>Trade-Based Money Laundering.</dd>
+            <dt>UBO</dt><dd>Ultimate Beneficial Owner.</dd>
+            <dt>VASP</dt><dd>Virtual Asset Service Provider (crypto exchange, OTC desk, etc.).</dd>
+          </dl>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION XVII — REFERENCES -->
+    <section id="s17">
+      <div class="section-header">
+        <p class="num">— Appendix</p>
+        <h2>References &amp; further <em>reading</em>.</h2>
+        <p class="deck">Primary sources to read before relying on this primer. Wherever possible go to the regulator and standard-setter rather than the secondary source.</p>
+      </div>
+      <div class="section-body appendix-body refs-list">
+
+        <div class="group">
+          <h5>Standards &amp; international guidance</h5>
+          <p class="grouptitle">FATF, Wolfsberg, BCBS — the universal references.</p>
+          <ol>
+            <li>Financial Action Task Force — <em>The FATF Recommendations</em> (most recent revision). <span class="src">fatf-gafi.org &rsaquo; publications &rsaquo; fatf-recommendations</span></li>
+            <li>FATF — <em>Guidance on the Risk-Based Approach for the Banking Sector</em>. <span class="src">fatf-gafi.org &rsaquo; publications &rsaquo; rba-banking-sector</span></li>
+            <li>Wolfsberg Group — <em>Wolfsberg Statement on Effective Monitoring for Suspicious Activity</em>, and the <em>Wolfsberg Principles on the Use of AI and Machine Learning in Financial Crime Compliance</em>. <span class="src">wolfsberg-principles.com</span></li>
+            <li>Basel Committee on Banking Supervision — <em>Sound Management of Risks Related to Money Laundering and Financing of Terrorism</em>. <span class="src">bis.org &rsaquo; publ &rsaquo; bcbs275</span></li>
+          </ol>
+        </div>
+
+        <div class="group">
+          <h5>US framework</h5>
+          <p class="grouptitle">FinCEN, FFIEC, Federal Reserve, OFAC.</p>
+          <ol start="5">
+            <li>FinCEN — <em>BSA / AML Examination Manual</em> (FFIEC). Comprehensive, regulator-issued, and the single most useful reference for US TM expectations. <span class="src">bsaaml.ffiec.gov</span></li>
+            <li>FinCEN — Anti-Money Laundering Act of 2020 implementing rules and ongoing guidance. <span class="src">fincen.gov</span></li>
+            <li>US Federal Reserve — <em>Supervisory Letter SR 11-7: Guidance on Model Risk Management</em>. Foundational for TM model governance in the US. <span class="src">federalreserve.gov &rsaquo; supervisionreg &rsaquo; srletters</span></li>
+            <li>OFAC — <em>A Framework for OFAC Compliance Commitments</em>. <span class="src">treasury.gov &rsaquo; ofac</span></li>
+          </ol>
+        </div>
+
+        <div class="group">
+          <h5>European framework</h5>
+          <p class="grouptitle">The EU AML Package and EBA guidelines.</p>
+          <ol start="9">
+            <li>European Commission — <em>EU Anti-Money Laundering Package</em> (AMLR, AMLD6, AMLA Regulation). <span class="src">finance.ec.europa.eu &rsaquo; financial-crime &rsaquo; anti-money-laundering</span></li>
+            <li>European Banking Authority — <em>Guidelines on ML/TF Risk Factors</em>. <span class="src">eba.europa.eu</span></li>
+          </ol>
+        </div>
+
+        <div class="group">
+          <h5>UK framework</h5>
+          <p class="grouptitle">FCA, MLR 2017, PSR.</p>
+          <ol start="11">
+            <li>UK Financial Conduct Authority — <em>Financial Crime Guide</em>. <span class="src">handbook.fca.org.uk &rsaquo; FCG</span></li>
+            <li>UK Money Laundering, Terrorist Financing and Transfer of Funds Regulations 2017. <span class="src">legislation.gov.uk</span></li>
+            <li>UK Payment Systems Regulator — <em>APP scams reimbursement policy</em>. <span class="src">psr.org.uk</span></li>
+          </ol>
+        </div>
+
+        <div class="group">
+          <h5>Other significant jurisdictions</h5>
+          <p class="grouptitle">MAS, AUSTRAC, RBI.</p>
+          <ol start="14">
+            <li>Monetary Authority of Singapore — <em>MAS Notice 626 / 824</em>; COSMIC information-sharing platform documentation. <span class="src">mas.gov.sg</span></li>
+            <li>AUSTRAC — <em>AML/CTF Compliance Guide</em> and TBML typology reports. <span class="src">austrac.gov.au</span></li>
+            <li>Reserve Bank of India — <em>Master Direction on KYC</em> and PMLA-derived TM guidance. <span class="src">rbi.org.in</span></li>
+          </ol>
+        </div>
+
+        <div class="group">
+          <h5>Industry &amp; academic references</h5>
+          <p class="grouptitle">UN, BIS, and standard textbooks.</p>
+          <ol start="17">
+            <li>UN Office on Drugs and Crime — <em>Estimating Illicit Financial Flows Resulting from Drug Trafficking and Other Transnational Organized Crimes</em>. <span class="src">unodc.org</span></li>
+            <li>BIS &amp; bank-of-international-supervisors working papers on AML effectiveness and Project Aurora (federated learning experiments). <span class="src">bis.org &rsaquo; about &rsaquo; bisih</span></li>
+            <li>Cox, P. — <em>Handbook of Anti-Money Laundering</em>. Wiley.</li>
+            <li>Schott, P.A. — <em>Reference Guide to Anti-Money Laundering and Combating the Financing of Terrorism</em>. World Bank.</li>
+          </ol>
+        </div>
+
+        <div class="group">
+          <h5>Major enforcement actions worth reading the orders on</h5>
+          <p class="grouptitle">Read the orders, not the news write-ups.</p>
+          <ol start="21">
+            <li>HSBC — DOJ Deferred Prosecution Agreement, 2012. The reference case for TM coverage and CDD failures.</li>
+            <li>Standard Chartered — DFS / OFAC orders, 2012 and 2019.</li>
+            <li>Danske Bank — Estonia branch matter, indictments 2018–2023. Classic case study in non-resident-portfolio risk.</li>
+            <li>Westpac — AUSTRAC penalty, 2020 (AUD 1.3bn). Famous for the LitePay product gap.</li>
+            <li>TD Bank — DOJ / FinCEN orders, 2024 (USD 3bn). Most-recent large US action; centered on TM scenario weakness.</li>
+          </ol>
+        </div>
+
+        <div class="note">
+          <p class="tag">Suggested reading order</p>
+          <h6>The four-document sequence.</h6>
+          <p>Start with the <em>FATF 40 Recommendations</em> for the conceptual frame, the <em>FFIEC BSA/AML Examination Manual</em> for the US operational standard, the <em>Wolfsberg Statement on Effective Monitoring</em> for the industry view, and at least two enforcement actions (HSBC 2012 + TD 2024) to see what regulators actually punish. That four-document sequence gives you 80% of the working knowledge.</p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ════════════════════ COLOPHON FOOTER ════════════════════ -->
+<footer class="colophon">
+  <div class="inner">
+    <div class="block">
+      <div class="h">Document</div>
+      <div class="feature">Transaction monitoring in banks &amp; FIs.</div>
+      <div>Primers · No. 03 · May 2026</div>
+    </div>
+    <div class="block">
+      <div class="h">Practice</div>
+      <div class="feature">Infosys Consulting · Banking · Financial Crime.</div>
+      <div>Self-learning · Internal use</div>
+    </div>
+    <div class="block">
+      <div class="h">Set in</div>
+      <div class="feature">Fraunces &amp; IBM Plex Sans &amp; JetBrains Mono.</div>
+      <div>Designed by IC</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    // Reading-progress bar
+    const prog = document.getElementById('prog');
+    const onScroll = () => {
+      const h = document.documentElement;
+      const scrolled = h.scrollTop;
+      const max = h.scrollHeight - h.clientHeight;
+      const p = max > 0 ? (scrolled / max) * 100 : 0;
+      prog.style.setProperty('--p', p.toFixed(2) + '%');
+    };
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Active-section tracking in the sidebar via IntersectionObserver.
+    if ('IntersectionObserver' in window) {
+      const links = document.querySelectorAll('.sidebar nav a[data-section]');
+      const linkMap = {};
+      links.forEach(a => { linkMap[a.dataset.section] = a; });
+
+      const setActive = (id) => {
+        links.forEach(a => a.classList.remove('active'));
+        if (linkMap[id]) linkMap[id].classList.add('active');
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        let best = null;
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            if (!best || e.boundingClientRect.top < best.boundingClientRect.top) {
+              best = e;
+            }
+          }
+        });
+        if (best) setActive(best.target.id);
+      }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+
+      document.querySelectorAll('main.content > section[id]').forEach(s => {
+        observer.observe(s);
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

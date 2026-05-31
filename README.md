@@ -13,6 +13,10 @@ one-pagers, and engineering notes — all built from a shared design system.
 |---|---|---|
 | **Deck** | Agentic AI in Banking — 25-slide POV deck (PPTX + PDF) | [`docs/decks/agentic-ai-banking-pov/`](docs/decks/agentic-ai-banking-pov/) |
 | **Primer** | Long-form HTML companion to the deck | [`docs/primers/agentic-ai-banking-primer.html`](docs/primers/agentic-ai-banking-primer.html) |
+| **Primer** | CDD / KYC — customer due diligence (self-learning reference) | [`docs/primers/cdd-kyc-primer.html`](docs/primers/cdd-kyc-primer.html) |
+| **Primer** | Transaction monitoring (self-learning reference) | [`docs/primers/transaction-monitoring-primer.html`](docs/primers/transaction-monitoring-primer.html) |
+| **Primer** | Sanctions / PEP / adverse-media screening (self-learning reference) | [`docs/primers/screening-primer.html`](docs/primers/screening-primer.html) |
+| **Primer** | Trade surveillance (self-learning reference) | [`docs/primers/trade-surveillance-primer.html`](docs/primers/trade-surveillance-primer.html) |
 | **One-pager** | Single A4 sheet — printable exec summary | [`docs/one-pagers/agentic-ai-banking-one-pager.html`](docs/one-pagers/agentic-ai-banking-one-pager.html) |
 | **Engineering note** | Agentic harness, evals & traces — self-learning guide with interactive animations | [`docs/engineering-notes/agentic-harness-evals-traces.html`](docs/engineering-notes/agentic-harness-evals-traces.html) |
 | **Engineering note** | The Claude Agent SDK — annotated explainer | [`docs/engineering-notes/claude-agent-sdk-ic.html`](docs/engineering-notes/claude-agent-sdk-ic.html) |
@@ -149,7 +153,7 @@ Then check `design-reference.html` for live specimens of every component.
 
 ## Status
 
-Spring 2026 · Working library · 6 artifacts.
+Spring 2026 · Working library · 10 artifacts.
 
 The design system is current — three font families documented, named visual
 vocabulary stabilized, layout patterns established. Each new artifact stress-tests
