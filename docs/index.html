@@ -293,6 +293,119 @@
     font-weight: 600;
   }
 
+  /* ─────────── FEATURED BLOCK (flagship collection) ─────────── */
+  .featured {
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--blue);
+    background: var(--white);
+    padding: 36px 40px 32px;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 48px;
+    align-items: start;
+  }
+  @media (max-width: 800px) { .featured { grid-template-columns: 1fr; gap: 28px; padding: 28px 24px; } }
+  .featured .chip {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .featured .chip::before { content: ''; width: 28px; height: 3px; background: var(--blue); }
+  .featured h3 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 72, "SOFT" 0, "WONK" 0;
+    font-weight: 400;
+    font-size: clamp(28px, 3.4vw, 40px);
+    line-height: 1.08;
+    letter-spacing: -0.018em;
+    color: var(--deep);
+    margin: 0 0 16px;
+  }
+  .featured h3 em {
+    font-style: italic;
+    font-variation-settings: "opsz" 72, "SOFT" 100, "WONK" 1;
+    color: var(--blue);
+    font-weight: 400;
+  }
+  .featured .lede {
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--slate);
+    margin: 0;
+    max-width: 52ch;
+  }
+  .featured .lede em { font-style: italic; color: var(--deep); }
+  /* right column: the three format links */
+  .featured .formats {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .featured .formats .fmt {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule);
+    color: var(--pavement);
+    text-decoration: none;
+    transition: padding-left 160ms ease, color 160ms ease;
+  }
+  .featured .formats .fmt:hover {
+    padding-left: 8px;
+    color: var(--blue);
+    text-decoration: none;
+  }
+  .featured .formats .fmt .fmt-name {
+    font-family: var(--display);
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--deep);
+    letter-spacing: -0.005em;
+  }
+  .featured .formats .fmt:hover .fmt-name { color: var(--blue); }
+  .featured .formats .fmt .fmt-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--stone);
+    white-space: nowrap;
+  }
+  .featured .formats .src-links {
+    margin-top: 12px;
+    display: flex; gap: 16px; flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .featured .formats .src-links a { color: var(--blue); font-weight: 600; }
+
+  /* ─────────── COMPACT CARD (dense grid) ─────────── */
+  .card.compact {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 20px 22px;
+  }
+  .card.compact .card-cta {
+    display: none;   /* whole card is the link; arrow not needed in dense grid */
+  }
+  .card.compact .card-title { font-size: 20px; margin-bottom: 6px; }
+  .card.compact .card-desc {
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
   /* ─────────── DESIGN-SYSTEM CALLOUT ─────────── */
   .ds-extra {
     margin-top: 16px;
@@ -444,124 +557,78 @@
 
 <main>
 
-  <!-- ════════════ DECKS ════════════ -->
+  <!-- ════════════ FEATURED · FLAGSHIP COLLECTION ════════════ -->
   <section class="group">
     <div class="group-head">
-      <span class="group-eyebrow">Decks <span class="count">· 1</span></span>
-      <span class="group-title">Sales-enablement &amp; POV decks</span>
+      <span class="group-eyebrow">Featured <span class="count">· Banking POV</span></span>
+      <span class="group-title">One body of work, three formats</span>
     </div>
-    <div class="cards">
-      <a class="card" href="./decks/agentic-ai-banking-pov/agentic-ai-banking-pov.pdf">
-        <div class="card-body">
-          <div class="card-chip">DECK · BANKING POV</div>
-          <h3 class="card-title">Agents that change the <em>work</em>, not just the worker.</h3>
-          <p class="card-desc">A 25-slide point-of-view deck on agentic AI in banking — the pilot plateau, the operating-model reframe, three redesigned processes, the path forward, sales tools for the partner in the room.</p>
-          <div class="card-meta">
-            <span>PDF · 25 slides</span><span>~30 min readout</span><span>Sales enablement</span>
-          </div>
-          <div class="extra-links">
-            <a href="./decks/agentic-ai-banking-pov/agentic-ai-banking-pov.pptx">↓ Download PPTX</a>
-            <a href="https://github.com/Vedpalnitk/ic-collaterals/blob/main/src/decks/agentic-ai-banking-pov/spec.md">View spec on GitHub</a>
-            <a href="https://github.com/Vedpalnitk/ic-collaterals/blob/main/src/decks/agentic-ai-banking-pov/build.py">View build script</a>
-          </div>
+    <div class="featured">
+      <div class="lead-col">
+        <div class="chip">POINT OF VIEW · BANKING</div>
+        <h3>Agents that change the <em>work</em>, not just the worker.</h3>
+        <p class="lede">The flagship point of view on agentic AI in banking — why pilots plateau, and the <em>operating-model reframe</em> that gets past it. Available as a readout deck, a long-form primer, and a one-page brief.</p>
+      </div>
+      <div class="formats">
+        <a class="fmt" href="./decks/agentic-ai-banking-pov/agentic-ai-banking-pov.pdf">
+          <span class="fmt-name">Readout deck</span>
+          <span class="fmt-meta">PDF · 25 slides · 30 min</span>
+        </a>
+        <a class="fmt" href="./primers/agentic-ai-banking-primer.html">
+          <span class="fmt-name">Long-form primer</span>
+          <span class="fmt-meta">HTML · 25 min read</span>
+        </a>
+        <a class="fmt" href="./one-pagers/agentic-ai-banking-one-pager.html">
+          <span class="fmt-name">One-page brief</span>
+          <span class="fmt-meta">HTML · A4 · 90 sec</span>
+        </a>
+        <div class="src-links">
+          <a href="./decks/agentic-ai-banking-pov/agentic-ai-banking-pov.pptx">↓ PPTX</a>
+          <a href="https://github.com/Vedpalnitk/ic-collaterals/blob/main/src/decks/agentic-ai-banking-pov/spec.md">Spec</a>
+          <a href="https://github.com/Vedpalnitk/ic-collaterals/blob/main/src/decks/agentic-ai-banking-pov/build.py">Build script</a>
         </div>
-        <span class="card-cta">Open →</span>
-      </a>
+      </div>
     </div>
   </section>
 
-  <!-- ════════════ PRIMERS · POV ════════════ -->
+  <!-- ════════════ FINANCIAL-CRIME PRIMERS ════════════ -->
   <section class="group">
     <div class="group-head">
-      <span class="group-eyebrow">Primers · POV <span class="count">· 1</span></span>
-      <span class="group-title">Long-form point-of-view reads</span>
-    </div>
-    <div class="cards">
-      <a class="card" href="./primers/agentic-ai-banking-primer.html">
-        <div class="card-body">
-          <div class="card-chip">PRIMER · BANKING POV</div>
-          <h3 class="card-title">Agents that change the <em>work</em>, not just the worker.</h3>
-          <p class="card-desc">The long-form HTML companion to the deck — same thesis, expanded with the reasoning, the principles behind each redesigned process, and the regulatory context. Editorial broadsheet style with drop caps, pull quotes, and inline sidebars.</p>
-          <div class="card-meta">
-            <span>HTML</span><span>~25 min read</span><span>Banking POV</span>
-          </div>
-        </div>
-        <span class="card-cta">Read →</span>
-      </a>
-    </div>
-  </section>
-
-  <!-- ════════════ PRIMERS · FINANCIAL CRIME ════════════ -->
-  <section class="group">
-    <div class="group-head">
-      <span class="group-eyebrow">Primers · Financial crime <span class="count">· 4</span></span>
-      <span class="group-title">Self-learning reference primers</span>
+      <span class="group-eyebrow">Financial-crime primers <span class="count">· 4</span></span>
+      <span class="group-title">Self-learning reference reads</span>
     </div>
     <div class="cards two-col">
-      <a class="card" href="./primers/cdd-kyc-primer.html">
+      <a class="card compact" href="./primers/cdd-kyc-primer.html">
         <div class="card-body">
-          <div class="card-chip">PRIMER №05 · COMPLIANCE</div>
-          <h3 class="card-title">Customer Due <em>Diligence</em> (CDD/KYC).</h3>
-          <p class="card-desc">How regulated institutions identify, verify, risk-rate and monitor customers across the relationship lifecycle — the foundational layer of the AML, sanctions and fraud control framework. Identity, UBO, risk-rating, EDD, perpetual KYC.</p>
-          <div class="card-meta">
-            <span>HTML</span><span>~65 min</span><span>18 sections</span>
-          </div>
+          <div class="card-chip">CDD / KYC · COMPLIANCE</div>
+          <h3 class="card-title">Customer Due <em>Diligence</em>.</h3>
+          <p class="card-desc">Identity, verification, UBO, risk-rating, EDD and perpetual KYC — the foundational layer of the AML, sanctions and fraud control framework.</p>
+          <div class="card-meta"><span>HTML</span><span>~65 min</span><span>18 sections</span></div>
         </div>
-        <span class="card-cta">Read →</span>
       </a>
-      <a class="card" href="./primers/transaction-monitoring-primer.html">
+      <a class="card compact" href="./primers/transaction-monitoring-primer.html">
         <div class="card-body">
-          <div class="card-chip">PRIMER №03 · COMPLIANCE</div>
+          <div class="card-chip">AML · COMPLIANCE</div>
           <h3 class="card-title">Transaction <em>monitoring</em>.</h3>
-          <p class="card-desc">How banks detect suspicious money movement — the three stages of laundering, detection approaches, scenario typologies with worked walkthroughs, tuning, investigation, and SAR/CTR/STR reporting.</p>
-          <div class="card-meta">
-            <span>HTML</span><span>~50 min</span><span>17 sections</span>
-          </div>
+          <p class="card-desc">Detecting suspicious money movement — the three stages of laundering, scenario typologies with worked walkthroughs, tuning, and SAR/CTR reporting.</p>
+          <div class="card-meta"><span>HTML</span><span>~50 min</span><span>17 sections</span></div>
         </div>
-        <span class="card-cta">Read →</span>
       </a>
-      <a class="card" href="./primers/screening-primer.html">
+      <a class="card compact" href="./primers/screening-primer.html">
         <div class="card-body">
-          <div class="card-chip">PRIMER №02 · COMPLIANCE</div>
+          <div class="card-chip">SANCTIONS · COMPLIANCE</div>
           <h3 class="card-title">Sanctions, PEP &amp; adverse-media <em>screening</em>.</h3>
-          <p class="card-desc">The compliance function that blocks business in real time — the lists landscape, name-matching mechanics, customer vs. payment screening, false-positive reduction, and hit disposition.</p>
-          <div class="card-meta">
-            <span>HTML</span><span>~40 min</span><span>18 sections</span>
-          </div>
+          <p class="card-desc">The function that blocks business in real time — the lists landscape, name-matching mechanics, customer vs. payment screening, and hit disposition.</p>
+          <div class="card-meta"><span>HTML</span><span>~40 min</span><span>18 sections</span></div>
         </div>
-        <span class="card-cta">Read →</span>
       </a>
-      <a class="card" href="./primers/trade-surveillance-primer.html">
+      <a class="card compact" href="./primers/trade-surveillance-primer.html">
         <div class="card-body">
-          <div class="card-chip">PRIMER №04 · MARKETS</div>
+          <div class="card-chip">MARKETS · SURVEILLANCE</div>
           <h3 class="card-title">Trade <em>surveillance</em>.</h3>
-          <p class="card-desc">How markets firms detect abuse — insider dealing, spoofing, layering, wash trades and the rest of the typology set; the data, the detection models, worked cases, and alert disposition.</p>
-          <div class="card-meta">
-            <span>HTML</span><span>~50 min</span><span>16 sections</span>
-          </div>
+          <p class="card-desc">Detecting market abuse — insider dealing, spoofing, layering, wash trades; the data, the detection models, worked cases, and alert disposition.</p>
+          <div class="card-meta"><span>HTML</span><span>~50 min</span><span>16 sections</span></div>
         </div>
-        <span class="card-cta">Read →</span>
-      </a>
-    </div>
-  </section>
-
-  <!-- ════════════ ONE-PAGERS ════════════ -->
-  <section class="group">
-    <div class="group-head">
-      <span class="group-eyebrow">One-pagers <span class="count">· 1</span></span>
-      <span class="group-title">Single-sheet exec summaries</span>
-    </div>
-    <div class="cards">
-      <a class="card" href="./one-pagers/agentic-ai-banking-one-pager.html">
-        <div class="card-body">
-          <div class="card-chip">ONE-PAGER · A4</div>
-          <h3 class="card-title">Agents that change the <em>work</em>, not just the worker.</h3>
-          <p class="card-desc">A single A4 sheet — designed to print to one page and read in 90 seconds. The thesis, three hero stats, three takeaways, and the five no-regret moves in one printable view.</p>
-          <div class="card-meta">
-            <span>HTML · A4 print</span><span>~90 sec read</span><span>Executive brief</span>
-          </div>
-        </div>
-        <span class="card-cta">Open →</span>
       </a>
     </div>
   </section>
@@ -573,27 +640,21 @@
       <span class="group-title">Self-learning &amp; technical explainers</span>
     </div>
     <div class="cards two-col">
-      <a class="card" href="./engineering-notes/agentic-harness-evals-traces.html">
+      <a class="card compact" href="./engineering-notes/agentic-harness-evals-traces.html">
         <div class="card-body">
-          <div class="card-chip">NOTE №01 · FOUNDATIONS</div>
+          <div class="card-chip">FOUNDATIONS · TECHNICAL</div>
           <h3 class="card-title">Agentic harness, <em>evals</em> &amp; traces.</h3>
-          <p class="card-desc">A self-learning guide to the infrastructure around an LLM that turns it into an agent — and the discipline of evals and traces that keeps it honest in production. Interactive loop &amp; feedback-cycle animations.</p>
-          <div class="card-meta">
-            <span>HTML</span><span>~30 min</span><span>Technical</span>
-          </div>
+          <p class="card-desc">The infrastructure that turns an LLM into an agent — and the discipline of evals and traces that keeps it honest. With interactive loop &amp; feedback-cycle animations.</p>
+          <div class="card-meta"><span>HTML</span><span>~30 min</span><span>Interactive</span></div>
         </div>
-        <span class="card-cta">Read →</span>
       </a>
-      <a class="card" href="./engineering-notes/claude-agent-sdk-ic.html">
+      <a class="card compact" href="./engineering-notes/claude-agent-sdk-ic.html">
         <div class="card-body">
-          <div class="card-chip">NOTE №04 · AGENTIC LAYER</div>
+          <div class="card-chip">AGENTIC LAYER · TECHNICAL</div>
           <h3 class="card-title">The Claude Agent <em>SDK</em>.</h3>
-          <p class="card-desc">An annotated explainer on Anthropic's library for building agents that do things — not just write words. What's inside, when to reach for it, a working example, and an animated loop visualization.</p>
-          <div class="card-meta">
-            <span>HTML</span><span>~12 min</span><span>Technical</span>
-          </div>
+          <p class="card-desc">Anthropic's library for building agents that do things — what's inside, when to reach for it, a working example, and an animated loop visualization.</p>
+          <div class="card-meta"><span>HTML</span><span>~12 min</span><span>Interactive</span></div>
         </div>
-        <span class="card-cta">Read →</span>
       </a>
     </div>
   </section>
@@ -605,16 +666,13 @@
       <span class="group-title">Palette, three font families, named components</span>
     </div>
     <div class="cards">
-      <a class="card" href="./design-reference.html">
+      <a class="card compact" href="./design-reference.html">
         <div class="card-body">
           <div class="card-chip">STYLE GUIDE</div>
           <h3 class="card-title">The IC <em>design system</em>.</h3>
-          <p class="card-desc">A working style guide — palette, three font families (System / Editorial / Technical), named visual components (chapter slab, eyebrow, pull quote, the seam, more), layout patterns, and the lessons learned from building the artifacts above. Light/dark toggle.</p>
-          <div class="card-meta">
-            <span>HTML</span><span>Reference</span><span>Living document</span>
-          </div>
+          <p class="card-desc">Palette, three font families, named visual components (chapter slab, eyebrow, pull quote, the seam), layout patterns, and the lessons learned. Light/dark toggle.</p>
+          <div class="card-meta"><span>HTML</span><span>Reference</span><span>Living document</span></div>
         </div>
-        <span class="card-cta">Browse →</span>
       </a>
     </div>
 
