@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 10 — Evaluations for Agents · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; max-height: none; } }
+
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .progress::before { transition: none; } }
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <!-- PER-PRIMER REPLACE: masthead-right "MODULE N · PRIMER NN / 20" -->
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE III · PRIMER 10 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">Evaluations for Agents</h1>
+    <p class="subtitle"><em>The TDD of agentic systems — measure the behavior, not the trajectory.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">COLD START</span>
+    <p>If you haven't read Primer 5 — an agent loop is a while-loop that lets a model call tools. The model decides; your harness executes. Evals measure whether the <em>behavior</em> of that loop is what you want.</p>
+  </aside>
+
+  <div class="layout">
+    <!-- PER-PRIMER REPLACE: TOC entries + prev/next nav hrefs -->
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">Why agent evals are different</a></li>
+        <li><a href="#s2" class="toc-link">The task suite</a></li>
+        <li><a href="#s3" class="toc-link">Judges: rules, models, humans</a></li>
+        <li><a href="#s4" class="toc-link">Scoring rubrics</a></li>
+        <li><a href="#s5" class="toc-link">Eval-driven development</a></li>
+        <li><a href="#s6" class="toc-link">Regression detection</a></li>
+        <li><a href="#s7" class="toc-link">What this connects to</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="05-agent-loop.html">← Primer 5 — The Agent Loop</a>
+        <a class="nav-link next" href="15-agentic-kyc-surveillance.html">Primer 15 — Agentic KYC &amp; Surveillance →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — Why agent evals are different
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">Why agent evals are different</h2>
+
+        <p>A unit test is a simple promise: <code>function(input) == expected</code>. You run the function, you check the result, the build is green or red. The discipline that makes software shippable rests on that promise. Agents break it on the first call.</p>
+
+        <p>An agent is a model that decides, a harness that executes, and a loop that lets the two of them take turns. None of those three pieces is deterministic in the way a function is. The model samples from a distribution. The harness invokes tools that hit real systems. The loop chains them together for an unknown number of steps. You are not checking a value; you are watching a process unfold and asking whether enough of its endings are the ones you wanted.</p>
+
+        <p><strong>The non-determinism.</strong> Send the same prompt to the same model twice and you will get two different trajectories. Different reasoning, sometimes different tool calls, occasionally a different final answer. Temperature near zero narrows the distribution but does not collapse it. A test that asserts a single output is a test that flakes the first time the wind changes. The only honest unit of measurement is a rate — a pass count over a sample size — with a confidence interval attached.</p>
+
+        <p><strong>The multi-step nature.</strong> Even when the agent gets the final answer right, the path mattered. Did it call the screening tool before the decision tool? Did it stop at the first confident lead, or did it over-search and burn ten extra turns? Success is not a single assertion; it is a sequence of decisions ending in the right state, on a reasonable budget. Evals have to capture both the destination and, where it matters, the route.</p>
+
+        <p><strong>The tool mediation.</strong> Agent outputs are joint products of the model and the tools. If the screening API returns slightly different data on Tuesday than on Monday, your agent's answer changes — and that's the system working correctly. The tool's state at call time is part of the input, but it is not part of the prompt you wrote. Evals that don't account for this either freeze the world (mocks, fixtures) and lose realism, or accept the world as it is and reason about variance.</p>
+
+        <p>Traditional unit tests struggle on all three counts. They are binary where the system is probabilistic. They are single-shot where the system is multi-step. They are synthetic where the system is plumbed into real tools. You can write them; they will not protect you. What you need is a different posture: a population of tasks, scored on a rubric, summarized as a rate, and watched for movement over time.</p>
+
+        <blockquote class="pull">Don't ask "did it answer correctly once." Ask "what fraction of the time does it answer correctly, and is that fraction stable?"</blockquote>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — The task suite
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">The task suite</h2>
+
+        <p>An agent eval starts with a corpus of tasks — small, well-specified problems with a way to score the outcome. The corpus is the load-bearing artifact. Models change; harnesses change; prompts change. The task suite is the constant the rest of the system is measured against. A good suite has three properties.</p>
+
+        <p><strong>Representative.</strong> The tasks are sampled from real user queries, not synthesized by a developer in a notebook. Notebook tasks tend to be too clean, too neutral, and too short. They miss the messy phrasing, the ambiguous intent, the half-typed referent ("the one from last week"), and the long-tail edge cases that production traffic surfaces every day. If your agent runs in production, sample from production logs. If it doesn't yet, sample from whatever real user input you have — pilot transcripts, support tickets, internal dogfood — and re-sample when real traffic starts. The closer the suite tracks the live distribution, the more your CI score predicts the user-facing one.</p>
+
+        <p><strong>Balanced.</strong> A suite that's 80% easy queries will tell you the model is great long after it has stopped being great on the cases that matter. Bin tasks by difficulty (easy, medium, hard), by tool path (which tool sequence the answer requires), and by intent class (including refusals — a healthy agent says "I can't" sometimes, and that needs its own coverage). Track pass rates per bin, not just the headline. Regressions usually show up first in the smallest bin, and they are invisible if you only look at the average.</p>
+
+        <p><strong>Growing.</strong> Every production bug becomes a fixture. The first time a user reports the agent screening the wrong customer, you reproduce the failure, add it to the suite, and from that day on the CI gate ensures the bug stays fixed. The suite is the institutional memory of every mistake the system has made. Treat additions like you treat regression tests in a mature codebase: cheap to write, expensive not to.</p>
+
+        <p>A task itself is small. It has an identifier, a prompt (the user input), and a rubric (the set of conditions the trajectory and result must satisfy). Optional fields capture seed state, expected tool calls, ceiling on iterations, and tags for the bins above. The whole thing is code, kept in the repo, versioned with everything else.</p>
+
+        <div class="code">
+          <span class="code-tag">PYTHON</span>
+<pre>EVAL_TASKS = [
+    {
+        "id": "kyc-001-clean-pep-match",
+        "prompt": "Run KYC on customer ID 88312. PEP screening only.",
+        "rubric": {
+            "must_call_tool": "screen_pep",
+            "must_attach_evidence": True,
+            "max_iterations": 6,
+        },
+    },
+    # ...
+]</pre>
+        </div>
+
+        <p>Where do the tasks come from? In a mature setup, three sources. <strong>Sampled traffic</strong> — a fixed fraction of real sessions, de-identified, hand-labeled with the correct outcome, then frozen into the suite. <strong>Regression fixtures</strong> — every bug ticket the team closes ships with the failing case attached. <strong>Adversarial cases</strong> — written deliberately to probe known weak spots: ambiguous phrasing, multi-language input, customers that match multiple records, requests that should be refused.</p>
+
+        <p>How do they grow? They grow with the system. A useful target for an agent in production is 100–300 active tasks in the main suite, with another 20–30% held back for the shadow set (see §5). New tasks land via PR like any other code change, reviewed by a peer who confirms the rubric is right and the case isn't a duplicate. Old tasks get retired when they no longer reflect anything the agent is asked to do. The suite is a living document of what "working" means for this agent, today.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — Judges: rules, models, humans
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">Judges: rules, models, humans</h2>
+
+        <p>A task is only as useful as the thing that scores it. Three classes of judge are in use, and a serious eval system uses all three, in different ratios, for different reasons.</p>
+
+        <h3>Rule-based judges</h3>
+
+        <p>Rule-based judges check things you can write down as code. Did the agent call <code>screen_pep</code>? Did its final response validate against the JSON schema? Did it attach an evidence object with a non-empty source field? Did it stay under the iteration cap? These checks are cheap, deterministic, and run in milliseconds. They are also narrow — they can tell you whether the structural contract was met, but they cannot tell you whether the answer was right. Use them as the floor: a task that fails a rule-based check is failing before you even ask a model judge whether the substance was correct.</p>
+
+        <h3>Model-as-judge</h3>
+
+        <p>Model-as-judge is the workhorse. A second LLM, given the task, the agent's trajectory, the agent's final answer, and a written rubric, produces a graded score and a short explanation. Cheap-ish — one extra call per task — and broad: it can rate correctness, completeness, citation quality, tone, and a dozen other axes that no rule could express. It is also wrong sometimes, in ways the rule-based judge never is: it can be inconsistent across runs, biased toward verbose answers, susceptible to prompt-injection from the agent's own output, and prone to grade-inflation when the rubric is vague. The fix is structural: short, specific rubrics; structured output; lower temperature; and a separate judge model from the one being evaluated (so a model isn't grading itself).</p>
+
+        <h3>Human judges</h3>
+
+        <p>Humans are the gold standard and the bottleneck. A subject-matter expert can score a trajectory with judgment no rule and no LLM has — was this the right call given what a compliance officer would actually do? Is the evidence cited the right evidence, or just plausible-looking? Humans do not scale to grading every PR, but they do something more important: they grade the graders. A small, carefully labeled set of human-scored tasks is what lets you trust the model judge on everything else.</p>
+
+        <p>Which brings up the recurring question: how do you know your model judge is right? You hold out 50–100 tasks that humans have scored, you run the model judge on the same set, and you compute agreement. Cohen's kappa &kappa; over about 0.7 is the rough threshold for "the model is grading well enough to deploy as the primary judge"; below that, you go back and tighten the rubric or change the judge model. Re-run the calibration on a fresh human-scored sample every quarter, or whenever you change the judge prompt — because the judge drifts too, and a judge you stopped checking is a judge you stopped trusting.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — Scoring rubrics
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">Scoring rubrics</h2>
+
+        <p>How a task is scored decides what the team optimizes for. Pass/fail is the simplest rubric — the trajectory either met every condition or it didn't, and the score is a single bit. It has the virtue of being unambiguous: CI is green or red, the gate is binary, no one argues about partial credit. It has the vice of hiding everything else. Between two releases, you cannot tell whether the failing cases got closer or further away. A run that's "99 fails, 1 pass" looks identical to a run that's "100 fails, 0 pass," even though one is on the verge of green and the other is in the wilderness.</p>
+
+        <p>Graded rubrics fix the hiding problem. Score each axis you care about on a small ordinal scale — 0 to 4 is a common choice — and let the judge produce a per-axis grade. A typical agent rubric has four axes: <strong>correctness</strong> (did the final answer get the substance right), <strong>completeness</strong> (did it address everything the user asked), <strong>citation</strong> (did it ground its claims in the right evidence), and <strong>latency</strong> (did it finish within the iteration and wall-clock budget). The scores are noisier than a binary, but they show movement. A regression from a 3.8 average correctness to a 3.5 is something you can act on a week before the binary pass rate ever flips.</p>
+
+        <table class="cmp">
+          <thead><tr><th>Rubric style</th><th>Strength</th><th>Cost</th></tr></thead>
+          <tbody>
+            <tr><td>Binary pass/fail</td><td>Unambiguous CI gate</td><td>Hides progress between releases</td></tr>
+            <tr><td>Graded (0&ndash;4 per axis)</td><td>Shows direction of travel</td><td>Needs a model judge or human</td></tr>
+            <tr><td>Composite score</td><td>One number for the dashboard</td><td>Hides the failing axis</td></tr>
+          </tbody>
+        </table>
+
+        <p>Composite scores roll the per-axis grades into a single number — usually a weighted mean. They make great dashboard tiles and terrible debugging tools. A 3.4 composite that's "3.0 correctness, 3.8 everything else" tells a very different story from a 3.4 composite that's "4.0 correctness, 2.8 citation," and the composite alone tells you neither. Report the components on the dashboard, even when leadership wants the headline number.</p>
+
+        <p>The recommendation: gate on a binary <em>derived</em> from a graded rubric. The CI rule is something like "pass if every axis &ge; 3, fail otherwise." The team gets the unambiguous gate they need, and the dashboard gets the direction-of-travel signal it needs, from the same run. You pay the cost of a graded judge once and get both products out the other side.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — Eval-driven development
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">Eval-driven development</h2>
+
+        <p>Test-driven development has a rhythm: write the failing test, watch it go red, write the smallest change that makes it green, refactor. Eval-driven development is the same rhythm at a different cadence. Write the failing eval — a new task representing a behavior the agent doesn't yet do, or a bug it currently has. Run the suite, see the new case fail in a sea of green. Change a prompt, a tool, a guardrail. Run again. Green. Commit.</p>
+
+        <p>This sounds straightforward and is not, because evals are slow and noisy in ways unit tests are not. A 200-task suite scored with a model judge takes minutes to run and costs real money. A single task with temperature above zero can flip pass and fail across consecutive runs. The discipline of writing the eval first is what protects you from optimizing toward a moving target with no record of where you started. Without it, "the agent is better now" becomes a vibe call. With it, it becomes a diff.</p>
+
+        <p>Three things make this work in practice.</p>
+
+        <p><strong>Evals run on every PR.</strong> Not nightly, not weekly — on the PR itself, as a required check. The cost is non-trivial (a few dollars per PR is typical) and worth paying every time. A reviewer should never have to ask "did you run the evals." The CI ran them; the result is on the PR; the conversation starts from there.</p>
+
+        <p><strong>The team holds a shadow set.</strong> If every developer can see every task in the suite, the team will (consciously or not) overfit prompts to those tasks. A prompt that mentions "always cite the customer ID" because two of the visible tasks failed for not citing it might pass those two and quietly degrade five others nobody is looking at. Hold back 20–30% of tasks that only run in CI and that only the eval owner can read. The shadow score is the honest one.</p>
+
+        <p><strong>Results are diffs, not points.</strong> A PR doesn't fail because the overall pass rate dropped a point. It fails because <em>these three specific tasks</em> regressed. Show the per-task delta — what was passing on main and is failing on this PR, what was failing on main and is passing on this PR. The diff makes the conversation specific. "You broke kyc-014" is a different review than "the score went down."</p>
+
+        <div class="note">
+          <span class="note-tag">DISCIPLINE</span>
+          <p class="note-head"><em>The shadow set is what keeps you honest.</em></p>
+          <p>If every developer sees every eval task, the team will (consciously or not) overfit prompts to them. Hold out 20&ndash;30% of tasks as a shadow set that only runs in CI and only management sees pass rates for. Treat divergence between visible and shadow scores as a leading indicator of overfitting.</p>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — Regression detection
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">Regression detection</h2>
+
+        <p>Once evals run on every PR, the next problem is figuring out what the numbers mean. Agent eval suites are small by software-testing standards — 50 to 300 tasks is typical, and the cost and runtime of going much larger is real. At those sample sizes, single-point comparisons are noisy enough to mislead, and the team that flies by them ends up chasing variance instead of regressions.</p>
+
+        <p><strong>Put confidence intervals on the pass rate.</strong> A pass rate is a proportion, and proportions have well-understood error bars. The Wilson interval is the standard choice for small N and proportions near 0 or 1; it gives sensible bounds where naive normal-approximation intervals do not. You don't need to derive it — every stats library has a one-liner — but you do need to report it. A score of "84% &plusmn; 7%" is a different artifact from a score of "84%," and only the first one stops the team from arguing about a 3-point delta that is inside the noise floor.</p>
+
+        <p><strong>Diff per task, not just per suite.</strong> The headline pass rate can move because one critical task regressed or because five low-value ones flipped. Those situations call for different responses, and the headline doesn't distinguish them. Surface, for every PR: which tasks passed on main and failed on the PR, which tasks failed on main and passed on the PR, and which tasks flipped between runs of the same code. A focused regression in one tool path is a fix; a broad sweep across the suite is a model-behavior shift; a single high-value case is a P1 ticket. The diff is what makes those calls obvious.</p>
+
+        <p><strong>Re-run before you declare.</strong> Temperature above zero means a fraction of tasks will flip on any given run, with no underlying cause. Before reporting a regression, re-run the failing tasks two or three times. If they pass on the rerun, you have flake, not a regression — note it, mark the task as variance-prone, and move on. If they fail consistently, you have a real signal. This rule alone removes most of the noise from the team's day.</p>
+
+        <p><strong>Watch the "looks like a regression" trap.</strong> A 2-point pass-rate drop on a 100-task suite has a confidence interval roughly &plusmn;8 points around it — comfortably consistent with no change at all. Teams that don't internalize this end up chasing every wiggle. The remedy is partly statistical (intervals, reruns) and partly cultural (don't act on a single-PR number; trend over a week of runs). Regression detection is its own discipline. Don't fly by single numbers.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — What this connects to
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">What this connects to</h2>
+
+        <p>This primer is the methodology layer. The other half — the runtime plumbing that captures trajectories, ships them to the eval store, and makes the diff above mechanically possible — lives in adjacent primers and in an existing engineering note.</p>
+
+        <p><strong>Traces (Primer 11).</strong> When an eval fails, the trace is where you go to understand why. A trace is the full recorded record of a run — the prompt, every tool call, every tool result, every intermediate model response, the final answer, and the timings on each. Evals tell you <em>that</em> the agent regressed; traces tell you <em>where</em> in the loop the regression happened. The two are useless without each other, which is why they ship together.</p>
+
+        <p><strong>Safety evals (Primer 12).</strong> Everything in this primer is about whether the agent does its job. A separate suite — red-team prompts, prompt-injection probes, refusal cases, jailbreak attempts — measures whether the agent stays inside the lines while doing it. Safety evals run on a different cadence (often nightly rather than per-PR) and have different scoring rules (a single failure on a critical safety case blocks the release, even if everything else is green). Treat them as a parallel suite, not as more rows in this one.</p>
+
+        <p><strong>Existing engineering note.</strong> <a href="../engineering-notes/agentic-harness-evals-traces.html">Agentic Harness, Evals &amp; Traces</a> covers the runtime infrastructure — how to wire a harness, capture traces, route trajectories to evals, and structure the store that holds it all. This primer is the methodology; that note is the plumbing. Read them together when you build.</p>
+
+        <p>Evals are the threshold module of this course. Everything before it is what an agent <em>is</em>. Everything after it depends on knowing whether the one you built is working. A demo is a single trajectory you got lucky with; a deployable system is a population of trajectories you have measured. The line between the two is drawn here.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE III · PRIMER 10 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+  </script>
+</body>
+</html>
