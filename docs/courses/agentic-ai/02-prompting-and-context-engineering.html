@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 2 — Prompting & Context Engineering · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; max-height: none; } }
+
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .progress::before { transition: none; } }
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <!-- PER-PRIMER REPLACE: masthead-right "MODULE N · PRIMER NN / 20" -->
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE I · PRIMER 02 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">Prompting &amp; Context Engineering</h1>
+    <p class="subtitle"><em>The difference between prompting an answer and prompting a behavior.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">COLD START</span>
+    <p>If you haven't read Primer 1 — an LLM is a function from a token sequence to a probability distribution. Generation is repeated sampling. The context window is a fixed budget. This primer builds directly on those ideas.</p>
+  </aside>
+
+  <div class="layout">
+    <!-- PER-PRIMER REPLACE: TOC entries + prev/next nav hrefs -->
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">Prompt vs context</a></li>
+        <li><a href="#s2" class="toc-link">System prompts: role, mandate, constraints</a></li>
+        <li><a href="#s3" class="toc-link">Few-shot: when, when not, and how</a></li>
+        <li><a href="#s4" class="toc-link">Structuring the message stack</a></li>
+        <li><a href="#s5" class="toc-link">Prompting an answer vs prompting a behavior</a></li>
+        <li><a href="#s6" class="toc-link">Context as a budget</a></li>
+        <li><a href="#s7" class="toc-link">What this connects to</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="01-llm-mental-model.html">← Primer 1 — LLM Mental Model</a>
+        <a class="nav-link next" href="03-tool-use-and-structured-output.html">Primer 3 — Tool Use &amp; Structured Output →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — Prompt vs context
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">Prompt vs context</h2>
+
+        <p>The word "prompt" gets used for two different things, and conflating them is the source of most of the bad advice on the internet. A <strong>prompt</strong>, strictly, is the single message you send — the user-role string the application hands the model right now. The <strong>context</strong> is everything the model actually sees on that call: the system prompt, the tool definitions, the conversation history, the retrieved documents, and the current user message, all concatenated into one token sequence that the model attends to.</p>
+
+        <p>The model does not know which part you "wrote" and which part came from a retrieval step or a previous turn. It sees one sequence. Its next-token distribution is conditioned on the whole thing.</p>
+
+        <p>This matters because most failures builders blame on "the prompt" are actually failures of the context. The instruction was clear. The user's request was reasonable. But the model also saw four irrelevant prior turns, a 2,000-token tool schema for a tool it didn't need, and a retrieved passage about a different customer. With that on the table, the next-token distribution drifted somewhere unhelpful. Tightening the user message would not have rescued it. Tightening the context would.</p>
+
+        <blockquote class="pull">A bad prompt is rarely the problem. A bad context is.</blockquote>
+
+        <p><strong>Prompt engineering</strong> is the craft of writing the message — clear instructions, the right examples, a structured request. It is necessary and it has a ceiling. <strong>Context engineering</strong> is the craft of deciding what the model sees at all — which prior turns survive, which documents get retrieved, which tools get defined, which examples make it into the system prompt this run. It is the larger discipline, and it is where the leverage sits when you move from a single call to an agent.</p>
+
+        <p>The shift from "I am writing a prompt" to "I am composing a context" is the single most important upgrade a builder makes in their first month with these systems. Once you make it, you stop tuning sentences and start designing pipelines: how the context gets assembled, how it gets trimmed, what gets cached, what gets pulled fresh. The rest of this primer is about that discipline.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — System prompts: role, mandate, constraints
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">System prompts: role, mandate, constraints</h2>
+
+        <p>The <code>system</code> role exists for a reason. It is the slot reserved for instructions that apply to the whole interaction — not this turn, every turn. The model is trained to weight the system prompt as standing orders. Use that. Put the things that must always be true here, and only the things that must always be true.</p>
+
+        <p>A well-formed system prompt does three jobs, in this order:</p>
+
+        <p><strong>Role.</strong> Who the model is being asked to be. "You are a compliance analyst." "You are a senior backend engineer reviewing a pull request." "You are a customer-service triage assistant for a retail bank." One sentence. Pick the role that matches the work, not a flattering archetype. "Expert PhD in finance" is worse than "compliance analyst" because the model has seen far more examples of analysts doing analyst work than of expert PhDs writing anything.</p>
+
+        <p><strong>Mandate.</strong> What the work is, in one or two sentences. "Your job is to assemble a KYC case pack from the customer record and screening results." This anchors the model to a goal. Without a mandate, the role floats — a "compliance analyst" might answer questions, write essays, or refuse on policy grounds. With a mandate, the role narrows to a job: case packs, produced from these inputs.</p>
+
+        <p><strong>Constraints.</strong> What not to do, where the limits are, what to escalate. This is where structure beats prose. The model reads bullets more reliably than embedded clauses. A constraint buried mid-paragraph ("...and of course never make claims without evidence...") gets weighted alongside the surrounding sentences. The same constraint on its own line, prefixed with a dash, gets weighted as a standing rule.</p>
+
+        <div class="code">
+          <span class="code-tag">PYTHON</span>
+<pre>from anthropic import Anthropic
+
+system = """You are a KYC analyst.
+Your job is to assemble a case pack from the customer record and screening results.
+
+Constraints:
+- Never claim a customer is clean without an attached evidence record.
+- Escalate any PEP hit or sanctions adjacency to a senior reviewer.
+- Cite the source for every risk factor."""
+
+resp = Anthropic().messages.create(
+    model="claude-sonnet-4-6",
+    max_tokens=1024,
+    system=system,
+    messages=[{"role": "user", "content": "Assemble case pack for customer 88312."}],
+)</pre>
+        </div>
+
+        <p>Notice the shape. Role on line one. Mandate in the next paragraph. Constraints as a bulleted list with imperatives. No lore, no flattery, no "please." The model does not need to be motivated. It needs to know what to do and what not to do.</p>
+
+        <p>Two things to avoid. First, do not stuff turn-specific facts into the system prompt. "The customer is 88312" belongs in the user message, not the system block — it will change next turn, and a stale system prompt is a slow-moving lie. Second, do not let the system prompt grow without pruning. Every line you add is read every turn and paid for every turn. A constraint that fired once during testing and never since is a candidate for deletion, not preservation.</p>
+
+        <p>A good rule for sizing: the system prompt should be the shortest string that produces the behavior you want across a varied test set. Not the longest you can write before the model gets confused. Compression is a feature.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — Few-shot: when, when not, and how
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">Few-shot: when, when not, and how</h2>
+
+        <p>Few-shot prompting means showing the model worked examples of the input/output pattern before asking it to do the same on a new input. The technique predates instruction-tuned models — it used to be the only way to get a base model to do anything specific — and it still works, just for a narrower set of cases than people assume.</p>
+
+        <p>Zero-shot is the default. Modern instruction-tuned models follow clear instructions on standard tasks without examples. Reach for few-shot only when there is something the instruction alone cannot convey.</p>
+
+        <p>Three reasons to add examples:</p>
+
+        <ul>
+          <li><strong>The output format is non-obvious.</strong> A custom JSON shape your downstream code expects, a domain-specific log format, a structured handoff between agents. Examples lock the shape better than schema descriptions.</li>
+          <li><strong>The reasoning pattern is non-standard.</strong> You want the model to follow a specific decision tree — check A first, then B only if A passed, then escalate if B is ambiguous. Show two or three traces of that pattern and the model will imitate it.</li>
+          <li><strong>Edge-case coverage matters.</strong> Pick the two hardest cases in your test set and show the desired behavior on them explicitly. This is cheap insurance.</li>
+        </ul>
+
+        <p>Three reasons not to:</p>
+
+        <ul>
+          <li><strong>The format is standard.</strong> Free text, simple JSON, a bullet list — the model already knows how to produce these. Examples add tokens without changing behavior.</li>
+          <li><strong>The examples bloat the context.</strong> If you are reaching for ten or more examples, you are doing in-context learning. Consider fine-tuning instead — same outcome, none of the per-turn cost.</li>
+          <li><strong>You'd be tempted to write "and so on…"</strong> That phrase means you don't really know the pattern yet. Go back to the spec; do not paper over it with examples the model will overfit to.</li>
+        </ul>
+
+        <p>How to do it well: pick examples that span the input distribution, not three near-duplicates. Put them inside the user message or, for the strongest effect, as separate user/assistant turns in the history. Never paraphrase a real customer's record verbatim — your examples become part of the training signal for whatever future model your provider distills, and PII in examples is PII in the prompt.</p>
+
+        <table class="cmp">
+          <thead><tr><th>Shot count</th><th>Use for</th><th>Failure mode</th></tr></thead>
+          <tbody>
+            <tr><td>Zero-shot</td><td>Standard tasks, free text, simple JSON</td><td>Format drift on edge cases</td></tr>
+            <tr><td>Few-shot (2–5)</td><td>Custom formats, reasoning patterns, hard edges</td><td>Overfits to the examples' specifics</td></tr>
+            <tr><td>Many-shot (20+)</td><td>You're really doing in-context learning</td><td>Context bloat; consider fine-tuning</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — Structuring the message stack
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">Structuring the message stack</h2>
+
+        <p>The model's view at any given turn is not a single string. It is the <strong>message stack</strong>: the system prompt at the top, the tool definitions alongside it, the conversation history in order, and the current user message at the bottom. The SDK serializes this into one token sequence; the model reads it as a whole. But where you place a piece of information in the stack matters more than the words you choose for it.</p>
+
+        <p>Two empirical patterns dominate. First, <strong>the model attends most strongly to the start and the end of context</strong>. Instructions placed at the very top of the system prompt and information placed at the bottom of the last user message both get strong attention weight. Material in between competes harder for it.</p>
+
+        <p>Second, the so-called <strong>"lost in the middle"</strong> effect: as conversation history grows, the middle of the stack — turns 3 through N-2, say — gets progressively under-weighted. Important constraints that you set on turn 1 and never repeated will quietly stop firing by turn 20. The model still sees them. It just no longer treats them as load-bearing. If a constraint matters across a long session, restate it in the system prompt (which always sits at the top) or re-inject it into the latest user message.</p>
+
+        <p>Roles in the stack are not cosmetic. The <code>system</code> / <code>user</code> / <code>assistant</code> / <code>tool</code> labels are how the model distinguishes who said what. They affect attention patterns and influence what the model treats as authoritative versus what it treats as data. Two common mistakes follow from forgetting this.</p>
+
+        <p>One: pasting raw user input into the system prompt to "give the model context." This collapses the boundary between standing orders and untrusted data. The model will treat injected instructions in the user input as if they came from you. This is the basic shape of prompt injection. Keep the system role for things you wrote and trust.</p>
+
+        <p>Two: hand-rolling fake assistant turns to "show the model what it said." If the model didn't actually generate those tokens, you are lying to it about its own history. The behavior gets harder to predict — the model may try to reconcile the fake turn with its current parameters and produce something neither of you wanted. If you need to demonstrate an output shape, do it as a few-shot example clearly labeled as an example, not as a fabricated history.</p>
+
+        <p>A working rule pulls it together: <strong>if it must always be true, put it in the system prompt. If it depends on this turn, put it in the user message.</strong> Standing orders go up top. Turn-specific facts go at the bottom. The middle is for history, and you should expect the model to under-weight it.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — Prompting an answer vs prompting a behavior
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">Prompting an answer vs prompting a behavior</h2>
+
+        <p>This is the single most important distinction in this primer, and it is the one most builders only learn by getting burned. There are two fundamentally different things you can ask a prompt to do, and they require different craft.</p>
+
+        <p><strong>Prompting an answer</strong> is the case most people start with. You have one question; you want one response. "Summarize this document." "What is the weather in Bengaluru?" "Classify this ticket as billing, technical, or other." The prompt is a one-shot specification, the model produces one output, the interaction ends. The craft is in writing the question well, picking examples that nail the format, and tuning until the model's response on your test case looks right.</p>
+
+        <p><strong>Prompting a behavior</strong> is the case agents force you into. You are no longer specifying one answer; you are specifying a <em>pattern the model will apply across many turns and many inputs you have not seen yet</em>. "When the user asks for weather, call <code>get_weather</code> with the city, then format the result as a brief summary." "When you receive a ticket, check the customer's plan tier first, then route based on the matrix in the constraints, and escalate to a human if any field is missing." The prompt is no longer a question. It is a policy.</p>
+
+        <p>The shift happens whether builders notice it or not. The first time someone wires an LLM into a tool-using loop, they are no longer prompting an answer. They are writing a policy the model will execute against tomorrow's user input, which they have not seen. Most of the pain in early agent projects comes from builders applying answer-prompting craft to a behavior-prompting problem.</p>
+
+        <p>The differences in craft are concrete:</p>
+
+        <ul>
+          <li><strong>Stop writing "here's an example, copy this."</strong> Write "here's how to think about cases like this." Examples teach format; rules teach generalization. Behavior prompts need both, weighted toward rules.</li>
+          <li><strong>Stop chaining if-then conditions in prose.</strong> A paragraph with five embedded conditionals is a lottery for the model. Structure the conditions as a decision tree or a bulleted policy — material the model can read deterministically.</li>
+          <li><strong>Stop testing against one representative case.</strong> A behavior prompt needs to survive twenty varied inputs, including the ones designed to break it. If you've only seen it work on the happy path, you've shipped a fragile policy and labeled it a feature.</li>
+        </ul>
+
+        <div class="note">
+          <span class="note-tag">DISCIPLINE</span>
+          <p class="note-head"><em>Prompt the behavior, not the example.</em></p>
+          <p>If you tune the prompt to nail one example, you'll find a second example that breaks it. Tune the prompt to a generalizable rule, then verify it across a varied set. Treat any prompt that "only works for this one case" as broken.</p>
+        </div>
+
+        <p>The mental shift is also a tooling shift. Answer-prompting can be done in a chat window. Behavior-prompting needs an eval set — twenty to a hundred varied inputs, expected outputs or rubrics, a way to run the prompt across all of them and see the failures. Once you are prompting a behavior, the eval set is the prompt's specification; the prompt text is the implementation. Tuning the prompt without re-running the evals is editing code without compiling it.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — Context as a budget
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">Context as a budget</h2>
+
+        <p>Primer 1 framed the context window as a budget. This section is the operational version of that idea: how, when you are doing context engineering, you actually spend the budget.</p>
+
+        <p>Every turn, everything in scope competes for the same fixed pool of tokens — 200K, 1M, whatever the model gives you. The competitors are the system prompt, the tool definitions, the conversation history, the retrieved passages, the current user message, and the room left for the response. The window is shared. You cannot grow one item without shrinking another or paying more.</p>
+
+        <p>The items split cleanly into expensive and cheap. <strong>Tool definitions</strong> are expensive — a useful agent's eight to twelve tools easily run 3,000–8,000 tokens together. <strong>Retrieved passages</strong> are expensive and unbounded if you don't cap them. <strong>Conversation history</strong> is expensive and grows monotonically unless you summarize. <strong>The system prompt</strong> is expensive only on the first turn; with caching, it's nearly free thereafter. <strong>Instructions and short examples</strong> are cheap. <strong>The current user message</strong> is usually the smallest line item.</p>
+
+        <p>Once you see the items clearly, the engineering choices become obvious. Pay for the things that earn their cost.</p>
+
+        <div class="twocol">
+          <div>
+            <h3 class="col-head">Spend on</h3>
+            <ul>
+              <li>The system prompt — read every turn, cache it.</li>
+              <li>2–5 well-chosen few-shot examples</li>
+              <li>The retrieved passages the answer actually depends on</li>
+              <li>Tool definitions for tools the agent will call this turn</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="col-head">Trim first</h3>
+            <ul>
+              <li>Old tool results that aren't relevant anymore</li>
+              <li>Conversation turns from 5+ exchanges back — summarize instead</li>
+              <li>RAG passages that scored low on the retrieval rerank</li>
+              <li>Tool definitions for tools the agent never uses</li>
+            </ul>
+          </div>
+        </div>
+
+        <p>When the budget gets tight in production — typically around turn 15 of a long session, or when a RAG step pulled in a long document — you have three levers, in order of preference. <strong>Summarize history</strong>: replace turns 1–10 with a 500-token summary that preserves the decisions and drops the chatter. <strong>Retrieve less</strong>: tighten the top-k on your retriever, rerank harder, return fewer passages. <strong>Prune tools</strong>: if the agent has 12 tools but this user request will only touch 3, narrow the tool set per turn rather than declaring all 12 every time.</p>
+
+        <p>The discipline is to think of every token in the context as a choice you made — either deliberately because it earns its cost, or accidentally because no one trimmed it. By the time you have an agent in production, the context is your most important configuration surface. Treat it like one.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — What this connects to
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">What this connects to</h2>
+
+        <p>Prompting and context engineering touch nearly every later primer in the course. The pointers worth carrying forward:</p>
+
+        <ul>
+          <li><strong><a href="01-llm-mental-model.html">Primer 1 — LLM Mental Model</a></strong> — the context-as-budget framing started there. This primer is the operational version: how to spend the budget once you are composing real contexts.</li>
+          <li><strong><a href="03-tool-use-and-structured-output.html">Primer 3 — Tool Use &amp; Structured Output</a></strong> — tool definitions are themselves a form of prompt; the model reads each tool's name, description, and schema as instructions about when and how to call it. Structured-output schemas are how you turn "prompting an answer" into "prompting a parseable answer" — the schema does the work that a fragile post-hoc regex would have done.</li>
+          <li><strong><a href="04-retrieval-augmented-generation.html">Primer 4 — Retrieval-Augmented Generation</a></strong> — RAG is the dominant strategy for getting the <em>right</em> context into the budget. Most of context engineering at scale is retrieval engineering: what to retrieve, how many passages, how to rerank, when to skip.</li>
+          <li><strong><a href="05-agent-loop.html">Primer 5 — The Agent Loop</a></strong> — the system prompt is read once per turn but rarely changes; cache it. Context engineering at agent scale is where prompting stops being a knack and becomes a discipline — the loop forces every decision about what to include, trim, and summarize to be made dozens of times per session.</li>
+        </ul>
+
+        <p>Prompting is a habit, not a trick. The prompts that ship are the ones you've tested across a varied set, structured for legibility, and stripped down to the load-bearing instructions. Everything else is decoration — and decoration costs tokens every turn.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE I · PRIMER 02 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+  </script>
+</body>
+</html>
