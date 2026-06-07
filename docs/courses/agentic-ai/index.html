@@ -62,16 +62,33 @@ p { margin: 0 0 18px; }
 
 /* --- Primer list ---------------------------------------------- */
 .primer-list { max-width: 1000px; margin: 0 auto; padding: 0 32px; list-style: none; }
-.primer-card { display: grid; grid-template-columns: 56px 1fr 160px; gap: 24px; padding: 24px 0; border-bottom: 1px solid var(--rule); align-items: baseline; }
-.primer-card:hover { background: var(--tint-stone); }
-.primer-card a { display: contents; color: inherit; }
+.primer-card { position: relative; display: grid; grid-template-columns: 56px 1fr 160px; gap: 24px; padding: 24px 0; border-bottom: 1px solid var(--rule); align-items: baseline; transition: background 120ms ease; }
+.primer-card:not(.placeholder):hover { background: var(--tint-stone); }
 .primer-num { font-family: var(--mono); font-size: 14px; color: var(--blue); font-weight: 500; }
 .primer-body { display: flex; flex-direction: column; gap: 4px; }
 .primer-title { font-family: var(--display); font-size: 20px; color: var(--pavement); margin: 0; }
+.primer-title a { color: inherit; text-decoration: none; }
+.primer-title a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+/* Card-link pattern: the title is the link; its ::after overlay makes the whole card clickable
+   without adding a second link to the accessibility tree. */
+.primer-title a::after { content: ''; position: absolute; inset: 0; }
+.primer-title a:focus-visible { outline: none; }
+.primer-card:has(a:focus-visible) { outline: 2px solid var(--blue); outline-offset: 4px; }
 .primer-arg { font-size: 14px; color: var(--slate); margin: 0; }
 .primer-meta { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--slate); text-align: right; }
-.primer-card.placeholder { opacity: 0.55; pointer-events: none; }
+.primer-card.placeholder { opacity: 0.55; }
 .primer-card.placeholder .primer-meta::after { content: ' · soon'; color: var(--stone); }
+/* Narrow widths: collapse card to two rows, shrink cover. Spec rule is "shouldn't shatter". */
+@media (max-width: 720px) {
+  .cover-title { font-size: 48px; }
+  .cover-subtitle { font-size: 20px; }
+  .cover-byline { grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 48px; }
+  .chapter-slab { padding: 40px 24px; }
+  .chapter-title { font-size: 32px; }
+  .primer-list { padding: 0 20px; }
+  .primer-card { grid-template-columns: 40px 1fr; gap: 12px 16px; padding: 20px 0; }
+  .primer-meta { grid-column: 2; text-align: left; }
+}
 
 /* --- Colophon ------------------------------------------------- */
 .colophon { background: var(--deep); color: var(--stone); padding: 24px 48px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; display: flex; justify-content: space-between; margin-top: 96px; }
@@ -137,16 +154,14 @@ p { margin: 0 0 18px; }
 </section>
 <ol class="primer-list">
   <li class="primer-card">
-    <a href="01-llm-mental-model.html">
-      <span class="primer-num">01</span>
-      <div class="primer-body">
-        <h3 class="primer-title">LLM Mental Model for Builders</h3>
-        <p class="primer-arg">Tokens, sampling, context windows, latency/cost frontier. What models can and can't do, framed for someone about to call one in a loop.</p>
-      </div>
-      <div class="primer-meta">~18 MIN · MODULE I</div>
-    </a>
+    <span class="primer-num">01</span>
+    <div class="primer-body">
+      <h3 class="primer-title"><a href="01-llm-mental-model.html">LLM Mental Model for Builders</a></h3>
+      <p class="primer-arg">Tokens, sampling, context windows, latency/cost frontier. What models can and can't do, framed for someone about to call one in a loop.</p>
+    </div>
+    <div class="primer-meta">~18 MIN · MODULE I</div>
   </li>
-  <li class="primer-card placeholder">
+  <li class="primer-card placeholder" aria-disabled="true">
     <span class="primer-num">02</span>
     <div class="primer-body">
       <h3 class="primer-title">Prompting &amp; Context Engineering</h3>
@@ -154,7 +169,7 @@ p { margin: 0 0 18px; }
     </div>
     <div class="primer-meta">~18 MIN · MODULE I</div>
   </li>
-  <li class="primer-card placeholder">
+  <li class="primer-card placeholder" aria-disabled="true">
     <span class="primer-num">03</span>
     <div class="primer-body">
       <h3 class="primer-title">Tool Use &amp; Structured Output</h3>
@@ -162,7 +177,7 @@ p { margin: 0 0 18px; }
     </div>
     <div class="primer-meta">~20 MIN · MODULE I</div>
   </li>
-  <li class="primer-card placeholder">
+  <li class="primer-card placeholder" aria-disabled="true">
     <span class="primer-num">04</span>
     <div class="primer-body">
       <h3 class="primer-title">Retrieval-Augmented Generation</h3>
@@ -182,16 +197,14 @@ p { margin: 0 0 18px; }
 </section>
 <ol class="primer-list">
   <li class="primer-card">
-    <a href="05-agent-loop.html">
-      <span class="primer-num">05</span>
-      <div class="primer-body">
-        <h3 class="primer-title">The Agent Loop</h3>
-        <p class="primer-arg">ReAct, the canonical read→decide→act cycle, termination, error recovery. The default loop you should reach for, and what to change when you outgrow it. Animated: loop tick-through with state.</p>
-      </div>
-      <div class="primer-meta">~22 MIN · MODULE II</div>
-    </a>
+    <span class="primer-num">05</span>
+    <div class="primer-body">
+      <h3 class="primer-title"><a href="05-agent-loop.html">The Agent Loop</a></h3>
+      <p class="primer-arg">ReAct, the canonical read→decide→act cycle, termination, error recovery. The default loop you should reach for, and what to change when you outgrow it. Animated: loop tick-through with state.</p>
+    </div>
+    <div class="primer-meta">~22 MIN · MODULE II</div>
   </li>
-  <li class="primer-card placeholder">
+  <li class="primer-card placeholder" aria-disabled="true">
     <span class="primer-num">06</span>
     <div class="primer-body">
       <h3 class="primer-title">Memory &amp; State</h3>
@@ -199,7 +212,7 @@ p { margin: 0 0 18px; }
     </div>
     <div class="primer-meta">~18 MIN · MODULE II</div>
   </li>
-  <li class="primer-card placeholder">
+  <li class="primer-card placeholder" aria-disabled="true">
     <span class="primer-num">07</span>
     <div class="primer-body">
       <h3 class="primer-title">Planning &amp; Task Decomposition</h3>
@@ -207,7 +220,7 @@ p { margin: 0 0 18px; }
     </div>
     <div class="primer-meta">~18 MIN · MODULE II</div>
   </li>
-  <li class="primer-card placeholder">
+  <li class="primer-card placeholder" aria-disabled="true">
     <span class="primer-num">08</span>
     <div class="primer-body">
       <h3 class="primer-title">Multi-Agent Patterns</h3>
@@ -215,7 +228,7 @@ p { margin: 0 0 18px; }
     </div>
     <div class="primer-meta">~18 MIN · MODULE II</div>
   </li>
-  <li class="primer-card placeholder">
+  <li class="primer-card placeholder" aria-disabled="true">
     <span class="primer-num">09</span>
     <div class="primer-body">
       <h3 class="primer-title">Sub-Agents, Skills &amp; Harnesses</h3>
@@ -235,16 +248,14 @@ p { margin: 0 0 18px; }
 </section>
 <ol class="primer-list">
   <li class="primer-card">
-    <a href="10-evaluations-for-agents.html">
-      <span class="primer-num">10</span>
-      <div class="primer-body">
-        <h3 class="primer-title">Evaluations for Agents</h3>
-        <p class="primer-arg">Task suites, judge models, scoring rubrics, regression detection, eval-driven development. Extends the agentic-harness engineering note.</p>
-      </div>
-      <div class="primer-meta">~22 MIN · MODULE III</div>
-    </a>
+    <span class="primer-num">10</span>
+    <div class="primer-body">
+      <h3 class="primer-title"><a href="10-evaluations-for-agents.html">Evaluations for Agents</a></h3>
+      <p class="primer-arg">Task suites, judge models, scoring rubrics, regression detection, eval-driven development. Extends the agentic-harness engineering note.</p>
+    </div>
+    <div class="primer-meta">~22 MIN · MODULE III</div>
   </li>
-  <li class="primer-card placeholder">
+  <li class="primer-card placeholder" aria-disabled="true">
     <span class="primer-num">11</span>
     <div class="primer-body">
       <h3 class="primer-title">Observability &amp; Traces</h3>
@@ -252,7 +263,7 @@ p { margin: 0 0 18px; }
     </div>
     <div class="primer-meta">~22 MIN · MODULE III</div>
   </li>
-  <li class="primer-card placeholder">
+  <li class="primer-card placeholder" aria-disabled="true">
     <span class="primer-num">12</span>
     <div class="primer-body">
       <h3 class="primer-title">Safety, Guardrails &amp; Prompt Injection</h3>
@@ -260,7 +271,7 @@ p { margin: 0 0 18px; }
     </div>
     <div class="primer-meta">~22 MIN · MODULE III</div>
   </li>
-  <li class="primer-card placeholder">
+  <li class="primer-card placeholder" aria-disabled="true">
     <span class="primer-num">13</span>
     <div class="primer-body">
       <h3 class="primer-title">Cost, Latency &amp; Caching</h3>
@@ -268,7 +279,7 @@ p { margin: 0 0 18px; }
     </div>
     <div class="primer-meta">~18 MIN · MODULE III</div>
   </li>
-  <li class="primer-card placeholder">
+  <li class="primer-card placeholder" aria-disabled="true">
     <span class="primer-num">14</span>
     <div class="primer-body">
       <h3 class="primer-title">Fine-Tuning &amp; Adaptation</h3>
@@ -288,16 +299,14 @@ p { margin: 0 0 18px; }
 </section>
 <ol class="primer-list">
   <li class="primer-card">
-    <a href="15-agentic-kyc-surveillance.html">
-      <span class="primer-num">15</span>
-      <div class="primer-body">
-        <h3 class="primer-title">Agentic KYC &amp; Surveillance</h3>
-        <p class="primer-arg">Case packs, evidence chains, audit trails, the human-checkpoint pattern. Builds on the existing CDD/KYC and trade-surveillance primers.</p>
-      </div>
-      <div class="primer-meta">~22 MIN · MODULE IV</div>
-    </a>
+    <span class="primer-num">15</span>
+    <div class="primer-body">
+      <h3 class="primer-title"><a href="15-agentic-kyc-surveillance.html">Agentic KYC &amp; Surveillance</a></h3>
+      <p class="primer-arg">Case packs, evidence chains, audit trails, the human-checkpoint pattern. Builds on the existing CDD/KYC and trade-surveillance primers.</p>
+    </div>
+    <div class="primer-meta">~22 MIN · MODULE IV</div>
   </li>
-  <li class="primer-card placeholder">
+  <li class="primer-card placeholder" aria-disabled="true">
     <span class="primer-num">16</span>
     <div class="primer-body">
       <h3 class="primer-title">Code-Modernization Agents</h3>
@@ -317,16 +326,14 @@ p { margin: 0 0 18px; }
 </section>
 <ol class="primer-list">
   <li class="primer-card">
-    <a href="17-agentic-operating-model.html">
-      <span class="primer-num">17</span>
-      <div class="primer-body">
-        <h3 class="primer-title">The Agentic Operating Model</h3>
-        <p class="primer-arg">Humans-at-the-seam thesis; work redesign; where agents own vs assist vs escalate; the seam as a control point. Animated: org-flow diagram with seam highlights.</p>
-      </div>
-      <div class="primer-meta">~22 MIN · MODULE V</div>
-    </a>
+    <span class="primer-num">17</span>
+    <div class="primer-body">
+      <h3 class="primer-title"><a href="17-agentic-operating-model.html">The Agentic Operating Model</a></h3>
+      <p class="primer-arg">Humans-at-the-seam thesis; work redesign; where agents own vs assist vs escalate; the seam as a control point. Animated: org-flow diagram with seam highlights.</p>
+    </div>
+    <div class="primer-meta">~22 MIN · MODULE V</div>
   </li>
-  <li class="primer-card placeholder">
+  <li class="primer-card placeholder" aria-disabled="true">
     <span class="primer-num">18</span>
     <div class="primer-body">
       <h3 class="primer-title">Agent Platforms &amp; Internal Tooling</h3>
@@ -334,7 +341,7 @@ p { margin: 0 0 18px; }
     </div>
     <div class="primer-meta">~18 MIN · MODULE V</div>
   </li>
-  <li class="primer-card placeholder">
+  <li class="primer-card placeholder" aria-disabled="true">
     <span class="primer-num">19</span>
     <div class="primer-body">
       <h3 class="primer-title">Workforce, Roles &amp; Skills Transition</h3>
@@ -342,7 +349,7 @@ p { margin: 0 0 18px; }
     </div>
     <div class="primer-meta">~18 MIN · MODULE V</div>
   </li>
-  <li class="primer-card placeholder">
+  <li class="primer-card placeholder" aria-disabled="true">
     <span class="primer-num">20</span>
     <div class="primer-body">
       <h3 class="primer-title">Governance, Risk &amp; Adoption</h3>
