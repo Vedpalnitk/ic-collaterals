@@ -109,7 +109,7 @@
     line-height: 1.55;
     color: var(--stone);
     max-width: 64ch;
-    margin: 0 0 36px;
+    margin: 0 0 28px;
     animation: fadeUp 1000ms cubic-bezier(.2,.7,.2,1) 240ms both;
   }
   .hero .deck em { font-style: italic; color: var(--white); }
@@ -142,11 +142,11 @@
   main {
     max-width: 1080px;
     margin: 0 auto;
-    padding: 64px 40px 80px;
+    padding: 52px 40px 64px;
   }
-  @media (max-width: 720px) { main { padding: 40px 24px 64px; } }
+  @media (max-width: 720px) { main { padding: 32px 24px 48px; } }
 
-  section.group { margin-bottom: 56px; }
+  section.group { margin-bottom: 44px; }
   section.group:last-of-type { margin-bottom: 0; }
 
   .group-head {
@@ -540,10 +540,9 @@
     <p class="kicker">A working library of IC artifacts</p>
     <h1>One <em>design system</em>, many collaterals.</h1>
     <p class="deck">
-      A growing library of decks, primers, one-pagers, and engineering notes
-      — all built from a shared set of <em>tokens</em>, three font families,
-      and a named visual vocabulary. Every artifact below is built from the
-      same system; the system itself is open to read at the bottom of this page.
+      Decks, primers, one-pagers, and engineering notes — built from a shared
+      set of <em>tokens</em>, three font families, and a named visual vocabulary.
+      The system itself is open to read.
     </p>
 
     <div class="meta-row">
@@ -567,7 +566,7 @@
       <div class="lead-col">
         <div class="chip">POINT OF VIEW · BANKING</div>
         <h3>Agents that change the <em>work</em>, not just the worker.</h3>
-        <p class="lede">The flagship point of view on agentic AI in banking — why pilots plateau, and the <em>operating-model reframe</em> that gets past it. Available as a readout deck, a long-form primer, and a one-page brief.</p>
+        <p class="lede">Why agentic AI pilots in banking plateau — and the <em>operating-model reframe</em> that gets past it. Read as a deck, a primer, or a one-page brief.</p>
       </div>
       <div class="formats">
         <a class="fmt" href="./decks/agentic-ai-banking-pov/agentic-ai-banking-pov.pdf">
@@ -651,6 +650,29 @@
     </div>
   </section>
 
+  <!-- ════════════ DESIGN SYSTEM ════════════ -->
+  <section class="group">
+    <div class="group-head">
+      <span class="group-eyebrow">Design system <span class="count">· the source</span></span>
+      <span class="group-title">Palette, three font families, named components</span>
+    </div>
+    <div class="cards">
+      <a class="card compact" href="./design-reference.html">
+        <div class="card-body">
+          <div class="card-chip">STYLE GUIDE</div>
+          <h3 class="card-title">The IC <em>design system</em>.</h3>
+          <p class="card-desc">Palette, three font families, named visual components (chapter slab, eyebrow, pull quote, the seam), layout patterns, and the lessons learned. Light/dark toggle.</p>
+          <div class="card-meta"><span>HTML</span><span>Reference</span><span>Living document</span></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="ds-extra">
+      <span class="label">Source files</span>
+      The machine-readable source of truth is <a href="./tokens.js"><code>tokens.js</code></a> (canonical palette, fonts, layout). The rule book is <a href="./CLAUDE.md"><code>CLAUDE.md</code></a> (auto-loaded into every Claude Code session in this folder; defines what to do and what to avoid when building new collaterals).
+    </div>
+  </section>
+
   <!-- ════════════ ENGINEERING NOTES ════════════ -->
   <section class="group">
     <div class="group-head">
@@ -677,36 +699,12 @@
     </div>
   </section>
 
-  <!-- ════════════ DESIGN SYSTEM ════════════ -->
-  <section class="group">
-    <div class="group-head">
-      <span class="group-eyebrow">Design system <span class="count">· the source</span></span>
-      <span class="group-title">Palette, three font families, named components</span>
-    </div>
-    <div class="cards">
-      <a class="card compact" href="./design-reference.html">
-        <div class="card-body">
-          <div class="card-chip">STYLE GUIDE</div>
-          <h3 class="card-title">The IC <em>design system</em>.</h3>
-          <p class="card-desc">Palette, three font families, named visual components (chapter slab, eyebrow, pull quote, the seam), layout patterns, and the lessons learned. Light/dark toggle.</p>
-          <div class="card-meta"><span>HTML</span><span>Reference</span><span>Living document</span></div>
-        </div>
-      </a>
-    </div>
-
-    <div class="ds-extra">
-      <span class="label">Source files</span>
-      The machine-readable source of truth is <a href="./tokens.js"><code>tokens.js</code></a> (canonical palette, fonts, layout). The rule book is <a href="./CLAUDE.md"><code>CLAUDE.md</code></a> (auto-loaded into every Claude Code session in this folder; defines what to do and what to avoid when building new collaterals).
-    </div>
-  </section>
-
   <!-- ════════════ ABOUT ════════════ -->
   <section class="about">
     <span class="about-label">About</span>
     <div class="about-body">
-      <p>This is a working library — built incrementally as each new collateral type stress-tests the design system and surfaces what needs to be added to it. The artifacts and the system co-evolve.</p>
-      <p>Built with <em>Fraunces</em> (display, with optical-size and WONK axes), <em>IBM Plex Sans</em> (technical body), <em>Newsreader</em> (editorial body), and <em>JetBrains Mono</em> (utility). The visual vocabulary &mdash; the seam, chapter slabs, eyebrow span bars, drop caps, named callouts &mdash; is documented in the design reference.</p>
-      <p>The current visual identity is the third iteration; earlier attempts at "consulting bland" were rejected in favor of the editorial-broadsheet feel that runs across the library now.</p>
+      <p>A working library — built incrementally as each new collateral stress-tests the design system. Artifacts and system co-evolve.</p>
+      <p>Built with <em>Fraunces</em>, <em>IBM Plex Sans</em>, <em>Newsreader</em>, and <em>JetBrains Mono</em>. The visual vocabulary &mdash; the seam, chapter slabs, eyebrow bars, drop caps, named callouts &mdash; is documented in the design reference. Current identity is the third iteration; earlier "consulting bland" attempts were rejected for the editorial-broadsheet feel.</p>
     </div>
   </section>
 
