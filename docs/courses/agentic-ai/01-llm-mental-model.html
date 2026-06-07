@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 1 — LLM Mental Model for Builders · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; max-height: none; } }
+
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .progress::before { transition: none; } }
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <div class="masthead-left">
+      <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    </div>
+    <div class="masthead-right">
+      <span class="mono-tag">MODULE I · PRIMER 01 / 20</span>
+    </div>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">LLM Mental Model for Builders</h1>
+    <p class="subtitle"><em>What you need to know about how a model behaves before you wire it into a loop.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">PREREQUISITES</span>
+    <p>This is the first primer in the course. No previous primer is required. You should know what an HTTP API is and have called one before.</p>
+  </aside>
+
+  <div class="layout">
+    <nav class="sidebar" aria-label="Table of contents">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">The model as a sampler</a></li>
+        <li><a href="#s2" class="toc-link">Tokens, not words</a></li>
+        <li><a href="#s3" class="toc-link">The context window is a budget</a></li>
+        <li><a href="#s4" class="toc-link">Sampling: temperature, top-p, schema</a></li>
+        <li><a href="#s5" class="toc-link">The cost/latency frontier</a></li>
+        <li><a href="#s6" class="toc-link">What models can and can't do</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="index.html">← Course syllabus</a>
+        <a class="nav-link next" href="05-agent-loop.html">Primer 5 — The Agent Loop →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — The model as a sampler
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">The model as a sampler</h2>
+
+        <p>An LLM is a function. It takes a sequence of tokens as input and returns a probability distribution over the next token in the vocabulary. That is the whole interface. Everything you have ever seen a model do — answer a question, write code, plan a trip, refuse a request — is the output of repeatedly sampling from that distribution and feeding the sampled token back in.</p>
+
+        <p>This framing matters because most builder mistakes come from thinking of the model as a database, an oracle, or a person. It is none of those. It is a sampler over a learned distribution. Holding that picture in mind changes how you debug.</p>
+
+        <p>Three consequences fall out directly.</p>
+
+        <p><strong>Same prompt, different answers.</strong> If the temperature is above zero, the model picks among likely next tokens stochastically. Run the same prompt twice and you will get two different trajectories. This is not a bug in your code. It is the system working as designed. If you want determinism, you have to ask for it — temperature near zero, sometimes a fixed seed where the provider exposes one — and even then "deterministic" means "very nearly the same," not "byte-identical across runs."</p>
+
+        <p><strong>Self-consistency is cheap and effective.</strong> Because every generation is a sample, you can run the same prompt N times and take the majority answer. This works surprisingly well for tasks with a clean "right answer" — arithmetic with a calculator tool, multiple-choice, structured extraction. It is the simplest reliability technique you have. The cost is N× the tokens; the payoff is fewer failures from single bad samples. Use it when a task is important and the answer space is narrow.</p>
+
+        <p><strong>Hallucinations are samples, not bugs.</strong> When a model invents a function name, a citation, or a fact, it is not malfunctioning. It is doing exactly what it was trained to do: sampling a plausible continuation from its learned distribution. The continuation just happens to be wrong. You cannot debug this by adding more instructions to "be accurate." You fix it by narrowing the distribution the model is sampling from — give it the document with the answer (retrieval), force it through a schema (structured output), or constrain it to a tool call. Better prompts help at the margin. Better inputs help more.</p>
+
+        <div class="figure">
+          <span class="figure-tag">FIG. 01</span>
+          <svg viewBox="0 0 640 280" role="img" aria-label="Token sequence feeding a probability distribution over the next token">
+            <!-- input tokens -->
+            <g font-family="JetBrains Mono, monospace" font-size="11" fill="#404040">
+              <rect x="20"  y="40" width="64" height="36" fill="none" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="52"  y="63" text-anchor="middle">The</text>
+              <rect x="92"  y="40" width="64" height="36" fill="none" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="124" y="63" text-anchor="middle">cat</text>
+              <rect x="164" y="40" width="64" height="36" fill="none" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="196" y="63" text-anchor="middle">sat</text>
+              <rect x="236" y="40" width="64" height="36" fill="none" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="268" y="63" text-anchor="middle">on</text>
+              <rect x="308" y="40" width="64" height="36" fill="none" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="340" y="63" text-anchor="middle">the</text>
+              <text x="20" y="28" fill="#404040" font-size="10" letter-spacing="1">INPUT TOKENS</text>
+            </g>
+
+            <!-- arrow / model -->
+            <g font-family="JetBrains Mono, monospace" font-size="10" fill="#6D6E71">
+              <line x1="390" y1="58" x2="430" y2="58" stroke="#404040" stroke-width="1"/>
+              <polygon points="430,53 440,58 430,63" fill="#404040"/>
+              <rect x="442" y="42" width="60" height="32" fill="#E6F2FA" stroke="#007CC3" stroke-width="1"/>
+              <text x="472" y="62" text-anchor="middle" fill="#007CC3">MODEL</text>
+              <line x1="504" y1="58" x2="540" y2="58" stroke="#404040" stroke-width="1"/>
+              <polygon points="540,53 550,58 540,63" fill="#404040"/>
+            </g>
+
+            <!-- probability bars (next-token candidates) -->
+            <g font-family="JetBrains Mono, monospace" font-size="11" fill="#404040">
+              <text x="20" y="110" letter-spacing="1" fill="#404040" font-size="10">P(NEXT TOKEN)</text>
+
+              <!-- bar 1: mat 0.42 -->
+              <rect x="80"  y="130" width="252" height="18" fill="#007CC3"/>
+              <text x="20"  y="144">mat</text>
+              <text x="340" y="144" fill="#404040" font-size="10">0.42</text>
+
+              <!-- bar 2: floor 0.21 -->
+              <rect x="80"  y="155" width="126" height="18" fill="#007CC3"/>
+              <text x="20"  y="169">floor</text>
+              <text x="214" y="169" fill="#404040" font-size="10">0.21</text>
+
+              <!-- bar 3: chair 0.13 -->
+              <rect x="80"  y="180" width="78" height="18" fill="#007CC3"/>
+              <text x="20"  y="194">chair</text>
+              <text x="166" y="194" fill="#404040" font-size="10">0.13</text>
+
+              <!-- bar 4: roof 0.08 -->
+              <rect x="80"  y="205" width="48" height="18" fill="#007CC3"/>
+              <text x="20"  y="219">roof</text>
+              <text x="136" y="219" fill="#404040" font-size="10">0.08</text>
+
+              <!-- bar 5: bed 0.05 -->
+              <rect x="80"  y="230" width="30" height="18" fill="#007CC3"/>
+              <text x="20"  y="244">bed</text>
+              <text x="118" y="244" fill="#404040" font-size="10">0.05</text>
+            </g>
+
+            <!-- axis -->
+            <line x1="80" y1="124" x2="80" y2="252" stroke="#E2E4E7" stroke-width="1"/>
+          </svg>
+          <p class="figure-caption">A model is a function from a token sequence to a probability distribution over the next token. Generation is repeated sampling.</p>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — Tokens, not words
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">Tokens, not words</h2>
+
+        <p>The model does not see words. It sees tokens — integer ids drawn from a fixed vocabulary, typically 50K to 200K entries. Tokenization happens before the model and is shared with the cost meter: you pay per token of input and per token of output, not per word, character, or message.</p>
+
+        <p>Modern tokenizers use a flavor of <strong>byte-pair encoding</strong> (BPE). The vocabulary is learned from a large training corpus by repeatedly merging the most frequent adjacent byte pairs into new tokens. Frequent strings end up as a single token; rare strings get broken into several. The word <code>the</code> is one token. A long medical term might be four. An emoji might be three. A piece of base64 might be one token per character.</p>
+
+        <p>The practical rule of thumb for English prose is the only number you need to carry around in your head:</p>
+
+        <div class="stat-block">
+          <div class="stat">~4<small> chars/token</small></div>
+          <div class="stat-label">ENGLISH PROSE, GPT-CLASS TOKENIZER</div>
+        </div>
+
+        <p>So 1,000 tokens is roughly 750 words, or two pages of prose. A 200K-token context window holds about 150,000 words — a long novel. This ratio is stable enough to plan with.</p>
+
+        <p>It is also fragile in predictable ways. The same idea written as <strong>JSON or code costs more</strong> than as prose. Punctuation, indentation, and quoted keys all eat tokens that an English sentence would compress past. As a rough multiplier, structured formats run 2–3× more tokens per unit of meaning. A 500-word API response shaped as nested JSON might tokenize like 1,500 words of prose.</p>
+
+        <p>Non-Latin scripts are worse. Older tokenizers were trained primarily on English and assign one token per character (or worse, per byte) for Hindi, Arabic, Chinese, Korean, and Thai. The same paragraph can cost 3–5× as many tokens in those languages as in English. Newer tokenizers narrow the gap but do not close it. If your product serves multilingual users, model this in your cost forecast — it is not a rounding error.</p>
+
+        <p>When you care about the exact count, ask the provider. Every major SDK ships a token-counting endpoint that uses the same tokenizer the model uses, which means it agrees with what you will be billed for.</p>
+
+        <div class="code">
+          <span class="code-tag">PYTHON</span>
+<pre>from anthropic import Anthropic
+client = Anthropic()
+client.messages.count_tokens(
+    model="claude-sonnet-4-6",
+    messages=[{"role": "user", "content": "Hello world"}],
+)
+# &rarr; InputTokens(input_tokens=10)</pre>
+        </div>
+
+        <p>Get into the habit of counting before you ship. A prompt that "looks short" can hide a 2,000-token few-shot example. A "small" JSON payload can be the largest line item in your bill. Tokens are the unit of cost and the unit of context — measure them, do not estimate from word counts.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — The context window is a budget
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">The context window is a budget</h2>
+
+        <p>Every model has a maximum number of tokens it can attend to in a single call. This is the <strong>context window</strong>. Frontier models today sit at 200K to 1M tokens. That sounds enormous. It runs out faster than you think.</p>
+
+        <p>The window is a shared budget. Everything you send draws from the same pool:</p>
+
+        <ul>
+          <li><strong>System prompt</strong> — instructions, role, formatting rules. Often 500–5,000 tokens once you take it seriously.</li>
+          <li><strong>Tool definitions</strong> — names, descriptions, JSON schemas for every tool the model can call. A useful agent with 8–12 tools often spends 3,000–8,000 tokens here alone.</li>
+          <li><strong>Few-shot examples</strong> — sample inputs and expected outputs included in the prompt. Easy to grow without noticing.</li>
+          <li><strong>Retrieved context</strong> — documents, code, search results pulled in at runtime. Bounded only by what you put a limit on.</li>
+          <li><strong>Conversation history</strong> — every prior user message and every prior assistant response, replayed in full on every turn.</li>
+          <li><strong>The current user message</strong> — usually the smallest item on this list.</li>
+          <li><strong>Output</strong> — the response also lives in the window, and providers cap output tokens separately.</li>
+        </ul>
+
+        <p>For a multi-turn agent, the dominant term is usually the system prompt + tool definitions + accumulated history. On turn 10 of a session, you are re-sending the same system prompt, the same tool defs, and nine prior turns of conversation — and paying for all of them, every time.</p>
+
+        <p>This is where <strong>prompt caching</strong> earns its keep. Both Anthropic and most major providers let you mark a prefix of the prompt as cacheable. The next request that shares that prefix reads the cached tokens at a steep discount instead of re-processing them. The exact mechanics vary, but the shape is consistent: cached input is much cheaper than fresh input, and the savings compound across turns.</p>
+
+        <div class="note">
+          <span class="note-tag">TAG · CACHING</span>
+          <p class="note-head"><em>Cache the parts that don't change.</em></p>
+          <p>System prompts, tool definitions, retrieved docs that repeat across turns — all of these should be cache-marked. With Anthropic's prompt caching, cached tokens cost ~10% of normal at read time, with a 5-minute TTL. For agents that loop, this is a 5–10× cost reduction.</p>
+        </div>
+
+        <p>Two principles fall out of the budget framing. First, <strong>order things from stable to volatile</strong>. Put the static system prompt and tool definitions at the top; put the volatile retrieved context and the current user message at the bottom. Caches key off a prefix match, so any change near the top invalidates everything after it. Second, <strong>budget the response</strong>. If you have a hard 1,000-token output limit, set it; do not leave it open. A model that has room to write 4,000 tokens often will, even when 200 would do.</p>
+
+        <p>Treat the window like a memory budget in an embedded system. You measure, you cap, you cache, and you do not assume the next model will give you more headroom than you have today.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — Sampling: temperature, top-p, schema
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">Sampling: temperature, top-p, schema</h2>
+
+        <p>The model emits a probability distribution. The sampler decides which token to actually pick. That choice is governed by three knobs that you, the caller, control.</p>
+
+        <p><strong>Temperature</strong> scales the distribution before sampling. At temperature 1.0, you sample from the model's raw distribution. Above 1.0, the distribution flattens — unlikely tokens get more chance, and outputs feel "creative" and unstable. Below 1.0, the distribution sharpens, and the most likely token becomes overwhelmingly likely. At temperature 0, you take the argmax — the single highest-probability token, every time.</p>
+
+        <p>Temperature 0 is <em>not</em> the same as deterministic. Floating-point ties get broken differently across hardware, batching can shuffle results, and providers sometimes inject small amounts of noise. Treat temperature 0 as "very nearly the same answer," not as "byte-identical." If you need true reproducibility, log inputs and outputs and verify, do not trust the seed.</p>
+
+        <p><strong>Top-p</strong> (also called nucleus sampling) is an alternative truncation. Instead of scaling the whole distribution, you keep only the smallest set of tokens whose cumulative probability adds up to <em>p</em> (e.g. 0.9), and sample from that set. The benefit: long-tail garbage tokens are dropped no matter what the temperature is. The cost: another knob to reason about. Most builders pick temperature or top-p, not both.</p>
+
+        <p><strong>Structured output</strong> is the strongest constraint of the three, and it is in a different category. Instead of nudging the distribution, you tell the model that the next tokens must match a schema — a JSON object with these fields and types, or a specific tool call with these arguments. Providers implement this by masking the distribution at each step to only include tokens consistent with the schema. The result is reliable, parseable output without prompt-engineering acrobatics.</p>
+
+        <p>The decision rule for builders is short:</p>
+
+        <table class="cmp">
+          <thead><tr><th>Setting</th><th>Use for</th><th>Failure mode</th></tr></thead>
+          <tbody>
+            <tr><td>Temp 0.0</td><td>Structured extraction, classification</td><td>Repetitive on long generations</td></tr>
+            <tr><td>Temp 0.7</td><td>Drafting, summaries, prose</td><td>Occasional drift</td></tr>
+            <tr><td>Forced schema</td><td>Anything you'll JSON-parse</td><td>Schema validation failures (retry)</td></tr>
+          </tbody>
+        </table>
+
+        <p>The shorter rule: <strong>free text for prose, schema for anything you will parse.</strong> If your downstream code does <code>json.loads</code> on the response, you should be using structured output. The cost of a regex over a freeform reply is a class of bugs you do not need.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — The cost/latency frontier
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">The cost/latency frontier</h2>
+
+        <p>Per-call cost is straightforward. You pay for input tokens at one rate and for output tokens at a higher rate. Frontier-class models today price output tokens at roughly 5× input. Cost per call is:</p>
+
+        <p><code>cost = input_tokens &times; in_rate + output_tokens &times; out_rate</code></p>
+
+        <p>For an agent, multiply that by the number of turns in a session, and multiply that by the number of sessions per day. Three multipliers stack: tokens, turns, traffic. Each one is easy to underestimate by 2–3×.</p>
+
+        <p>Work an example. Use round, illustrative numbers — Sonnet-class pricing in the neighborhood of <strong>$3 per million input tokens</strong> and <strong>$15 per million output tokens</strong>. (Check current rates; the point here is the ratio and where the leverage lives, not the exact dollars.)</p>
+
+        <p>An agent has a 20,000-token system prompt and tool definitions. Each turn, the user sends a 1,000-token message and the model emits a 500-token response. The loop runs 10 turns per session.</p>
+
+        <p>On turn 1, the model sees 21,000 input tokens (system + tools + user) and emits 500 output tokens. On turn 2, it sees 22,500 (the prior turn's user + assistant are now history) and emits another 500. By turn 10, the input has grown to roughly 33,000 tokens. The session total is approximately <strong>275,000 input tokens and 5,000 output tokens</strong>.</p>
+
+        <p>At illustrative rates: <code>275,000 &times; $3/M + 5,000 &times; $15/M = $0.825 + $0.075 &asymp; $0.90</code> per session. Run that 10,000 times a day and you are at <strong>~$9,000/day, ~$270,000/month</strong>.</p>
+
+        <p>Now turn caching on. The first 20,000 tokens of every turn — the system prompt and tool definitions — are identical. You mark them cacheable. After the first turn warms the cache, subsequent turns within the 5-minute TTL pay for those tokens at roughly 10% of the normal rate.</p>
+
+        <div class="stat-block">
+          <div class="stat">~10%<small> of normal</small></div>
+          <div class="stat-label">CACHED INPUT TOKEN COST (ANTHROPIC)</div>
+        </div>
+
+        <p>The 275,000 input tokens split into roughly 200,000 cached and 75,000 fresh. Cost becomes <code>200,000 &times; $0.30/M + 75,000 &times; $3/M + 5,000 &times; $15/M = $0.06 + $0.225 + $0.075 &asymp; $0.36</code> per session. The same 10,000 sessions/day now costs <strong>~$3,600/day, ~$108,000/month</strong>. Same agent, same behavior, ~60% cheaper. In production agents the gap is often wider.</p>
+
+        <blockquote class="pull">In agents, the system prompt is read once per turn but rarely changes. Cache it.</blockquote>
+
+        <p>Latency is a separate axis with its own levers. Time-to-first-token is dominated by input size — bigger prompts mean longer prefill. Total response time is dominated by output size — every output token is generated serially. Caching helps prefill (cached tokens skip most of the work) but does nothing for output speed.</p>
+
+        <p>The cheapest perceived-latency win is <strong>streaming</strong>. Instead of waiting for the full response, stream tokens to the user as they generate. A 2-second response that starts producing at 300ms feels dramatically faster than a 2-second response that arrives all at once. Use streaming wherever a human is reading the output. Skip it when a downstream system is parsing structured output and needs the full payload anyway.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — What models can and can't do
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">What models can and can't do</h2>
+
+        <p>An LLM is shockingly good at some things and reliably bad at others. The pattern is not random. It follows from what the model is: a high-capacity pattern-matcher trained on text, with no internal memory between calls and no native ability to do arithmetic, run code, or fetch live data. Anything that fits those constraints, it does well. Anything that breaks them, it does poorly until you give it a tool.</p>
+
+        <div class="twocol">
+          <div>
+            <h3 class="col-head">Strong at</h3>
+            <ul>
+              <li>Language: paraphrase, summarize, translate, style transfer</li>
+              <li>Structure: extract, classify, route, format</li>
+              <li>Short-horizon planning and tool selection</li>
+              <li>Generating code in well-represented languages</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="col-head">Weak at</h3>
+            <ul>
+              <li>Arithmetic past a few digits (use a tool)</li>
+              <li>Long-horizon consistency across many turns</li>
+              <li>Knowledge after the cutoff date</li>
+              <li>Tasks requiring persistent state without memory</li>
+            </ul>
+          </div>
+        </div>
+
+        <p>The strengths share a shape. They are all transformations of text where the answer is a function of the input plus learned conventions. Summarization, translation, classification, extraction, routing — all of these have well-defined inputs and outputs and a large training corpus showing the model what good looks like. Short-horizon planning is in this category too: "given this user request and these tools, which tool do I call next?" is a one-step decision the model is very good at.</p>
+
+        <p>The weaknesses share an opposite shape. They are tasks where the answer requires either a precise mechanism the model does not have (multi-digit arithmetic, exact lookups, deterministic execution) or state that lives across many steps (long-horizon goals, multi-turn consistency, knowledge the training run never saw). The model will happily produce confident-looking output for these tasks. The output will often be wrong.</p>
+
+        <p>The fix in every case is the same: <strong>do not ask the model to do the thing it cannot do</strong>. Give it a tool that can. Calculators for arithmetic. Code execution for anything that needs to be precise. Retrieval for knowledge after the cutoff. External memory — a scratchpad, a database, a vector store — for state that has to persist. The model's job is to decide which tool to call and with what arguments, not to be the calculator itself.</p>
+
+        <p>One more failure mode worth naming: <strong>long-horizon consistency</strong>. On a single short generation, the model holds the thread. Across 50 turns of a conversation, or 30 steps of a plan, it drifts. It forgets constraints it agreed to earlier. It contradicts itself. It loses the goal. This is not a flaw you can prompt away. It is the cost of having all working memory live in the context window, where it competes with everything else for space.</p>
+
+        <p>This is the bridge to the rest of the course. A single model call is short-horizon by nature. <em>An agent loop is the structure you build around a model to give it long-horizon behavior</em> — letting a strong-at-short-horizons model accumulate work across many turns, with tools to handle what it cannot, and external memory to remember what the window cannot hold. That is where we go next.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE I · PRIMER 01 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+
+    function onScroll() {
+      const h = document.documentElement;
+      const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < 120) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  })();
+  </script>
+</body>
+</html>
