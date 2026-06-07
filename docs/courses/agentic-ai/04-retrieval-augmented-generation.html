@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 4 — Retrieval-Augmented Generation · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; max-height: none; } }
+
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+/* =================================================================
+   Animation — FIG. 02 chunk-overlap explorer
+   Cycle: 9s total. Three rows take turns being the "active retrieval"
+   target, with the fact-on-boundary highlighted differently in each.
+   ================================================================= */
+.animated-figure { position: relative; }
+.chunk-anim { width: 100%; height: auto; display: block; }
+
+/* The fact marker pulses to draw the eye throughout the loop. */
+@keyframes factPulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+
+/* Row A (no overlap): retrieval lands on the chunk that contains
+   *part of* the fact. The split-fact glyph blinks to signal loss. */
+@keyframes retrievalRowA {
+  0%, 33%      { opacity: 1; }
+  33.01%, 100% { opacity: 0; }
+}
+@keyframes chunkARetrieved {
+  0%, 33%      { fill: #007CC3; }
+  33.01%, 100% { fill: #F2F2F3; }
+}
+@keyframes splitFactBlink {
+  0%, 33%      { opacity: 1; }
+  33.01%, 100% { opacity: 0; }
+}
+
+/* Row B (20% overlap): retrieval lands on the chunk that fully
+   contains the fact thanks to the overlap region. */
+@keyframes retrievalRowB {
+  0%, 33%      { opacity: 0; }
+  33.01%, 66%  { opacity: 1; }
+  66.01%, 100% { opacity: 0; }
+}
+@keyframes chunkBRetrieved {
+  0%, 33%      { fill: #F2F2F3; }
+  33.01%, 66%  { fill: #007CC3; }
+  66.01%, 100% { fill: #F2F2F3; }
+}
+@keyframes capturedFactGlow {
+  0%, 33%      { opacity: 0; }
+  33.01%, 66%  { opacity: 1; }
+  66.01%, 100% { opacity: 0; }
+}
+
+/* Row C (50% overlap): two adjacent chunks both contain the fact —
+   redundant retrieval. */
+@keyframes retrievalRowC {
+  0%, 66%       { opacity: 0; }
+  66.01%, 100%  { opacity: 1; }
+}
+@keyframes chunkC1Retrieved {
+  0%, 66%       { fill: #F2F2F3; }
+  66.01%, 100%  { fill: #007CC3; }
+}
+@keyframes chunkC2Retrieved {
+  0%, 66%       { fill: #F2F2F3; }
+  66.01%, 100%  { fill: #3699DA; }
+}
+
+/* Text labels that surface a one-word verdict per row, at the right
+   time. */
+@keyframes verdictA {
+  0%, 33%      { opacity: 1; }
+  33.01%, 100% { opacity: 0; }
+}
+@keyframes verdictB {
+  0%, 33%      { opacity: 0; }
+  33.01%, 66%  { opacity: 1; }
+  66.01%, 100% { opacity: 0; }
+}
+@keyframes verdictC {
+  0%, 66%      { opacity: 0; }
+  66.01%, 100% { opacity: 1; }
+}
+
+.chunk-anim .fact-marker      { animation: factPulse 2s infinite; transform-origin: center; }
+
+.chunk-anim .row-a-arrow      { animation: retrievalRowA 9s infinite; }
+.chunk-anim .row-a-chunk-hit  { animation: chunkARetrieved 9s infinite; }
+.chunk-anim .row-a-split      { animation: splitFactBlink 9s infinite; }
+.chunk-anim .row-a-verdict    { animation: verdictA 9s infinite; }
+
+.chunk-anim .row-b-arrow      { animation: retrievalRowB 9s infinite; }
+.chunk-anim .row-b-chunk-hit  { animation: chunkBRetrieved 9s infinite; }
+.chunk-anim .row-b-captured   { animation: capturedFactGlow 9s infinite; }
+.chunk-anim .row-b-verdict    { animation: verdictB 9s infinite; }
+
+.chunk-anim .row-c-arrow      { animation: retrievalRowC 9s infinite; }
+.chunk-anim .row-c-chunk1-hit { animation: chunkC1Retrieved 9s infinite; }
+.chunk-anim .row-c-chunk2-hit { animation: chunkC2Retrieved 9s infinite; }
+.chunk-anim .row-c-verdict    { animation: verdictC 9s infinite; }
+
+.chunk-anim.paused * { animation-play-state: paused !important; }
+
+.anim-toggle { background: var(--white); border: 1px solid var(--rule); padding: 4px 10px; cursor: pointer; margin-top: 8px; color: var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+.anim-toggle:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.anim-toggle:hover { background: var(--tint-blue); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .progress::before { transition: none; }
+  .chunk-anim * { animation: none !important; }
+  .anim-toggle { display: none; }
+}
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <!-- PER-PRIMER REPLACE: masthead-right "MODULE N · PRIMER NN / 20" -->
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE I · PRIMER 04 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">Retrieval-Augmented Generation</h1>
+    <p class="subtitle"><em>Retrieval is the load-bearing dependency. Get it right first.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">IF YOU HAVEN'T READ PRIMER 3</span>
+    <p>Tools are how the model reads and writes your systems. Retrieval is the most common tool. This primer is the pattern that makes it reliable.</p>
+  </aside>
+
+  <div class="layout">
+    <!-- PER-PRIMER REPLACE: TOC entries + prev/next nav hrefs -->
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">What RAG is, what it isn't</a></li>
+        <li><a href="#s2" class="toc-link">The retrieval pipeline</a></li>
+        <li><a href="#s3" class="toc-link">Chunking &amp; overlap</a></li>
+        <li><a href="#s4" class="toc-link">Embeddings, similarity, hybrid search</a></li>
+        <li><a href="#s5" class="toc-link">Reranking: the under-appreciated step</a></li>
+        <li><a href="#s6" class="toc-link">RAG vs long-context vs fine-tune</a></li>
+        <li><a href="#s7" class="toc-link">What this connects to</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="03-tool-use-and-structured-output.html">← Primer 3 — Tool Use &amp; Structured Output</a>
+        <a class="nav-link next" href="05-agent-loop.html">Primer 5 — The Agent Loop →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — What RAG is, what it isn't
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">What RAG is, what it isn't</h2>
+
+        <p>Retrieval-Augmented Generation is one sentence: retrieve relevant text from somewhere, paste it into the model's context, ask the model to answer using that text. That is the whole pattern. Every elaborate RAG architecture you have seen — vector databases, embedding pipelines, reranker cascades, query rewriters — is plumbing in service of those three steps.</p>
+
+        <p>Holding that shape in mind clears up most of the confusion around it. Three consequences fall out directly.</p>
+
+        <p><strong>RAG is a context-engineering pattern, not a model feature.</strong> The model is exactly the same model whether you wrap it in retrieval or not. You are not "training" anything. You are not changing weights. You are choosing what text to put in front of an unchanged model at the moment you ask it a question. The art is entirely in choosing well.</p>
+
+        <p><strong>RAG doesn't make the model "know" anything new.</strong> The model still only sees what is in its context window for this single call. RAG puts the right text in front of the model at the right time so it has the material to answer from. Outside that call, the model has no memory of what was retrieved. The next call starts cold.</p>
+
+        <p><strong>If retrieval is wrong, the model will confidently hallucinate using the wrong text.</strong> This is the failure mode that surprises teams. A retrieval system that returns plausible-but-irrelevant passages does not produce "I don't know." It produces a fluent, confident answer grounded in the wrong document. The model is doing its job — answer from the context — and the context is misleading. Retrieval quality is the load-bearing dependency. A great model on bad retrievals is worse than an okay model on great retrievals, because the great model is more persuasive about the wrong answer.</p>
+
+        <p>One common confusion worth heading off early: RAG is not an alternative to fine-tuning. They are orthogonal axes. Fine-tuning changes how the model <em>speaks</em> — its tone, its preferred format, the conventions of a domain. RAG changes what the model <em>sees</em> — the specific facts available to it for this call. You almost always want RAG first, because most real product needs are "the model needs to know about <em>my</em> documents," not "the model needs to talk in a specific voice." Fine-tuning is for the residual cases after RAG and prompting have done their work (see §6 for the full decision tree).</p>
+
+        <p>Held tightly to this shape, the rest of the primer is mechanical. Everything else is just how to retrieve well.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — The retrieval pipeline
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">The retrieval pipeline</h2>
+
+        <p>A production RAG system has five stages. Each does one job, each has its own cost/quality knob, and each is a place to over- or under-invest.</p>
+
+        <ol>
+          <li><strong>Query.</strong> The user's question, possibly rewritten by the model first. Query expansion — turning "claims process" into "claims process, claim filing, FNOL, first notice of loss" — often does more for recall than a better embedding model.</li>
+          <li><strong>Embed.</strong> Turn the query into a dense vector using an embedding model. The same model must have been used to embed the corpus. Mismatched embedding models silently produce nonsense.</li>
+          <li><strong>Search.</strong> Find candidate passages. Two flavors: <em>semantic</em> (vector similarity, captures meaning) and <em>lexical</em> (BM25 or similar, captures exact tokens). <strong>Hybrid search</strong> runs both and fuses the results.</li>
+          <li><strong>Rerank.</strong> Score the top 50–100 candidates with a stronger model — usually a cross-encoder that reads (query, passage) together rather than embedding them independently. Keep the top 3–10.</li>
+          <li><strong>Context.</strong> Paste the reranked passages into the prompt with the user's question. The LLM answers.</li>
+        </ol>
+
+        <p>The shape of the pipeline is the same everywhere. The places teams differ — and the places they fail — are in how much they invest in each stage.</p>
+
+        <p>The most common over-investment is at <strong>embed</strong>. Teams pay for the largest, slowest, most expensive embedding model on a corpus of fifty documents. The cost is real; the quality difference, at that scale, is invisible. Pick a competent embedding model and move on; the budget is better spent elsewhere.</p>
+
+        <p>The most common under-investments are at <strong>search</strong> and <strong>rerank</strong>. Teams ship semantic-only search on corpora full of technical jargon, brand names, product SKUs, or code identifiers — exactly the strings embedding models handle worst — and are surprised when retrieval misses obvious matches. Or they skip rerank entirely and ship the raw top-10 vector hits, which are often only "roughly relevant." Both are unforced errors. Hybrid search closes the jargon gap. A reranker closes the precision gap. Together they are usually a bigger quality jump than any model swap.</p>
+
+        <div class="figure">
+          <span class="figure-tag">FIG. 01</span>
+          <svg viewBox="0 0 800 200" role="img" aria-label="Five-stage retrieval pipeline: query, embed, search, rerank, context">
+            <!-- stage boxes -->
+            <g font-family="JetBrains Mono, monospace" font-size="11" fill="#404040">
+              <rect x="20"  y="60" width="120" height="56" fill="none" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="80"  y="93" text-anchor="middle" font-size="13" fill="#007CC3">QUERY</text>
+
+              <rect x="170" y="60" width="120" height="56" fill="none" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="230" y="93" text-anchor="middle" font-size="13" fill="#007CC3">EMBED</text>
+
+              <rect x="320" y="60" width="120" height="56" fill="#E6F2FA" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="380" y="93" text-anchor="middle" font-size="13" fill="#007CC3">SEARCH</text>
+
+              <rect x="470" y="60" width="120" height="56" fill="#E6F2FA" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="530" y="93" text-anchor="middle" font-size="13" fill="#007CC3">RERANK</text>
+
+              <rect x="620" y="60" width="120" height="56" fill="none" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="680" y="93" text-anchor="middle" font-size="13" fill="#007CC3">CONTEXT</text>
+            </g>
+
+            <!-- arrows -->
+            <g stroke="#404040" stroke-width="1" fill="#404040">
+              <line x1="142" y1="88" x2="168" y2="88"/>
+              <polygon points="168,84 174,88 168,92"/>
+              <line x1="292" y1="88" x2="318" y2="88"/>
+              <polygon points="318,84 324,88 318,92"/>
+              <line x1="442" y1="88" x2="468" y2="88"/>
+              <polygon points="468,84 474,88 468,92"/>
+              <line x1="592" y1="88" x2="618" y2="88"/>
+              <polygon points="618,84 624,88 618,92"/>
+            </g>
+
+            <!-- top eyebrow labels -->
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="#6D6E71" letter-spacing="1">
+              <text x="80"  y="42" text-anchor="middle">USER + REWRITE</text>
+              <text x="230" y="42" text-anchor="middle">1 VECTOR</text>
+              <text x="380" y="42" text-anchor="middle">SEMANTIC + BM25</text>
+              <text x="530" y="42" text-anchor="middle">CROSS-ENCODER</text>
+              <text x="680" y="42" text-anchor="middle">TOP K → PROMPT</text>
+            </g>
+
+            <!-- bottom cost/quality labels -->
+            <g font-family="JetBrains Mono, monospace" font-size="10" fill="#404040">
+              <text x="80"  y="140" text-anchor="middle">$ · fast</text>
+              <text x="230" y="140" text-anchor="middle">$ · fast</text>
+              <text x="380" y="140" text-anchor="middle" fill="#007CC3">$$ · fast</text>
+              <text x="530" y="140" text-anchor="middle" fill="#007CC3">$$$ · slower</text>
+              <text x="680" y="140" text-anchor="middle">— · llm cost</text>
+            </g>
+
+            <!-- caption strip -->
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="#A7A9AC" letter-spacing="1">
+              <text x="20"  y="174">INVEST HERE: HYBRID SEARCH + RERANK</text>
+              <text x="780" y="174" text-anchor="end">UNDER-INVEST AT YOUR PERIL</text>
+              <line x1="20" y1="180" x2="780" y2="180" stroke="#E2E4E7" stroke-width="1"/>
+            </g>
+          </svg>
+          <p class="figure-caption">Five stages, each with its own cost/quality knob. Search and rerank carry most of the quality differential; embed and query are easier to get right.</p>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — Chunking & overlap (animated)
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">Chunking &amp; overlap</h2>
+
+        <p>You cannot retrieve a million-token document. You retrieve <em>passages</em> from it. Chunking is the upstream step that turns long documents into the small, retrievable units the embedding model and the search index see. Two parameters dominate the design:</p>
+
+        <ul>
+          <li><strong>Chunk size</strong> — typically 200–1,000 tokens. Smaller chunks make each retrieval more precise; larger chunks carry more context per hit.</li>
+          <li><strong>Overlap</strong> — typically 10–25% of the chunk size. Adjacent chunks share content so that facts straddling a chunk boundary are captured by both neighbors.</li>
+        </ul>
+
+        <p>Overlap is the parameter that surprises people the first time. Without it, fixed-size chunks tile the document with hard edges. If a sentence — or a fact, or a definition — happens to straddle a boundary, you split it. The first half lands in chunk N; the second half lands in chunk N+1; neither chunk contains the whole fact, and neither will retrieve well against a query that asks about it. Embedding similarity drops sharply for half-facts. The reranker, given a query and a passage with only half the answer, scores it low. The model never sees the material it needed.</p>
+
+        <p>Overlap fixes this by trading redundancy for boundary coverage. If adjacent chunks share 20% of their content, any fact shorter than that 20% window is fully contained in at least one chunk no matter where the boundary fell. The cost is that you index more total tokens; the benefit is that the failure mode at the boundary stops happening.</p>
+
+        <p>The three regimes have predictable trade-offs. <em>No overlap</em>: cheapest to index, fastest to search, splits facts at boundaries. <em>Moderate overlap (~20%)</em>: small redundancy cost, robust against most boundary splits — the default for almost every production system. <em>Heavy overlap (~50%)</em>: every fact lives in two or three chunks; retrieval becomes redundant rather than precise, and you start paying real costs at indexing and rerank time. The animation below cycles through the three regimes against the same document, with one fact sitting deliberately on a boundary.</p>
+
+        <div class="figure animated-figure">
+          <span class="figure-tag">FIG. 02 · ANIMATED</span>
+          <svg id="fig02-chunk-anim" viewBox="0 0 700 320" class="chunk-anim" role="img" aria-label="Three chunking strategies — no overlap, 20% overlap, 50% overlap — with a fact straddling a chunk boundary">
+
+            <!-- DOCUMENT BAR -->
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="#6D6E71" letter-spacing="1">
+              <text x="20" y="22">DOCUMENT</text>
+            </g>
+            <rect x="20" y="30" width="660" height="22" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1"/>
+            <!-- fact marker (sits on the boundary at x=350, centered) -->
+            <rect class="fact-marker" x="328" y="30" width="44" height="22" fill="#007CC3" opacity="0.55"/>
+            <text x="350" y="46" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#FFFFFF" letter-spacing="1">FACT</text>
+
+            <!-- ===== ROW A — NO OVERLAP ===== -->
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="#6D6E71" letter-spacing="1">
+              <text x="20" y="82">NO OVERLAP</text>
+            </g>
+            <!-- two chunks tiled, hard boundary at x=350 -->
+            <rect class="row-a-chunk-hit" x="20"  y="90" width="330" height="26" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1"/>
+            <rect                          x="350" y="90" width="330" height="26" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1"/>
+            <!-- chunk labels -->
+            <text x="185" y="107" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#404040">CHUNK 1</text>
+            <text x="515" y="107" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#404040">CHUNK 2</text>
+            <!-- the split fact: half in chunk 1, half in chunk 2; both shown blinking to signal loss -->
+            <rect class="row-a-split" x="328" y="90"  width="22" height="26" fill="#3699DA" opacity="0.6"/>
+            <rect class="row-a-split" x="350" y="90"  width="22" height="26" fill="#3699DA" opacity="0.6"/>
+            <line class="row-a-split" x1="349" y1="86" x2="349" y2="120" stroke="#A7A9AC" stroke-width="1" stroke-dasharray="2,2"/>
+            <!-- retrieval arrow pointing to chunk 1 -->
+            <g class="row-a-arrow">
+              <line x1="185" y1="138" x2="185" y2="122" stroke="#007CC3" stroke-width="1.5"/>
+              <polygon points="181,124 185,118 189,124" fill="#007CC3"/>
+            </g>
+            <!-- verdict text -->
+            <text class="row-a-verdict" x="20" y="146" font-family="JetBrains Mono, monospace" font-size="10" fill="#007CC3" letter-spacing="1">RETRIEVED — fact split, only half present</text>
+
+            <!-- ===== ROW B — 20% OVERLAP ===== -->
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="#6D6E71" letter-spacing="1">
+              <text x="20" y="178">20% OVERLAP</text>
+            </g>
+            <!-- chunk 1 ends at x=360; chunk 2 starts at x=300 → overlap region x=300..360 -->
+            <rect                          x="20"  y="186" width="340" height="26" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1"/>
+            <rect class="row-b-chunk-hit"  x="300" y="186" width="380" height="26" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1"/>
+            <!-- overlap shading -->
+            <rect x="300" y="186" width="60" height="26" fill="#E6F2FA" stroke="#E2E4E7" stroke-width="1"/>
+            <!-- the fact, fully contained in the overlap and in chunk 2 -->
+            <rect class="row-b-captured" x="328" y="186" width="44" height="26" fill="#007CC3" opacity="0.8"/>
+            <!-- chunk labels -->
+            <text x="160" y="203" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#404040">CHUNK 1</text>
+            <text x="490" y="203" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#404040">CHUNK 2</text>
+            <!-- overlap label -->
+            <text x="330" y="180" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#007CC3" letter-spacing="1">OVERLAP</text>
+            <!-- retrieval arrow pointing to chunk 2 -->
+            <g class="row-b-arrow">
+              <line x1="490" y1="234" x2="490" y2="218" stroke="#007CC3" stroke-width="1.5"/>
+              <polygon points="486,220 490,214 494,220" fill="#007CC3"/>
+            </g>
+            <!-- verdict text -->
+            <text class="row-b-verdict" x="20" y="242" font-family="JetBrains Mono, monospace" font-size="10" fill="#007CC3" letter-spacing="1">RETRIEVED — fact fully captured in chunk 2</text>
+
+            <!-- ===== ROW C — 50% OVERLAP ===== -->
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="#6D6E71" letter-spacing="1">
+              <text x="20" y="274">50% OVERLAP</text>
+            </g>
+            <!-- three chunks heavy overlap -->
+            <rect class="row-c-chunk1-hit" x="20"  y="282" width="330" height="26" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1"/>
+            <rect class="row-c-chunk2-hit" x="185" y="282" width="330" height="26" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1" opacity="0.85"/>
+            <rect                          x="350" y="282" width="330" height="26" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1" opacity="0.7"/>
+            <!-- fact present in chunks 1 and 2 -->
+            <rect x="328" y="282" width="44" height="26" fill="#007CC3" opacity="0.45"/>
+            <!-- chunk labels -->
+            <text x="100" y="299" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#404040">CHUNK 1</text>
+            <text x="270" y="299" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#404040">CHUNK 2</text>
+            <text x="600" y="299" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#404040">CHUNK 3</text>
+            <!-- two retrieval arrows pointing to chunks 1 and 2 — redundant -->
+            <g class="row-c-arrow">
+              <text x="20" y="316" font-family="JetBrains Mono, monospace" font-size="10" fill="#007CC3" letter-spacing="1">RETRIEVED ×2 — fact in chunks 1 and 2, redundant</text>
+            </g>
+          </svg>
+          <button class="anim-toggle" type="button" data-target="#fig02-chunk-anim" aria-pressed="false" aria-label="Pause or resume animation">PAUSE</button>
+          <p class="figure-caption">Overlap matters. Without it, facts on the boundary get split. The animation cycles through three overlap settings against the same fact.</p>
+        </div>
+
+        <p>A note on the parameters that matter less than people assume: the exact chunk size, within a wide band. 400 tokens vs 600 tokens almost never changes the headline retrieval metric. Use the natural unit of your corpus — paragraph, section, code block — and stop tuning. Where you do see headline movement is at the boundaries: paragraph-aware chunking, sentence-aware chunking, or code-block-aware chunking usually beats fixed-size chunking, because it puts boundaries where humans put them and overlap stops being a fix for an arbitrary problem.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — Embeddings, similarity, and hybrid search
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">Embeddings, similarity, and hybrid search</h2>
+
+        <p>An embedding model maps a piece of text to a fixed-length vector — typically 256 to 3,072 dimensions. The training objective is roughly: text with similar meaning should map to vectors close together; unrelated text should map far apart. "Close" is almost always measured with <strong>cosine similarity</strong> — the cosine of the angle between the two vectors, ranging from -1 (opposite) through 0 (orthogonal) to 1 (identical direction).</p>
+
+        <p>Two things to internalize about embedding models that catch teams out.</p>
+
+        <p>First, <strong>different models produce different vector spaces</strong>. A vector from <code>text-embedding-3-small</code> and a vector from <code>voyage-3</code> are not comparable — they live in different geometries with different basis vectors. You cannot mix them in a single index, and you cannot swap one for the other without re-embedding the entire corpus. Pick an embedding model deliberately and budget for the migration when you change it.</p>
+
+        <p>Second, <strong>embeddings encode the meaning the model was trained on</strong>. They are very good at the things English-language web text taught them: paraphrase, synonymy, topical similarity. They are worse at things the training data underrepresents: brand names ("Acuity"), product SKUs ("HSV-9012"), code identifiers (<code>getUserAuthToken</code>), rare technical jargon ("vacuolar H+-ATPase"), and acronym/expansion pairs ("KYC" vs "Know Your Customer"). For these strings, two embeddings of the "same" concept can sit far apart in vector space because the model never learned they were the same. Semantic search returns near-misses; the right document goes unretrieved.</p>
+
+        <p>This is the gap that <strong>lexical search</strong> fills. BM25 — the workhorse algorithm behind most full-text indexes for two decades — scores documents by exact and near-exact term matches, weighted by term frequency and inverse document frequency. BM25 has no idea what a word means; it has perfect recall on what a word <em>is</em>. For the SKUs and brand names and code identifiers, BM25 is the right tool.</p>
+
+        <p><strong>Hybrid search</strong> is the obvious move: run semantic search and lexical search in parallel, get two candidate lists, fuse them into one. The simplest fusion technique — and a stubbornly hard one to beat — is <strong>Reciprocal Rank Fusion</strong> (RRF): every candidate gets a score of <code>1 / (rank + k)</code> from each list, the scores are summed across lists, and the candidates are re-sorted by total. Documents that ranked well in either method bubble to the top; documents that ranked well in <em>both</em> bubble higher still. No tuning, no per-query weights, no learning step. Implement it once and it works.</p>
+
+        <div class="code">
+          <span class="code-tag">PYTHON</span>
+<pre>def hybrid_search(query, k=50):
+    # 1. Semantic candidates
+    q_vec = embed(query)
+    semantic_hits = vector_db.search(q_vec, top_k=k)
+
+    # 2. Lexical candidates (BM25)
+    lexical_hits = bm25_index.search(query, top_k=k)
+
+    # 3. Score-fusion (reciprocal rank fusion is the simplest)
+    fused = {}
+    for rank, hit in enumerate(semantic_hits):
+        fused[hit.id] = fused.get(hit.id, 0) + 1.0 / (rank + 60)
+    for rank, hit in enumerate(lexical_hits):
+        fused[hit.id] = fused.get(hit.id, 0) + 1.0 / (rank + 60)
+
+    return sorted(fused.items(), key=lambda x: -x[1])[:k]</pre>
+        </div>
+
+        <p>The constant 60 in <code>rank + 60</code> is the RRF smoothing factor; it stops rank-1 from dominating and is approximately the value the original paper landed on. You will almost never tune it. The output of <code>hybrid_search</code> is the input to the next stage — the reranker — which takes these 50 fused candidates and picks the 5 that actually deserve to be in the prompt.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — Reranking: the under-appreciated step
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">Reranking: the under-appreciated step</h2>
+
+        <p>The output of the search stage — semantic, lexical, or hybrid — is a list of 50 to 100 candidates that are "roughly relevant." The relevance signal is computed independently for each candidate: each was embedded once, scored against the query embedding once, and ranked. Nothing in that pipeline looked at the query and the candidate <em>together</em>. That is the gap a reranker closes.</p>
+
+        <p>A reranker reads the (query, passage) pair jointly. A cross-encoder — the canonical architecture — concatenates them into a single input and produces a single relevance score. Because the model sees both sides at once, it can pick up signals an independent embedding cannot: the passage uses the same entity as the query, the question word matches a definitional clause in the passage, the passage is structurally an answer rather than a topical neighbor. Cross-encoders are slower than bi-encoders by 10–100×, but you only run them on the top-50 candidates, not the top-1M corpus. The cost is bounded.</p>
+
+        <p>The framing that helps most: <strong>retrieval is recall; rerank is precision</strong>. The search stage's job is to make sure the right passage is somewhere in the top 50, even if it is at rank 47. The rerank stage's job is to move it from rank 47 to rank 1 and to discard the 45 irrelevant passages above it. Different stages, different objectives, different budgets.</p>
+
+        <div class="note">
+          <span class="note-tag">QUALITY</span>
+          <p class="note-head"><em>Retrieve 50, rerank to 5, ship 5.</em></p>
+          <p>The single biggest jump in RAG quality usually comes from adding a reranker, not from a better embedding model or a smarter chunking strategy. Reranking is precision; retrieval is recall. Treat them as separate stages with separate budgets.</p>
+        </div>
+
+        <p>The economic case is more favorable than teams expect. Suppose your search stage returns 50 candidates per query and your reranker charges a small per-pair fee. Fifty rerank calls per user query is cheap — comfortably under a cent at typical 2026 prices. The expensive thing in the pipeline is the LLM call that produces the final answer, not the rerank that selects the passages. Spending a tenth of a cent on rerank to make the LLM call ten cents more accurate is a trade nobody should hesitate over.</p>
+
+        <p>There is one practical wrinkle: rerankers add latency. A typical reranker call adds 100–300ms to the end-to-end response time. For interactive use this is usually fine; for very latency-sensitive applications (autocomplete, sub-second voice), it may not be. The mitigation is to run rerank in parallel with whatever else you can parallelize, and to keep the rerank candidate count small enough that the latency is bounded.</p>
+
+        <p>The thing teams discover, six months in, is that the reranker is also the easiest stage to swap. Embedding-model changes force a corpus re-embed; reranker changes do not. Build the seam, run the experiments, ship the winner.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — RAG vs long-context vs fine-tune
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">RAG vs long-context vs fine-tune</h2>
+
+        <p>RAG is not the only way to get knowledge into a model. There are three options, and the choice between them is one of the more useful decision trees in this stack.</p>
+
+        <p><strong>Long-context</strong> means paste the whole corpus into the prompt and let the model find what matters. With 200K-to-1M-token windows now routine, this option went from impossible to viable for a real class of problems. Use it when:</p>
+
+        <ul>
+          <li>The corpus is small — comfortably under the model's context window with room for the system prompt and the response.</li>
+          <li>The query genuinely needs the whole corpus, not specific passages. "Summarize this contract," "compare these three policies," "find inconsistencies across this dossier" — these are long-context shapes.</li>
+          <li>Cost isn't a hard constraint and you want zero retrieval complexity. No vector DB, no embedding pipeline, no rerank — just the model and the prompt.</li>
+        </ul>
+
+        <p><strong>RAG</strong> means retrieve relevant passages at query time and put only those in the prompt. Use it when:</p>
+
+        <ul>
+          <li>The corpus is too big for long-context, or the same model serves many corpora (every customer's documents, every team's wiki).</li>
+          <li>The corpus changes faster than you'd want to redeploy a model — daily docs, weekly policies, a knowledge base with constant edits.</li>
+          <li>You need verifiable citations. RAG hands you the source passages naturally; you can show users exactly which documents the answer was grounded in.</li>
+        </ul>
+
+        <p><strong>Fine-tuning</strong> means change the model's weights so it answers differently for everyone. Use it when:</p>
+
+        <ul>
+          <li>You need the model to <em>speak</em> a specific way — a tone, a format, a domain vocabulary — that prompting and few-shot examples couldn't reliably produce.</li>
+          <li>RAG plus prompting can't get you there after honest effort. ("Honest effort" is doing the work in §1–§5 of this primer, not "I prompted it for a day.")</li>
+          <li>You can afford the eval and regression burden of a tuned model — every deploy is a new model that could regress on something the base model handled fine.</li>
+        </ul>
+
+        <table class="cmp">
+          <thead><tr><th>Approach</th><th>Best for</th><th>Worst at</th></tr></thead>
+          <tbody>
+            <tr><td>Long-context</td><td>Small, stable, query-the-whole corpus</td><td>Large or changing corpora; cost at scale</td></tr>
+            <tr><td>RAG</td><td>Large or changing knowledge; citations</td><td>Cross-document reasoning; style transfer</td></tr>
+            <tr><td>Fine-tune</td><td>Specific voice, format, or domain language</td><td>Adding facts; regression risk on every deploy</td></tr>
+          </tbody>
+        </table>
+
+        <p>The rule that survives every project: <strong>try RAG first.</strong> Long-context is the right answer if your corpus fits and the query genuinely wants all of it. Fine-tuning is the right answer only when prompting and RAG have hit their ceiling and the residual gap is about <em>how</em> the model speaks, not <em>what</em> it knows. Most teams that reach for fine-tuning early haven't yet done the work that would have made RAG good enough.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — What this connects to
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">What this connects to</h2>
+
+        <p>RAG is a tool that sits inside a larger system. The other primers in the course pick up the threads.</p>
+
+        <ul>
+          <li><strong><a href="02-prompting-and-context-engineering.html">Primer 2 — Prompting &amp; Context Engineering</a></strong> — RAG <em>is</em> context engineering. The retrieved passages are part of the context budget, alongside the system prompt, tool definitions, and conversation history. Everything Primer 2 said about ordering things stable-to-volatile, capping output, and caching the parts that don't change applies to the passages you paste into the prompt.</li>
+          <li><strong><a href="05-agent-loop.html">Primer 5 — The Agent Loop</a></strong> — once retrieval becomes a <em>tool</em> the agent calls (rather than a step in a fixed pipeline), RAG joins the loop. The model decides when to retrieve, what query to retrieve with, and whether to retrieve again. This is the shift from "RAG pipeline" to "agent that retrieves," and it changes both the design and the evals.</li>
+          <li><strong><a href="06-memory-and-state.html">Primer 6 — Memory &amp; State</a></strong> — RAG over the conversation history itself is one form of agent memory: index past turns, retrieve the relevant ones when the context window can no longer hold everything. The patterns from this primer transplant directly.</li>
+          <li><strong><a href="09-sub-agents-skills-harnesses.html">Primer 9 — Sub-Agents, Skills &amp; Harnesses</a></strong> — at scale, retrieval often becomes its own sub-agent with its own evals: query rewriter, retriever, reranker, judge. The decomposition matters because the failure modes are different at each stage and you want to debug them independently.</li>
+        </ul>
+
+        <p>Most teams' first agent failure is bad retrieval, not bad models. The model gets blamed because it is what the user sees, but the model only ever did what the retrieved context told it to. Get RAG right, then worry about the rest.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE I · PRIMER 04 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+
+  // Animation pause/play toggle. Button uses data-target="#svg-id" to find its SVG.
+  document.querySelectorAll('.anim-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.target;
+      const svg = target ? document.querySelector(target) : null;
+      if (!svg) return;
+      const paused = svg.classList.toggle('paused');
+      btn.textContent = paused ? 'PLAY' : 'PAUSE';
+      btn.setAttribute('aria-pressed', String(paused));
+    });
+  });
+  </script>
+</body>
+</html>
