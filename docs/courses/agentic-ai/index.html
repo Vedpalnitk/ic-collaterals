@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Building Agentic AI Systems · A course for builders · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+/* --- Cover ----------------------------------------------------- */
+.cover { background: var(--deep); color: var(--white); padding: 80px 48px 64px; }
+.cover-masthead { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--stone); margin-bottom: 64px; }
+.cover-title { font-family: var(--display); font-weight: 400; font-size: 80px; line-height: 1; margin: 0 0 16px; max-width: 900px; }
+.cover-title em { color: var(--lt-blue); font-style: italic; }
+.cover-subtitle { font-family: var(--display); font-style: italic; font-size: 26px; color: var(--lt-blue); margin: 0 0 48px; max-width: 700px; }
+.cover-byline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-top: 80px; max-width: 1000px; }
+.byline-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--stone); text-transform: uppercase; margin-bottom: 6px; }
+.byline-value { font-family: var(--display); font-style: italic; font-size: 16px; color: var(--white); }
+
+/* --- Thesis ---------------------------------------------------- */
+.thesis { max-width: 800px; margin: 80px auto; padding: 0 32px; }
+.thesis-pull { font-family: var(--display); font-style: italic; font-size: 32px; line-height: 1.3; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 32px; margin: 0 0 24px; }
+.thesis p { font-size: 18px; }
+
+/* --- How to read ---------------------------------------------- */
+.how-to-read { max-width: 800px; margin: 0 auto 80px; padding: 0 32px; }
+.eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--blue); text-transform: uppercase; margin-bottom: 12px; }
+.eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+
+/* --- Chapter slabs -------------------------------------------- */
+.chapter-slab { background: var(--deep); color: var(--white); padding: 56px 48px; margin: 64px 0 32px; }
+.chapter-num { font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; color: var(--lt-blue); text-transform: uppercase; }
+.chapter-title { font-family: var(--display); font-weight: 400; font-size: 48px; line-height: 1.1; margin: 8px 0 12px; max-width: 800px; }
+.chapter-title em { color: var(--lt-blue); font-style: italic; }
+.chapter-deck { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--stone); margin: 0; max-width: 700px; }
+
+/* --- Primer list ---------------------------------------------- */
+.primer-list { max-width: 1000px; margin: 0 auto; padding: 0 32px; list-style: none; }
+.primer-card { display: grid; grid-template-columns: 56px 1fr 160px; gap: 24px; padding: 24px 0; border-bottom: 1px solid var(--rule); align-items: baseline; }
+.primer-card:hover { background: var(--tint-stone); }
+.primer-card a { display: contents; color: inherit; }
+.primer-num { font-family: var(--mono); font-size: 14px; color: var(--blue); font-weight: 500; }
+.primer-body { display: flex; flex-direction: column; gap: 4px; }
+.primer-title { font-family: var(--display); font-size: 20px; color: var(--pavement); margin: 0; }
+.primer-arg { font-size: 14px; color: var(--slate); margin: 0; }
+.primer-meta { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--slate); text-align: right; }
+.primer-card.placeholder { opacity: 0.55; pointer-events: none; }
+.primer-card.placeholder .primer-meta::after { content: ' · soon'; color: var(--stone); }
+
+/* --- Colophon ------------------------------------------------- */
+.colophon { background: var(--deep); color: var(--stone); padding: 24px 48px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; display: flex; justify-content: space-between; margin-top: 96px; }
+.colophon a { color: var(--lt-blue); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- COVER                                                        -->
+<!-- ============================================================ -->
+<header class="cover">
+  <div class="cover-masthead">
+    <span>INFOSYS CONSULTING · COURSE</span>
+    <span>EDITION 2026.06 · BUILDER TRACK</span>
+  </div>
+  <h1 class="cover-title">Building <em>Agentic AI</em> Systems</h1>
+  <p class="cover-subtitle">A course for engineers building agents that actually deploy.</p>
+  <div class="cover-byline">
+    <div>
+      <div class="byline-label">Audience</div>
+      <div class="byline-value">Builders &amp; engineers</div>
+    </div>
+    <div>
+      <div class="byline-label">Track</div>
+      <div class="byline-value">Technical, hands-on</div>
+    </div>
+    <div>
+      <div class="byline-label">Modules</div>
+      <div class="byline-value">5 modules · 20 primers</div>
+    </div>
+    <div>
+      <div class="byline-label">Distribution</div>
+      <div class="byline-value">Public</div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================ -->
+<!-- THESIS                                                       -->
+<!-- ============================================================ -->
+<section class="thesis">
+  <div class="eyebrow"><span class="bar"></span><span>The thesis</span></div>
+  <blockquote class="thesis-pull">Building an agent is easy. Building an agent function is hard.</blockquote>
+  <p>Most teams can wire an LLM to a tool loop and demo something compelling. Few make it past evals, traces, cost, safety, and the operating-model work to actually deploy. This course is the path from prompt to platform — the patterns, the failure modes, and the org changes that separate a notebook from a function the bank runs on.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- HOW TO READ THIS COURSE                                      -->
+<!-- ============================================================ -->
+<section class="how-to-read">
+  <div class="eyebrow"><span class="bar"></span><span>How to read this course</span></div>
+  <p>The course is built hybrid. Read the twenty primers in order and the thesis advances module by module — foundations to loop to production to applied banking to operating model. Or treat it as a reference: each primer is cold-readable, with a short callout up top that catches you up on anything assumed from earlier. Four primers carry interactive animations on the concept that benefits most from one — chunk overlap, the agent loop, the trace viewer, the operating-model seam. Reading times below assume roughly 200 words per minute; budget more for the animated ones.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- MODULE I — FOUNDATIONS                                       -->
+<!-- ============================================================ -->
+<section class="chapter-slab">
+  <div class="chapter-num">Module I</div>
+  <h2 class="chapter-title"><em>Foundations</em></h2>
+  <p class="chapter-deck">The substrate agents run on.</p>
+</section>
+<ol class="primer-list">
+  <li class="primer-card">
+    <a href="01-llm-mental-model.html">
+      <span class="primer-num">01</span>
+      <div class="primer-body">
+        <h3 class="primer-title">LLM Mental Model for Builders</h3>
+        <p class="primer-arg">Tokens, sampling, context windows, latency/cost frontier. What models can and can't do, framed for someone about to call one in a loop.</p>
+      </div>
+      <div class="primer-meta">~18 MIN · MODULE I</div>
+    </a>
+  </li>
+  <li class="primer-card placeholder">
+    <span class="primer-num">02</span>
+    <div class="primer-body">
+      <h3 class="primer-title">Prompting &amp; Context Engineering</h3>
+      <p class="primer-arg">System prompts, roles, few-shot, structure. Context as a budget; the diff between prompting an answer and prompting a behavior.</p>
+    </div>
+    <div class="primer-meta">~18 MIN · MODULE I</div>
+  </li>
+  <li class="primer-card placeholder">
+    <span class="primer-num">03</span>
+    <div class="primer-body">
+      <h3 class="primer-title">Tool Use &amp; Structured Output</h3>
+      <p class="primer-arg">Function calling mechanics, JSON Schemas, validation, retries. When to force a tool vs free text; common failure modes.</p>
+    </div>
+    <div class="primer-meta">~20 MIN · MODULE I</div>
+  </li>
+  <li class="primer-card placeholder">
+    <span class="primer-num">04</span>
+    <div class="primer-body">
+      <h3 class="primer-title">Retrieval-Augmented Generation</h3>
+      <p class="primer-arg">Embeddings, hybrid search, chunking, reranking. RAG vs long-context vs fine-tune decision tree. Animated: chunk-overlap explorer.</p>
+    </div>
+    <div class="primer-meta">~25 MIN · MODULE I</div>
+  </li>
+</ol>
+
+<!-- ============================================================ -->
+<!-- MODULE II — THE AGENT                                        -->
+<!-- ============================================================ -->
+<section class="chapter-slab">
+  <div class="chapter-num">Module II</div>
+  <h2 class="chapter-title">The <em>Agent</em></h2>
+  <p class="chapter-deck">Loops, memory, planning, coordination.</p>
+</section>
+<ol class="primer-list">
+  <li class="primer-card">
+    <a href="05-agent-loop.html">
+      <span class="primer-num">05</span>
+      <div class="primer-body">
+        <h3 class="primer-title">The Agent Loop</h3>
+        <p class="primer-arg">ReAct, the canonical read→decide→act cycle, termination, error recovery. The default loop you should reach for, and what to change when you outgrow it. Animated: loop tick-through with state.</p>
+      </div>
+      <div class="primer-meta">~22 MIN · MODULE II</div>
+    </a>
+  </li>
+  <li class="primer-card placeholder">
+    <span class="primer-num">06</span>
+    <div class="primer-body">
+      <h3 class="primer-title">Memory &amp; State</h3>
+      <p class="primer-arg">Short-term context vs long-term stores; summarization, compaction, sliding windows; episodic vs semantic memory; when memory is the wrong abstraction.</p>
+    </div>
+    <div class="primer-meta">~18 MIN · MODULE II</div>
+  </li>
+  <li class="primer-card placeholder">
+    <span class="primer-num">07</span>
+    <div class="primer-body">
+      <h3 class="primer-title">Planning &amp; Task Decomposition</h3>
+      <p class="primer-arg">Plan-then-execute vs incremental; task graphs; hierarchical agents; recovering from a bad plan.</p>
+    </div>
+    <div class="primer-meta">~18 MIN · MODULE II</div>
+  </li>
+  <li class="primer-card placeholder">
+    <span class="primer-num">08</span>
+    <div class="primer-body">
+      <h3 class="primer-title">Multi-Agent Patterns</h3>
+      <p class="primer-arg">Orchestrator/workers, debate, hand-off, swarms. When multi-agent is the wrong answer (most of the time). Communication cost, failure modes.</p>
+    </div>
+    <div class="primer-meta">~18 MIN · MODULE II</div>
+  </li>
+  <li class="primer-card placeholder">
+    <span class="primer-num">09</span>
+    <div class="primer-body">
+      <h3 class="primer-title">Sub-Agents, Skills &amp; Harnesses</h3>
+      <p class="primer-arg">Code-level building blocks: tool registries, skill packages, sub-agent dispatch, harness loops. Extends existing IC engineering notes with cross-SDK patterns.</p>
+    </div>
+    <div class="primer-meta">~20 MIN · MODULE II</div>
+  </li>
+</ol>
+
+<!-- ============================================================ -->
+<!-- MODULE III — PRODUCTION                                      -->
+<!-- ============================================================ -->
+<section class="chapter-slab">
+  <div class="chapter-num">Module III</div>
+  <h2 class="chapter-title"><em>Production</em></h2>
+  <p class="chapter-deck">Evals, traces, safety, cost — the demo-to-deploy gap.</p>
+</section>
+<ol class="primer-list">
+  <li class="primer-card">
+    <a href="10-evaluations.html">
+      <span class="primer-num">10</span>
+      <div class="primer-body">
+        <h3 class="primer-title">Evaluations for Agents</h3>
+        <p class="primer-arg">Task suites, judge models, scoring rubrics, regression detection, eval-driven development. Extends the agentic-harness engineering note.</p>
+      </div>
+      <div class="primer-meta">~22 MIN · MODULE III</div>
+    </a>
+  </li>
+  <li class="primer-card placeholder">
+    <span class="primer-num">11</span>
+    <div class="primer-body">
+      <h3 class="primer-title">Observability &amp; Traces</h3>
+      <p class="primer-arg">Span model, what to capture, debugging multi-turn runs, replay, anomaly detection. Animated: trace viewer with drill-down.</p>
+    </div>
+    <div class="primer-meta">~22 MIN · MODULE III</div>
+  </li>
+  <li class="primer-card placeholder">
+    <span class="primer-num">12</span>
+    <div class="primer-body">
+      <h3 class="primer-title">Safety, Guardrails &amp; Prompt Injection</h3>
+      <p class="primer-arg">Input/output filters, tool authorization, refusal patterns, the lethal trifecta (data + tools + adversary), red-team playbook.</p>
+    </div>
+    <div class="primer-meta">~22 MIN · MODULE III</div>
+  </li>
+  <li class="primer-card placeholder">
+    <span class="primer-num">13</span>
+    <div class="primer-body">
+      <h3 class="primer-title">Cost, Latency &amp; Caching</h3>
+      <p class="primer-arg">Prompt caching, batch API, model routing, streaming, token math worked examples, cost regressions.</p>
+    </div>
+    <div class="primer-meta">~18 MIN · MODULE III</div>
+  </li>
+  <li class="primer-card placeholder">
+    <span class="primer-num">14</span>
+    <div class="primer-body">
+      <h3 class="primer-title">Fine-Tuning &amp; Adaptation</h3>
+      <p class="primer-arg">SFT, DPO, distillation, LoRA. When not to fine-tune — prompting, RAG, and tools usually win. Cost/benefit framework.</p>
+    </div>
+    <div class="primer-meta">~18 MIN · MODULE III</div>
+  </li>
+</ol>
+
+<!-- ============================================================ -->
+<!-- MODULE IV — APPLIED BANKING                                  -->
+<!-- ============================================================ -->
+<section class="chapter-slab">
+  <div class="chapter-num">Module IV</div>
+  <h2 class="chapter-title">Applied in <em>Banking</em></h2>
+  <p class="chapter-deck">Two concrete patterns leaning on existing IC primers.</p>
+</section>
+<ol class="primer-list">
+  <li class="primer-card">
+    <a href="15-agentic-kyc-surveillance.html">
+      <span class="primer-num">15</span>
+      <div class="primer-body">
+        <h3 class="primer-title">Agentic KYC &amp; Surveillance</h3>
+        <p class="primer-arg">Case packs, evidence chains, audit trails, the human-checkpoint pattern. Builds on the existing CDD/KYC and trade-surveillance primers.</p>
+      </div>
+      <div class="primer-meta">~22 MIN · MODULE IV</div>
+    </a>
+  </li>
+  <li class="primer-card placeholder">
+    <span class="primer-num">16</span>
+    <div class="primer-body">
+      <h3 class="primer-title">Code-Modernization Agents</h3>
+      <p class="primer-arg">COBOL/SAS → Java/Python with verification, test generation, the human-at-the-seam pattern. Working example with traces.</p>
+    </div>
+    <div class="primer-meta">~20 MIN · MODULE IV</div>
+  </li>
+</ol>
+
+<!-- ============================================================ -->
+<!-- MODULE V — AGENTIC ORGANISATION                              -->
+<!-- ============================================================ -->
+<section class="chapter-slab">
+  <div class="chapter-num">Module V</div>
+  <h2 class="chapter-title">Building an Agentic <em>Organisation</em></h2>
+  <p class="chapter-deck">Operating model, platform, people, governance.</p>
+</section>
+<ol class="primer-list">
+  <li class="primer-card">
+    <a href="17-agentic-operating-model.html">
+      <span class="primer-num">17</span>
+      <div class="primer-body">
+        <h3 class="primer-title">The Agentic Operating Model</h3>
+        <p class="primer-arg">Humans-at-the-seam thesis; work redesign; where agents own vs assist vs escalate; the seam as a control point. Animated: org-flow diagram with seam highlights.</p>
+      </div>
+      <div class="primer-meta">~22 MIN · MODULE V</div>
+    </a>
+  </li>
+  <li class="primer-card placeholder">
+    <span class="primer-num">18</span>
+    <div class="primer-body">
+      <h3 class="primer-title">Agent Platforms &amp; Internal Tooling</h3>
+      <p class="primer-arg">Central platform team responsibilities: model gateway, shared harnesses, eval infra, prompt registry, deployment gates. Build-vs-buy decisions.</p>
+    </div>
+    <div class="primer-meta">~18 MIN · MODULE V</div>
+  </li>
+  <li class="primer-card placeholder">
+    <span class="primer-num">19</span>
+    <div class="primer-body">
+      <h3 class="primer-title">Workforce, Roles &amp; Skills Transition</h3>
+      <p class="primer-arg">New roles (agent engineer, eval engineer, agent ops, prompt librarian); upskilling paths; what shrinks; change-management patterns.</p>
+    </div>
+    <div class="primer-meta">~18 MIN · MODULE V</div>
+  </li>
+  <li class="primer-card placeholder">
+    <span class="primer-num">20</span>
+    <div class="primer-body">
+      <h3 class="primer-title">Governance, Risk &amp; Adoption</h3>
+      <p class="primer-arg">AI/agent policy stack; risk tiering; model cards; audit trails; KPIs for agent ROI; the deploy-and-measure loop.</p>
+    </div>
+    <div class="primer-meta">~18 MIN · MODULE V</div>
+  </li>
+</ol>
+
+<!-- ============================================================ -->
+<!-- COLOPHON                                                     -->
+<!-- ============================================================ -->
+<footer class="colophon">
+  <span>INFOSYS CONSULTING · BUILDING AGENTIC AI · EDITION 2026.06</span>
+  <a href="../../index.html">← Back to collection</a>
+</footer>
+
+</body>
+</html>
