@@ -199,6 +199,8 @@ code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone
 @media (prefers-reduced-motion: reduce) {
   .loop-anim * { animation: none !important; }
   .loop-anim .node-emit, .loop-anim .node-append { opacity: 1; }
+  /* Animation is off — the toggle would lie about the current state, so hide it. */
+  .anim-toggle { display: none; }
   html { scroll-behavior: auto; }
   .progress::before { transition: none; }
 }
@@ -354,7 +356,7 @@ while True:
 
         <div class="figure animated-figure">
           <span class="figure-tag">FIG. 02 · ANIMATED</span>
-          <svg viewBox="0 0 800 320" class="loop-anim" role="img" aria-label="Animated diagram showing one full read-decide-act tick of the agent loop">
+          <svg id="fig02-anim" viewBox="0 0 800 320" class="loop-anim" role="img" aria-label="Animated diagram showing one full read-decide-act tick of the agent loop">
             <defs>
               <marker id="arrAnim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
                 <path d="M0,0 L10,5 L0,10 z" fill="#007CC3"/>
@@ -419,7 +421,7 @@ while True:
               <text x="400" y="282" text-anchor="middle" font-size="9" fill="#6D6E71" letter-spacing="1">APPEND TO HISTORY · LOOP</text>
             </g>
           </svg>
-          <button class="anim-toggle" type="button" aria-pressed="false" aria-label="Pause or resume animation">PAUSE</button>
+          <button class="anim-toggle" type="button" data-target="#fig02-anim" aria-pressed="false" aria-label="Pause or resume animation">PAUSE</button>
           <p class="figure-caption">One tick of the canonical loop. Each stage holds for ~1.5s before passing to the next.</p>
         </div>
       </section>
@@ -618,10 +620,11 @@ for block in resp.content:
     update();
   })();
 
-  // Animation pause/play toggle.
+  // Animation pause/play toggle. Button uses data-target="#svg-id" to find its SVG.
   document.querySelectorAll('.anim-toggle').forEach(btn => {
     btn.addEventListener('click', () => {
-      const svg = btn.parentElement.querySelector('.loop-anim');
+      const target = btn.dataset.target;
+      const svg = target ? document.querySelector(target) : null;
       if (!svg) return;
       const paused = svg.classList.toggle('paused');
       btn.textContent = paused ? 'PLAY' : 'PAUSE';
