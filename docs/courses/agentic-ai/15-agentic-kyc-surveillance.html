@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 15 — Agentic KYC &amp; Surveillance · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; max-height: none; } }
+
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .progress::before { transition: none; } }
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <!-- PER-PRIMER REPLACE: masthead-right "MODULE N · PRIMER NN / 20" -->
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE IV · PRIMER 15 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">Agentic KYC &amp; Surveillance</h1>
+    <p class="subtitle"><em>Two banking applications where agents are doing the gather, and humans are doing the judge.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">PREREQUISITES</span>
+    <p>If you haven't read Primers 5 and 10 — an agent loop calls tools and is evaluated against a task suite. Both are prerequisites here. The financial-crime context is covered in detail by the linked domain primers.</p>
+  </aside>
+
+  <div class="layout">
+    <!-- PER-PRIMER REPLACE: TOC entries + prev/next nav hrefs -->
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">Why KYC and surveillance are the canonical first deployments</a></li>
+        <li><a href="#s2" class="toc-link">The case-pack pattern</a></li>
+        <li><a href="#s3" class="toc-link">Evidence chains</a></li>
+        <li><a href="#s4" class="toc-link">The human checkpoint</a></li>
+        <li><a href="#s5" class="toc-link">Risk tiering</a></li>
+        <li><a href="#s6" class="toc-link">Failure modes specific to FS</a></li>
+        <li><a href="#s7" class="toc-link">What this connects to</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="10-evaluations-for-agents.html">← Primer 10 — Evaluations for Agents</a>
+        <a class="nav-link next" href="17-agentic-operating-model.html">Primer 17 — The Agentic Operating Model →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — Why KYC and surveillance are the canonical first deployments
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">Why KYC and surveillance are the canonical first deployments</h2>
+
+        <p>Every bank that is serious about agentic AI ends up running a pilot in financial crime. It is not coincidence. Two functions — Know Your Customer (KYC) and trading-and-payments surveillance — share a shape that makes them unusually well suited to a first agentic deployment. They are high-volume, expensive per case, narrow in output, and auditable end-to-end. The same four properties that make the work painful for analysts make it tractable for agents.</p>
+
+        <p><strong>KYC.</strong> A large retail bank may carry tens of millions of customer relationships. Each one needs onboarding diligence, periodic refresh, and event-driven review when something changes. Each individual case takes an analyst minutes to hours: pulling identification documents, reading screening hits, sizing transaction patterns, and writing a short memo that ends in a clear decision. The output is narrow — a tier classification, a risk rating, a memo — and every step is regulator-auditable.</p>
+
+        <p><strong>Surveillance.</strong> Trade surveillance, transaction monitoring, and sanctions screening generate a constant stream of alerts. Most are false positives. Each one has to be looked at by a human, who pulls related trades or payments, checks the customer's history, asks whether the activity is consistent with the profile, and writes a short narrative explaining the disposition. Same shape: high volume, hours per case, narrow output (escalate or close, with a written rationale), regulator-auditable.</p>
+
+        <p>The structural fit lines up with the four properties of a good agentic pilot. <strong>Volume</strong> means the return on automation compounds — a small per-case saving multiplies into a meaningful number at the firm level. <strong>Cost-per-case</strong> means there is real budget to redeploy when the agent absorbs the routine work. <strong>Narrow output</strong> means evaluation is feasible: you can write a task suite with ground-truth dispositions and score the agent against it. <strong>Audit-grade traceability</strong> means the deployment is defensible — every claim the agent makes is tied to a tool call, a document, a query, and the regulator can reconstruct the case from the log.</p>
+
+        <p>Domain depth lives in IC's existing primers: <a href="../primers/cdd-kyc-primer.html">Customer Due Diligence (CDD/KYC)</a>, <a href="../primers/trade-surveillance-primer.html">Trade Surveillance</a>, <a href="../primers/transaction-monitoring-primer.html">Transaction Monitoring</a>, and <a href="../primers/screening-primer.html">Screening (Sanctions / PEP / Adverse Media)</a>. This primer assumes you know the regulatory shape. It is about the agentic pattern that sits on top.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — The case-pack pattern
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">The case-pack pattern</h2>
+
+        <p>The unit of work is not "a model response." It is a <strong>case pack</strong>: a structured document the agent assembles, that a human then reads and approves. The case pack is the deliverable, the record, and the artefact a regulator will eventually read. Designing around the case pack — rather than around the chat transcript or the chain-of-thought — is the move that turns a science project into a production system.</p>
+
+        <p>A case pack has four standard sections, in this order:</p>
+
+        <ul>
+          <li><strong>Header.</strong> Customer identifiers, case identifiers, the trigger (onboarding, refresh, alert id), and the time horizon. The least exciting section, but the one auditors look at first.</li>
+          <li><strong>Screening.</strong> Sanctions hits, PEP matches, adverse media, watchlist results — each tagged with the list, the match score, the freshness of the underlying data, and a clear disposition (true positive, false positive, requires review).</li>
+          <li><strong>Risk factors.</strong> Geography, business type, ownership complexity, product mix, transaction velocity, peer comparisons. Each factor is a signal, not a conclusion; the agent surfaces what is unusual, not what should be decided.</li>
+          <li><strong>Recommendation.</strong> The agent's proposed disposition — approve, escalate, close, refer to specialist — with a short rationale that names the deciding factors and points to the evidence behind them.</li>
+        </ul>
+
+        <p>The agent assembles the pack by running one tool call (or one short sub-agent) per section. <code>screen_sanctions</code>, <code>screen_pep</code>, and <code>screen_adverse_media</code> produce the screening block. <code>risk_score</code> and <code>peer_compare</code> produce the risk-factors block. A <code>decision_model</code> tool or a short reasoning step produces the recommendation. The harness stitches the results into the case pack template; the template is fixed; the prose is generated.</p>
+
+        <p>This pattern works because <strong>audit trail is preserved by construction</strong>. Every section of the case pack is produced by a named tool. The tool call, its inputs, its outputs, and the timestamp are logged. When a regulator asks "how did you decide this customer was low-risk?", the case pack <em>is</em> the answer, and the evidence log behind it shows the work.</p>
+
+        <p>The companion point is what the human reviews. The temptation is to surface the agent's chain-of-thought — the "let me think step by step" trace — and let the human sanity-check the reasoning. Don't. Chain-of-thought is post-hoc rationalization; the model is good at producing plausible-sounding traces that have only a loose relationship to what actually drove the answer. Review the case pack instead. The case pack is the deliverable, the tool calls behind it are the verifiable record, and the prose is constrained to a template the analyst can scan in under a minute.</p>
+
+        <div class="figure">
+          <span class="figure-tag">FIG. 01</span>
+          <svg viewBox="0 0 800 400" role="img" aria-label="A case pack composed of four stacked sections, each produced by a named tool">
+            <!-- title -->
+            <g font-family="JetBrains Mono, monospace" font-size="10" fill="#404040">
+              <text x="40" y="28" letter-spacing="1">CASE PACK · CUSTOMER 88312</text>
+            </g>
+
+            <!-- pack outline -->
+            <rect x="40" y="40" width="500" height="340" fill="none" stroke="#404040" stroke-width="1.5"/>
+
+            <!-- band 1: Header -->
+            <rect x="40" y="40" width="500" height="70" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1"/>
+            <g font-family="Fraunces, serif" fill="#404040">
+              <text x="60" y="72" font-size="18" font-weight="500">Header</text>
+              <text x="60" y="92" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#6D6E71">Customer id, case id, trigger, time horizon</text>
+            </g>
+
+            <!-- band 2: Screening -->
+            <rect x="40" y="110" width="500" height="90" fill="#E6F2FA" stroke="#E2E4E7" stroke-width="1"/>
+            <g font-family="Fraunces, serif" fill="#404040">
+              <text x="60" y="142" font-size="18" font-weight="500">Screening</text>
+              <text x="60" y="162" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#6D6E71">Sanctions, PEP, adverse media — list, score, freshness</text>
+              <text x="60" y="182" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#6D6E71">Each hit tagged true positive / false positive / review</text>
+            </g>
+
+            <!-- band 3: Risk Factors -->
+            <rect x="40" y="200" width="500" height="90" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1"/>
+            <g font-family="Fraunces, serif" fill="#404040">
+              <text x="60" y="232" font-size="18" font-weight="500">Risk Factors</text>
+              <text x="60" y="252" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#6D6E71">Geography, ownership, product mix, velocity</text>
+              <text x="60" y="272" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#6D6E71">Surfaced as signals, not conclusions</text>
+            </g>
+
+            <!-- band 4: Recommendation -->
+            <rect x="40" y="290" width="500" height="90" fill="#E6F2FA" stroke="#E2E4E7" stroke-width="1"/>
+            <g font-family="Fraunces, serif" fill="#404040">
+              <text x="60" y="322" font-size="18" font-weight="500">Recommendation</text>
+              <text x="60" y="342" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#6D6E71">Proposed disposition + short rationale</text>
+              <text x="60" y="362" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#6D6E71">Citations back to evidence log</text>
+            </g>
+
+            <!-- tool tags on the right -->
+            <g font-family="JetBrains Mono, monospace" font-size="11" fill="#007CC3">
+              <!-- arrow + tag for each band -->
+              <line x1="560" y1="75" x2="600" y2="75" stroke="#007CC3" stroke-width="1"/>
+              <text x="608" y="79">build_header</text>
+
+              <line x1="560" y1="155" x2="600" y2="155" stroke="#007CC3" stroke-width="1"/>
+              <text x="608" y="159">screen_sanctions</text>
+              <text x="608" y="175" font-size="10" fill="#6D6E71">screen_pep · screen_adverse_media</text>
+
+              <line x1="560" y1="245" x2="600" y2="245" stroke="#007CC3" stroke-width="1"/>
+              <text x="608" y="249">risk_score</text>
+              <text x="608" y="265" font-size="10" fill="#6D6E71">peer_compare</text>
+
+              <line x1="560" y1="335" x2="600" y2="335" stroke="#007CC3" stroke-width="1"/>
+              <text x="608" y="339">decision_model</text>
+              <text x="608" y="355" font-size="10" fill="#6D6E71">drafted by harness</text>
+            </g>
+
+            <!-- "produced by" header -->
+            <g font-family="JetBrains Mono, monospace" font-size="10" fill="#6D6E71">
+              <text x="608" y="28" letter-spacing="1">PRODUCED BY</text>
+            </g>
+          </svg>
+          <p class="figure-caption">A case pack is one composite document made of four named, tool-tagged sections. The template is fixed; the prose is generated; the audit trail is preserved by construction.</p>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — Evidence chains
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">Evidence chains</h2>
+
+        <p>Inside every case pack, every factual claim has to be sourced. This is the hard rule that separates an agentic system you can put into production from one you cannot. The agent's job is not only to produce the recommendation — it is to maintain a parallel <strong>evidence log</strong> that ties each claim back to a tool call, a document reference, or a query result.</p>
+
+        <p>The principle is short. <em>No claim without a verifiable source.</em> If the agent writes "the customer is not on the OFAC SDN list as of today," the case pack has to carry, alongside that sentence, a structured record naming the tool that returned the result, the inputs that were passed, the timestamp, and a pointer to the immutable result blob. If the agent writes "transaction velocity is consistent with peer cohort," the evidence record has to point to the peer-comparison query and the cohort definition. If the agent cannot produce that record, the agent does not get to make the claim.</p>
+
+        <p>The mechanic is straightforward in practice. Every tool call the agent issues is wrapped by the harness so that, in addition to returning the result to the agent's working context, it also writes a structured record to the evidence store. When the agent assembles the case pack, the prose-generation step is constrained to emit a claim and its evidence reference together — they are produced as one unit, not stitched together afterwards. The harness validates that every claim in the final case pack has a matching entry in the evidence log before the pack is allowed to leave the agent.</p>
+
+        <p>The retention discipline is what makes this credible to regulators. Evidence records persist alongside the case for as long as the case has to be retained — typically five to ten years depending on jurisdiction and product. They are immutable: append-only, content-addressed, written to storage that does not allow rewriting. Five years from now, when a regulator asks why this case was closed, the case pack, the evidence log, and the underlying tool results are all still there, and they all still match.</p>
+
+        <p>The contrast with what the work used to look like is sharp. Pre-agent, analysts wrote memos and cited sources from memory. The citation was prose ("per the OFAC screen run on Tuesday"). It was rarely linked to the actual screening result, and reconstructing what the analyst saw three years later required digging through siloed systems. Post-agent, citations are first-class data, generated as a side effect of the tool call, and survive the analyst.</p>
+
+        <div class="code">
+          <span class="code-tag">JSON</span>
+<pre>{
+  "claim": "Customer is not on OFAC SDN list as of 2026-06-07",
+  "tool_call": {
+    "tool": "screen_sanctions",
+    "input": {"customer_id": "88312", "list": "OFAC_SDN"},
+    "ts": "2026-06-07T14:32:19Z"
+  },
+  "result_ref": "evidence_store/sanctions/88312/2026-06-07/result.json",
+  "confidence": "high"
+}</pre>
+        </div>
+
+        <p>One record per claim. Many claims per case. The evidence store is the load-bearing piece of infrastructure — get it wrong and the whole deployment is indefensible.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — The human checkpoint
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">The human checkpoint</h2>
+
+        <p>The agent is the paralegal. The human is the judge. The case pack arrives in the analyst's queue, the analyst reads it, and the analyst decides what happens next. The deployment is not "agent acts autonomously"; it is "agent prepares, human ratifies." The human checkpoint is the seam, and it is the control point that lets the deployment go live in the first place.</p>
+
+        <p>At the checkpoint, the human has four actions available, and only four:</p>
+
+        <ul>
+          <li><strong>Confirm.</strong> The case pack reads cleanly, the evidence supports the recommendation, the analyst agrees. Click through.</li>
+          <li><strong>Override, with a reason.</strong> The analyst disagrees with the recommendation and substitutes their own. The reason is mandatory — free text, plus a structured override-category tag.</li>
+          <li><strong>Escalate.</strong> The case is harder than the agent realised, or harder than the analyst can resolve alone, and goes to a senior specialist with the case pack attached.</li>
+          <li><strong>Request more.</strong> The case pack is incomplete or the evidence is thin. The analyst sends it back to the agent with a structured ask — pull this document, run this query, summarise this transaction set — and the agent loops.</li>
+        </ul>
+
+        <p>The UX implication is direct: the case pack must be navigable, and the evidence log must always be one click away. A claim in the recommendation that the analyst wants to verify should expand to show the supporting evidence record without leaving the page. Source documents — onboarding forms, screening result blobs, transaction extracts — should be inspectable in place. The review interface is more important than the assembly interface, because the assembly is mostly done by the agent.</p>
+
+        <p>This reverses the design priority from pre-agent systems. In a world where the analyst <em>wrote</em> the memo, the case-management UI was a creation tool. In a world where the agent writes the memo, the UI is a review tool. The bottleneck moves from "how fast can a human compose" to "how fast can a human verify." Treat the review experience as the product.</p>
+
+        <p>Finally, override discipline. Every override is a data point. The structured override-category tag — "evidence insufficient," "risk underweighted," "geographic context missing," "policy edge case" — feeds the eval suite. Over a quarter, the override log tells you exactly where the agent is wrong, and which fixes will move the needle. Treat overrides as the most valuable signal the deployment produces.</p>
+
+        <blockquote class="pull">The agent's job is to make the human's job easy. The human's job is to make the agent's job accountable.</blockquote>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — Risk tiering
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">Risk tiering</h2>
+
+        <p>Not every case is the same shape, and treating them as if they were wastes the most expensive resource in the building — senior analyst time. A working agentic deployment tiers cases by risk and concentrates human attention where the marginal review hour pays off. The tiering itself is policy, not model output: the agent surfaces signals, and a deterministic policy maps signals to tier.</p>
+
+        <p>This split matters. The agent is good at extracting signals — "this entity has a PEP-class match at score 0.87 on the EU list," "ownership traces through three jurisdictions, two of which are FATF grey-list," "transaction velocity in the last 30 days is 4× the 12-month average." Those are observations grounded in tool calls and evidence. What constitutes "high risk" is a firm-level policy decision encoded in a small, auditable rule set: a PEP hit above a threshold tiers up, a sanctioned-jurisdiction adjacency tiers up, certain product-customer combinations tier up. The rule set is owned by compliance, versioned, and reviewed quarterly. The agent never decides the tier; it provides the inputs.</p>
+
+        <p>Tiering matters because of where it puts the human. Low-risk cases — clean screening, no PEP exposure, established customers, stable patterns — make up the bulk of the queue. Auto-routing them, with a sampled human review, frees senior analysts to spend hours on the cases that actually warrant hours. Mid-risk cases get standard review with the agent's case pack as the starting point. High-risk cases get a senior specialist, and the agent prepares an extended dossier rather than a standard case pack — more peer comparisons, more historical context, more linked entities.</p>
+
+        <p>The sampling discipline is what keeps the auto-route honest. Even low-risk cases that route through without human eyes get sampled — five percent, ten percent, whatever the firm picks — and reviewed by a human. The sample is how you detect drift: if next quarter's auto-routed cases start looking different from this quarter's, the sampling catches it before regulators do.</p>
+
+        <table class="cmp">
+          <thead><tr><th>Tier</th><th>Trigger</th><th>Routing</th></tr></thead>
+          <tbody>
+            <tr><td>Low</td><td>Clean screen, no PEP, established profile</td><td>Auto-route; sample 5% for human review</td></tr>
+            <tr><td>Mid</td><td>Single moderate signal (one risk factor)</td><td>Standard analyst review with agent's case pack</td></tr>
+            <tr><td>High</td><td>PEP hit, complex ownership, sanctions adjacency</td><td>Senior specialist; agent prepares an extended dossier</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — Failure modes specific to FS
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">Failure modes specific to FS</h2>
+
+        <p>Generic LLM failure modes — hallucination, prompt injection, context dilution — all show up here. Three additional failure modes are specific to financial-crime deployments, and each deserves a named mitigation built into the system rather than left to the model.</p>
+
+        <h3>False confidence</h3>
+        <p>The agent reports "no concerns" with high confidence on a case it actually got wrong. The screening tool returned clean. The peer comparison looked normal. The transaction profile sat within expected bounds. Every sub-step was individually defensible, and the composite recommendation was wrong. The danger is that confident-clean cases are exactly the ones the human is most likely to wave through without scrutiny. Mitigation: confidence calibration plus disciplined sampling. The model's expressed confidence has to be calibrated against historical outcomes — a "high confidence" disposition that turns out wrong 20% of the time is not high confidence — and the low-risk auto-route has to be sampled regardless of confidence.</p>
+
+        <h3>Regulator-visible hallucinations</h3>
+        <p>The agent fabricates a citation — a regulation that does not exist, a screening result it did not actually run, a court filing it did not actually retrieve. Hallucinated citations are the worst class of failure in this domain: they survive into the audit log, they look authoritative, and they only get caught when a regulator follows the reference and finds nothing. Mitigation: enforced evidence linking. No claim leaves the agent without a matching evidence-store record, validated by the harness, pointed at content that actually exists. The system rejects unsourced claims at assembly time, not at audit time.</p>
+
+        <h3>Geographic drift</h3>
+        <p>The model was trained on a corpus that over-represents English-language US filings, and quietly performs worse on EU consumer cases, on APAC corporate structures, on Latin American transliterated names. The agent looks fine on the test set in the headquarters language and degrades silently when it meets the rest of the customer base. Mitigation: per-geography evaluation suites and per-region human checkpoints. The eval suite is segmented by jurisdiction, the performance numbers are reported per segment rather than as a single aggregate, and the auto-route threshold is set per region based on per-region performance.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — What this connects to
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">What this connects to</h2>
+
+        <p><strong>Domain depth.</strong> This primer is about the agentic pattern; the substance of the regulatory regimes — what KYC actually requires, what surveillance must detect, how screening lists work — lives in IC's domain primers: <a href="../primers/cdd-kyc-primer.html">Customer Due Diligence (CDD/KYC)</a>, <a href="../primers/trade-surveillance-primer.html">Trade Surveillance</a>, <a href="../primers/transaction-monitoring-primer.html">Transaction Monitoring</a>, and <a href="../primers/screening-primer.html">Screening</a>. Read those for the rules; read this for the pattern that lets an agent operate inside the rules.</p>
+
+        <p><strong>Engineering depth.</strong> The case pack, the evidence chain, and the human checkpoint are mechanically possible because of the harness, the eval discipline, and the trace logging covered in the engineering notes. <a href="../engineering-notes/agentic-harness-evals-traces.html">Agentic harness, evals, traces</a> is the practical companion to this primer: what the loop looks like in code, how the eval suite is structured, what is captured in the trace, and what gets persisted as evidence.</p>
+
+        <p><strong>Operating model.</strong> The case-pack pattern is one instance of a more general design: humans at the seam, agents on the gather. <a href="17-agentic-operating-model.html">Primer 17 — The Agentic Operating Model</a> generalises it across the firm: where the seams sit in research, advisory, operations, and control functions; how teams are restructured around review rather than creation; and how the firm-level operating model has to change for the local pattern to scale.</p>
+
+        <p>KYC and surveillance are the proof points because they make the case concrete: agentic AI demonstrably moves the needle in financial services here, today, with audit trail intact and humans where the judgement lives. The patterns that work in this domain — case pack, evidence chain, human checkpoint, tiered routing — generalise. The rest of the operating model follows.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE IV · PRIMER 15 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+  </script>
+</body>
+</html>
