@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 5 — The Agent Loop · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; max-height: none; } }
+
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+/* ============================================================
+   Animated figure — the canonical tick (Section 2)
+   5 stages × 1.5s each = 7.5s total, infinite loop.
+   ============================================================ */
+.animated-figure { position: relative; }
+.loop-anim { width: 100%; height: auto; display: block; }
+
+/* Node-highlight stages: each node holds BLUE fill/stroke for its
+   20% slice, otherwise sits in the neutral palette. */
+@keyframes stage1 {
+  0%, 20%       { fill: #007CC3; stroke: #007CC3; }
+  20.01%, 100%  { fill: #F2F2F3; stroke: #E2E4E7; }
+}
+@keyframes stage2 {
+  0%, 20%        { fill: #F2F2F3; stroke: #E2E4E7; }
+  20.01%, 40%    { fill: #007CC3; stroke: #007CC3; }
+  40.01%, 100%   { fill: #F2F2F3; stroke: #E2E4E7; }
+}
+@keyframes stage4 {
+  0%, 60%        { fill: #F2F2F3; stroke: #E2E4E7; }
+  60.01%, 80%    { fill: #007CC3; stroke: #007CC3; }
+  80.01%, 100%   { fill: #F2F2F3; stroke: #E2E4E7; }
+}
+
+/* Text labels invert on highlight so they remain legible. */
+@keyframes stage1text {
+  0%, 20%       { fill: #FFFFFF; }
+  20.01%, 100%  { fill: #404040; }
+}
+@keyframes stage2text {
+  0%, 20%        { fill: #404040; }
+  20.01%, 40%    { fill: #FFFFFF; }
+  40.01%, 100%   { fill: #404040; }
+}
+@keyframes stage4text {
+  0%, 60%        { fill: #404040; }
+  60.01%, 80%    { fill: #FFFFFF; }
+  80.01%, 100%   { fill: #404040; }
+}
+
+/* The emitted tool-call object fades in during stage 3. */
+@keyframes stage3 {
+  0%, 40%        { opacity: 0; }
+  40.01%, 60%    { opacity: 1; }
+  60.01%, 100%   { opacity: 0; }
+}
+
+/* The result block slides in during stage 5 and stays for the
+   remainder of the tick — the new state for the next iteration. */
+@keyframes stage5 {
+  0%, 80%        { opacity: 0; transform: translateX(-8px); }
+  80.01%, 100%   { opacity: 1; transform: translateX(0); }
+}
+
+/* The current-stage label up top cycles through five positions. */
+@keyframes stagelabel {
+  0%, 20%        { opacity: 1; }
+  20.01%, 100%   { opacity: 0.25; }
+}
+
+.loop-anim .node-state  { animation: stage1 7.5s infinite; }
+.loop-anim .node-model  { animation: stage2 7.5s infinite; }
+.loop-anim .node-exec   { animation: stage4 7.5s infinite; }
+.loop-anim .node-emit   { animation: stage3 7.5s infinite; }
+.loop-anim .node-append { animation: stage5 7.5s infinite; transform-origin: left center; }
+
+.loop-anim .label-state { animation: stage1text 7.5s infinite; }
+.loop-anim .label-model { animation: stage2text 7.5s infinite; }
+.loop-anim .label-exec  { animation: stage4text 7.5s infinite; }
+
+.loop-anim .stage-1 { animation: stagelabel 7.5s infinite; animation-delay: 0s; }
+.loop-anim .stage-2 { animation: stagelabel 7.5s infinite; animation-delay: -6.0s; }
+.loop-anim .stage-3 { animation: stagelabel 7.5s infinite; animation-delay: -4.5s; }
+.loop-anim .stage-4 { animation: stagelabel 7.5s infinite; animation-delay: -3.0s; }
+.loop-anim .stage-5 { animation: stagelabel 7.5s infinite; animation-delay: -1.5s; }
+
+.loop-anim.paused * { animation-play-state: paused !important; }
+
+.anim-toggle { background: var(--white); border: 1px solid var(--rule); padding: 4px 10px; cursor: pointer; margin-top: 8px; color: var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+.anim-toggle:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.anim-toggle:hover { background: var(--tint-blue); }
+
+@media (prefers-reduced-motion: reduce) {
+  .loop-anim * { animation: none !important; }
+  .loop-anim .node-emit, .loop-anim .node-append { opacity: 1; }
+  html { scroll-behavior: auto; }
+  .progress::before { transition: none; }
+}
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <!-- PER-PRIMER REPLACE: masthead-right "MODULE N · PRIMER NN / 20" -->
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE II · PRIMER 05 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">The Agent Loop</h1>
+    <p class="subtitle"><em>A while-loop around an LLM, and what makes that simple idea harden into something real.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">COLD START</span>
+    <p>If you haven't read Primer 1 — an LLM samples one token at a time from a probability distribution; tool use means the model emits a structured call that your code executes. That's everything you need.</p>
+  </aside>
+
+  <div class="layout">
+    <!-- PER-PRIMER REPLACE: TOC entries + prev/next nav hrefs -->
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">What an agent loop is</a></li>
+        <li><a href="#s2" class="toc-link">The canonical tick</a></li>
+        <li><a href="#s3" class="toc-link">Tool definitions and parsing</a></li>
+        <li><a href="#s4" class="toc-link">Termination</a></li>
+        <li><a href="#s5" class="toc-link">State and history</a></li>
+        <li><a href="#s6" class="toc-link">Failure modes</a></li>
+        <li><a href="#s7" class="toc-link">When to outgrow the canonical loop</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="01-llm-mental-model.html">← Primer 1 — LLM Mental Model</a>
+        <a class="nav-link next" href="10-evaluations-for-agents.html">Primer 10 — Evaluations for Agents →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — What an agent loop is
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">What an agent loop is</h2>
+
+        <p>An <strong>agent loop</strong> is the smallest piece of code that turns a single-shot LLM call into something that can take action. It is, almost literally, a <code>while</code> loop. On each iteration, the loop (a) presents the model with the current conversation state and the list of tools it may call, (b) parses the model's response for any tool calls, (c) executes those tools, (d) appends the tool results to the message history, and (e) repeats — until the model emits a terminal response with no tool calls.</p>
+
+        <p>Two roles fall out of that structure, and they are the most important distinction in the whole primer. The model is the <strong>decider</strong>. It looks at the state, picks the next action, and emits a structured call. The harness — your code — is the <strong>executor</strong>. It runs the tool, captures the result, and feeds it back in. The model never touches a network socket, a file, or a database. The harness never decides what to do next. Each one does the thing it is good at, and they take turns.</p>
+
+        <p>That clean division is the reason the canonical loop is the right default. It is small enough to fit on one page, debuggable end-to-end, and survives most real-world tasks long before you need anything fancier. When people show you a complex multi-agent diagram, ask where the decider/executor split lives. If the answer is fuzzy, the system probably has a bug it has not noticed yet.</p>
+
+        <p>Mechanically, here is what one iteration looks like in pseudocode:</p>
+
+        <div class="code">
+          <span class="code-tag">PSEUDOCODE</span>
+<pre>messages = [system_prompt, user_request]
+while True:
+    response = model.call(messages, tools=TOOLS)
+    messages.append(response)            # assistant turn
+    tool_calls = extract_tool_calls(response)
+    if not tool_calls:
+        return response                  # terminal
+    for call in tool_calls:
+        result = TOOLS[call.name](**call.input)
+        messages.append(tool_result(call.id, result))</pre>
+        </div>
+
+        <p>Everything else in this primer is a refinement of that ten-line shape. Termination conditions, history management, error handling, failure modes — they are all answers to questions that arise the first time you actually run this loop against a real task. You will not appreciate why the answers matter until you have felt the loop misbehave at least once. Build it. Watch it fail. Then come back.</p>
+
+        <div class="figure">
+          <span class="figure-tag">FIG. 01</span>
+          <svg viewBox="0 0 640 280" role="img" aria-label="Static cycle diagram of the read-decide-act loop with five nodes">
+            <!-- five nodes in a cycle -->
+            <g font-family="JetBrains Mono, monospace" font-size="11">
+              <!-- STATE -->
+              <rect x="40"  y="110" width="100" height="48" rx="4" fill="#E6F2FA" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="90"  y="138" text-anchor="middle" fill="#007CC3">STATE</text>
+
+              <!-- MODEL -->
+              <rect x="190" y="40"  width="100" height="48" rx="4" fill="#E6F2FA" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="240" y="68"  text-anchor="middle" fill="#007CC3">MODEL</text>
+
+              <!-- TOOL CALL -->
+              <rect x="340" y="40"  width="100" height="48" rx="4" fill="#FFFFFF" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="390" y="62"  text-anchor="middle" fill="#404040">TOOL</text>
+              <text x="390" y="78"  text-anchor="middle" fill="#404040">CALL</text>
+
+              <!-- TOOL EXEC -->
+              <rect x="490" y="110" width="100" height="48" rx="4" fill="#E6F2FA" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="540" y="138" text-anchor="middle" fill="#007CC3">TOOL</text>
+
+              <!-- APPEND -->
+              <rect x="340" y="180" width="100" height="48" rx="4" fill="#FFFFFF" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="390" y="202" text-anchor="middle" fill="#404040">APPEND</text>
+              <text x="390" y="218" text-anchor="middle" fill="#404040">RESULT</text>
+
+              <!-- arrows -->
+              <defs>
+                <marker id="arr1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                  <path d="M0,0 L10,5 L0,10 z" fill="#007CC3"/>
+                </marker>
+              </defs>
+              <!-- STATE -> MODEL -->
+              <path d="M140,118 C170,90 175,75 195,68" fill="none" stroke="#007CC3" stroke-width="1.5" marker-end="url(#arr1)"/>
+              <!-- MODEL -> TOOL CALL -->
+              <line x1="290" y1="64" x2="335" y2="64" stroke="#007CC3" stroke-width="1.5" marker-end="url(#arr1)"/>
+              <!-- TOOL CALL -> TOOL -->
+              <path d="M440,72 C475,90 480,100 495,118" fill="none" stroke="#007CC3" stroke-width="1.5" marker-end="url(#arr1)"/>
+              <!-- TOOL -> APPEND -->
+              <path d="M540,158 C540,180 510,195 445,205" fill="none" stroke="#007CC3" stroke-width="1.5" marker-end="url(#arr1)"/>
+              <!-- APPEND -> STATE (loop back) -->
+              <path d="M340,205 C200,220 90,200 90,160" fill="none" stroke="#007CC3" stroke-width="1.5" marker-end="url(#arr1)"/>
+
+              <!-- labels for the edges -->
+              <g fill="#6D6E71" font-size="9" letter-spacing="0.5">
+                <text x="148"  y="80">READ</text>
+                <text x="296"  y="56">DECIDE</text>
+                <text x="455"  y="88">EMIT</text>
+                <text x="490"  y="190">EXECUTE</text>
+                <text x="195"  y="240">APPEND &amp; REPEAT</text>
+              </g>
+            </g>
+          </svg>
+          <p class="figure-caption">The canonical loop as a cycle. The model decides; the harness executes; the result becomes new state.</p>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — The canonical tick (animated)
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">The canonical tick</h2>
+
+        <p>One tick of the loop is five small acts, in order. They blur together in production logs, so it is worth slowing them down once. The animation below holds each act for about a second and a half, then cycles. Pause it whenever you want to dwell.</p>
+
+        <p><strong>READ.</strong> The harness assembles the current state — system prompt, tool definitions, the running message history — and hands it to the model. Nothing fancy; just a list of messages and a list of tools.</p>
+
+        <p><strong>DECIDE.</strong> The model reads the state and produces a response. That response is a sequence of content blocks: maybe some thinking, maybe some natural-language text, maybe one or more tool calls. The model is not <em>doing</em> anything yet — it is just emitting structured output.</p>
+
+        <p><strong>EMIT.</strong> Inside that response, the harness finds the tool calls. Each one is a small object: the tool's name and a JSON dict of arguments. If there are no tool calls, the loop ends here and the response is returned. If there are, the harness validates the arguments against the tool's schema and prepares to execute.</p>
+
+        <p><strong>EXECUTE.</strong> The harness runs the tool. This is where the system actually touches the world — an API request goes out, a database query runs, a file is read. The result comes back as text, JSON, or a stream of bytes the harness has to serialize back into something the model can read.</p>
+
+        <p><strong>APPEND.</strong> The tool's result is wrapped in a <code>tool_result</code> message and appended to the history. The loop iterates: the next READ sees a longer history, with the model's last tool call and the result it produced, and the model picks its next action with full knowledge of what just happened.</p>
+
+        <p>That is the whole mechanic. Read, decide, emit, execute, append. Watch a few ticks pass below before moving on.</p>
+
+        <div class="figure animated-figure">
+          <span class="figure-tag">FIG. 02 · ANIMATED</span>
+          <svg viewBox="0 0 800 320" class="loop-anim" role="img" aria-label="Animated diagram showing one full read-decide-act tick of the agent loop">
+            <defs>
+              <marker id="arrAnim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M0,0 L10,5 L0,10 z" fill="#007CC3"/>
+              </marker>
+            </defs>
+
+            <!-- stage labels along the top -->
+            <g font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="1" fill="#007CC3">
+              <text x="100"  y="30" text-anchor="middle" class="stage-1">1 · READ</text>
+              <text x="270"  y="30" text-anchor="middle" class="stage-2">2 · DECIDE</text>
+              <text x="440"  y="30" text-anchor="middle" class="stage-3">3 · EMIT</text>
+              <text x="610"  y="30" text-anchor="middle" class="stage-4">4 · EXECUTE</text>
+              <text x="730"  y="30" text-anchor="middle" class="stage-5">5 · APPEND</text>
+            </g>
+
+            <!-- connecting arrows (static) -->
+            <g stroke="#007CC3" stroke-width="1.5" fill="none">
+              <line x1="170" y1="160" x2="200" y2="160" marker-end="url(#arrAnim)"/>
+              <line x1="340" y1="160" x2="370" y2="160" marker-end="url(#arrAnim)"/>
+              <line x1="510" y1="160" x2="540" y2="160" marker-end="url(#arrAnim)"/>
+              <line x1="680" y1="160" x2="700" y2="160" marker-end="url(#arrAnim)"/>
+              <!-- loop-back curve from APPEND area to STATE -->
+              <path d="M735,200 C735,260 100,270 100,200" stroke-dasharray="3,4" marker-end="url(#arrAnim)"/>
+            </g>
+
+            <g font-family="JetBrains Mono, monospace" font-size="12">
+              <!-- 1: STATE node -->
+              <rect class="node-state" x="40"  y="130" width="130" height="60" rx="4" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1.5"/>
+              <text x="105" y="158" text-anchor="middle" class="label-state" fill="#404040">STATE</text>
+              <text x="105" y="176" text-anchor="middle" font-size="9" class="label-state" fill="#404040">messages + tools</text>
+
+              <!-- 2: MODEL node -->
+              <rect class="node-model" x="210" y="130" width="130" height="60" rx="4" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1.5"/>
+              <text x="275" y="158" text-anchor="middle" class="label-model" fill="#404040">MODEL</text>
+              <text x="275" y="176" text-anchor="middle" font-size="9" class="label-model" fill="#404040">decide next action</text>
+
+              <!-- 3: EMIT — appears mid-cycle -->
+              <g class="node-emit">
+                <rect x="378" y="120" width="135" height="80" rx="4" fill="#FFFFFF" stroke="#007CC3" stroke-width="1.5"/>
+                <text x="445" y="140" text-anchor="middle" font-size="9" fill="#007CC3" letter-spacing="0.5">TOOL CALL</text>
+                <line x1="388" y1="148" x2="503" y2="148" stroke="#E2E4E7" stroke-width="1"/>
+                <text x="388" y="164" font-size="10" fill="#404040">name: get_</text>
+                <text x="388" y="178" font-size="10" fill="#404040">  weather</text>
+                <text x="388" y="192" font-size="10" fill="#404040">city: "BLR"</text>
+              </g>
+
+              <!-- 4: TOOL (executor) -->
+              <rect class="node-exec" x="548" y="130" width="130" height="60" rx="4" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1.5"/>
+              <text x="613" y="158" text-anchor="middle" class="label-exec" fill="#404040">TOOL</text>
+              <text x="613" y="176" text-anchor="middle" font-size="9" class="label-exec" fill="#404040">run + capture</text>
+
+              <!-- 5: APPEND result -->
+              <g class="node-append">
+                <rect x="708" y="120" width="80" height="80" rx="4" fill="#E6F2FA" stroke="#007CC3" stroke-width="1.5"/>
+                <text x="748" y="140" text-anchor="middle" font-size="9" fill="#007CC3" letter-spacing="0.5">RESULT</text>
+                <line x1="718" y1="148" x2="778" y2="148" stroke="#007CC3" stroke-width="1" opacity="0.4"/>
+                <text x="748" y="166" text-anchor="middle" font-size="11" fill="#404040">28°C</text>
+                <text x="748" y="184" text-anchor="middle" font-size="9" fill="#404040">clear</text>
+              </g>
+
+              <!-- loop-back label -->
+              <text x="400" y="282" text-anchor="middle" font-size="9" fill="#6D6E71" letter-spacing="1">APPEND TO HISTORY · LOOP</text>
+            </g>
+          </svg>
+          <button class="anim-toggle" type="button" aria-pressed="false" aria-label="Pause or resume animation">PAUSE</button>
+          <p class="figure-caption">One tick of the canonical loop. Each stage holds for ~1.5s before passing to the next.</p>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — Tool definitions and parsing
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">Tool definitions and parsing</h2>
+
+        <p>A tool, from the model's point of view, is three pieces of metadata: a <strong>name</strong>, a <strong>description</strong> (in natural language, written for the model to read), and an <strong>input schema</strong> (JSON Schema describing the arguments). You send the full list of tools on every turn. The model returns structured tool-call blocks; your harness pulls them out and executes them.</p>
+
+        <p>Here is the shape with the Anthropic SDK. The pattern is essentially identical across providers — different field names, same idea.</p>
+
+        <div class="code">
+          <span class="code-tag">PYTHON</span>
+<pre>from anthropic import Anthropic
+
+tools = [{
+    "name": "get_weather",
+    "description": "Get current weather for a city.",
+    "input_schema": {
+        "type": "object",
+        "properties": {"city": {"type": "string"}},
+        "required": ["city"],
+    },
+}]
+
+resp = Anthropic().messages.create(
+    model="claude-sonnet-4-6",
+    max_tokens=1024,
+    tools=tools,
+    messages=[{"role": "user", "content": "What's the weather in Bengaluru?"}],
+)
+
+for block in resp.content:
+    if block.type == "tool_use":
+        print(block.name, block.input)
+        # &rarr; get_weather {'city': 'Bengaluru'}</pre>
+        </div>
+
+        <p>Two responsibilities the harness owns and the model does not.</p>
+
+        <p><strong>Schema validation.</strong> Providers do a reasonable job of constraining the model's output to match the schema, but they do not guarantee it. The model can still emit a call with a missing required field, a string where a number was expected, or an enum value you did not list. Validate every tool call against the schema before you execute it. When validation fails, the right move is almost never to crash — instead, append a tool-result message that explains the failure to the model in plain text ("city is required") and let it try again. The model is surprisingly good at fixing its own malformed calls when you tell it what was wrong.</p>
+
+        <p><strong>Actually running the tool.</strong> The model produces the call; your code runs it. That sounds trivial until you realize how much hides in "runs it." A real tool runner needs a timeout (so a hung API does not freeze the loop), a serializer (the model can only consume text, so binary results need to be encoded), a sandbox boundary when the tool can touch the user's machine, and a retry policy for transient failures. None of this is the model's concern. All of it is yours.</p>
+
+        <p>Treat the tool layer like any other I/O boundary in your system. Every call has an input contract and an output contract. Every failure has a defined mode. The model only sees the strict, structured surface; the messy reality lives behind the harness.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — Termination
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">Termination</h2>
+
+        <p>A loop without a defined exit is a bug. The canonical loop has three reasonable termination conditions, and a well-built harness checks all of them.</p>
+
+        <p><strong>1. The model emits no tool calls.</strong> This is the natural endpoint. The model has decided it is done — it has gathered what it needs and produced a final answer. Return that answer to the caller and exit. This is the case the loop is designed to reach.</p>
+
+        <p><strong>2. The max-iteration safeguard fires.</strong> You count iterations and stop when you hit the cap. Twenty iterations is a reasonable default for most tasks; some need more, very few legitimately need fewer. The cap is not a feature — it is a circuit breaker. It exists so a misbehaving loop costs you bounded dollars instead of unbounded ones.</p>
+
+        <p><strong>3. The model emits an explicit "finish" signal.</strong> Some harnesses give the model a tool called <code>finish</code> or <code>respond_to_user</code> whose only job is to signal completion (and optionally carry the final answer as its argument). This is a stronger guarantee than "no tool calls" — it forces the model to make termination an explicit, structured decision rather than an implicit one. Worth considering when the cost of running an extra turn is high or when you want a clean audit trail of why each loop ended.</p>
+
+        <p>You also want to detect a fourth case, which is not termination but the thing that makes you wish for it: the <strong>stuck loop</strong>. The model keeps calling tools but is making no progress — same call, same result, same call again. The simplest detector is a small ring buffer of the last N tool calls; if you see exact-repeat calls more than two or three times, log it, surface it to the operator, and either break the loop or inject a system message telling the model to summarize and finish.</p>
+
+        <div class="note">
+          <span class="note-tag">SAFETY</span>
+          <p class="note-head"><em>Always cap iterations.</em></p>
+          <p>A loop without a cap is a loop that will sometimes spin forever — running up cost, holding open tool connections, and producing nothing. 20 iterations is a reasonable default for most tasks. If you legitimately need more, surface it as a config knob, not a removed cap.</p>
+        </div>
+
+        <p>One nuance worth flagging. The model's "I'm done" signal and your max-iteration cap are not interchangeable. The first is the model declaring success; the second is your harness preventing damage. When the cap fires, you are not done — you have run out of patience. Your application code should treat these two exits differently, even if the user-facing message is the same.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — State and history
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">State and history</h2>
+
+        <p>The state of the loop is the message history. Every assistant response, every tool call, every tool result, in order. That list is the only thing the model sees on each iteration — it has no memory between calls, no hidden scratchpad, no implicit context. If something is not in the history, the model does not know it happened.</p>
+
+        <p>This is clean but expensive. The history grows linearly with every turn, and you re-send all of it on every call. By turn 10 of a session, you are paying for the system prompt, the tool definitions, and nine previous turns of conversation each time the loop ticks. Two pressures bite at once.</p>
+
+        <p><strong>Cost.</strong> Input tokens add up. A 20K-token prompt running ten turns is a quarter of a million input tokens — without caching, that is real money per session. Prompt caching (see Primer 1) flattens most of this curve, but only for the stable prefix. The growing history part still costs full price.</p>
+
+        <p><strong>Signal-to-noise.</strong> Even when cost is fine, an overlong history hurts performance. Old tool results from two tasks ago compete for the model's attention with what you actually need it to do now. The model can lose the thread, mis-remember earlier facts, or fixate on stale context. More history is not always more grounding.</p>
+
+        <p>You have four serious strategies for history management. They sit on a spectrum from "keep everything" to "keep almost nothing," and you usually compose them rather than pick one.</p>
+
+        <ul>
+          <li><strong>Full history.</strong> Fine for short sessions (≤5 turns) or when every detail might matter. The default until proven otherwise.</li>
+          <li><strong>Sliding window.</strong> Keep the last N turns; drop older ones. Cheap and simple. Works for tasks where local context is what matters and the goal lives in the current few turns.</li>
+          <li><strong>Summarized prefix + recent window.</strong> Run a periodic summarization pass over the older turns and replace them with a compact summary. The recent window stays verbatim. This is the most common production pattern.</li>
+          <li><strong>Tool-result compression.</strong> Replace verbose tool outputs (a 5,000-token API response, a giant file dump) with a structured summary the moment they arrive. Often the highest-leverage move because tool results dominate token counts in tool-heavy agents.</li>
+        </ul>
+
+        <p>Compression has a failure mode worth naming: the summary throws away the exact piece of information the model needed three turns later. Hedge by keeping recent turns verbatim, by summarizing in a structured (rather than prose) format, and by giving the model a way to ask for the original — for example, a <code>recall_full_result</code> tool that fetches the unsummarized version from a side store.</p>
+
+        <p>For the deeper memory treatment — persistent state across sessions, vector recall, structured agent memory — see <a href="06-memory-and-state.html">Primer 6 — Memory &amp; State</a>. The strategies here cover within-session history; that primer covers cross-session memory.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — Failure modes
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">Failure modes</h2>
+
+        <p>The canonical loop is robust enough to be a default, but every team that runs one in production trips on a small set of recurring failures. The patterns are recognisable. Naming them is half the cure.</p>
+
+        <h3>Loop won't terminate</h3>
+
+        <p>The model keeps calling tools, often the same one with slightly different arguments, and never emits a terminal response. You watch your iteration counter climb toward the cap.</p>
+
+        <p>The common cause is an <strong>ambiguous tool output</strong>. The tool returns something the model cannot interpret as "this is the answer" — say, a paginated API response without a clear end-of-results marker, or an error message that looks like it might be a transient problem worth retrying. The model retries. The tool returns the same ambiguous thing. The cycle continues.</p>
+
+        <p>The fix lives in the tool, not the prompt. Give every tool output a structured shape that says, in effect, "here is the data, here is the status, here is whether you should call me again." A <code>status: complete</code> field, an explicit <code>more_results: false</code>, a clean error code. The model is good at following these signals when they exist and bad at guessing when they do not.</p>
+
+        <h3>Model won't use tools</h3>
+
+        <p>Tools are defined and available; the model answers from its own knowledge anyway. Often the answer is plausible-looking but wrong, because the model is hallucinating instead of calling the lookup tool you wrote specifically to prevent hallucination.</p>
+
+        <p>Two causes. First, <strong>weak prompting</strong> — your system prompt does not make it clear that tool use is expected, so the model treats tools as optional sugar rather than the right path. Second, <strong>overlap with prior knowledge</strong> — the model "knows" Bengaluru's typical weather, so it answers from memory rather than calling <code>get_weather</code>. The second case is more insidious because it works most of the time, until the day the model's memory is stale or wrong and there is no fallback.</p>
+
+        <p>Two fixes. Be explicit in the system prompt: "Always use the available tools to look up real-time information; do not answer from prior knowledge." If that is not enough, use the provider's <code>tool_choice</code> control — set it to <code>"any"</code> or <code>"required"</code> for the turns where you need tool use to happen no matter what.</p>
+
+        <h3>Cascade failures</h3>
+
+        <p>A tool errors out. The harness raises an exception. The loop dies. Or worse, the harness catches the exception, returns a malformed tool result, and the model spirals into a recovery loop calling the broken tool over and over.</p>
+
+        <p>The fix is a single principle that takes a few iterations to internalize: <strong>tool errors are messages to the model, not exceptions in your program</strong>. When a tool fails — schema validation, timeout, API 500, anything — wrap the error in a structured <code>tool_result</code> with <code>is_error: true</code> and a human-readable message, then append it to the history exactly like a successful result. The model sees the failure, reasons about it, and usually picks a different action.</p>
+
+        <p>Exceptions should be reserved for things the model genuinely cannot recover from — the harness itself misconfigured, the LLM provider down, the iteration cap hit. Everything in between flows through the message history. Once you make this distinction sharp, a whole category of cascade failures disappears.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — When to outgrow the canonical loop
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">When to outgrow the canonical loop</h2>
+
+        <p>The canonical loop is the default for a reason: it is simple, observable, and sufficient for most agent tasks. But it has a shape, and some tasks have a different shape. Three signals tell you it is time to reach for something else.</p>
+
+        <p><strong>The task wants parallel exploration.</strong> If the work decomposes into branches that can be explored independently — three candidate database queries, five competing hypotheses, a research task with multiple sources to investigate at once — a single sequential loop turns that natural parallelism into wasted wall-clock time. This is the canonical case for <strong>multi-agent</strong>, where a coordinator spins up sibling agents that work in parallel and aggregate their findings. See <a href="08-multi-agent-patterns.html">Primer 8 — Multi-Agent Patterns</a>.</p>
+
+        <p><strong>The task has a clear plan-then-execute structure.</strong> Some tasks benefit from explicitly separating planning from execution — first lay out the full sequence of steps, then run them in order. A canonical loop blurs this distinction; the model plans implicitly, one step at a time, with no separate artifact for the plan as a whole. When you need plan visibility, plan editing, or human approval of the plan before any action runs, you want a <strong>planner + executor</strong> pattern. See <a href="07-planning-and-decomposition.html">Primer 7 — Planning &amp; Decomposition</a>.</p>
+
+        <p><strong>One agent cannot hold all the context.</strong> Long tasks blow through the context window. Complex tasks blow through the model's ability to attend to everything at once. The fix is <strong>sub-agents</strong>: spawn a child agent with its own clean context window for a focused sub-task, then return only the distilled result to the parent. The parent keeps a tidy history; the child does the heavy lifting and disappears. See <a href="09-sub-agents-skills-harnesses.html">Primer 9 — Sub-Agents, Skills, Harnesses</a>.</p>
+
+        <p>Notice what is not on this list: "we want to feel sophisticated." The single most common bad call in agentic systems is reaching for multi-agent or planner architectures before the canonical loop has actually failed. Multi-agent multiplies the number of debugging surfaces by N. Planners introduce a new failure mode where the plan is wrong before the first action runs. Sub-agents make state harder to reason about.</p>
+
+        <div class="note">
+          <span class="note-tag">DEFAULT</span>
+          <p class="note-head"><em>Outgrow the loop only after it has hurt you.</em></p>
+          <p>Premature multi-agent is the most common bad call in agentic systems. If you cannot point at a specific failure your canonical loop is committing — wasted parallelism, opaque planning, context exhaustion — the right answer is to stay with the canonical loop and add better tools, better caching, or better termination. Reach for something fancier when the simple shape demonstrably is not enough.</p>
+        </div>
+
+        <p>The canonical loop will get you further than you expect. Build one. Run it against a real task. Watch where it strains. When it strains in a way that matches one of the three signals above, then — and only then — pick the right next pattern from the primers that follow.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE II · PRIMER 05 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  // Scroll-spy: rAF-throttled, divide-by-zero-safe.
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+
+  // Animation pause/play toggle.
+  document.querySelectorAll('.anim-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const svg = btn.parentElement.querySelector('.loop-anim');
+      if (!svg) return;
+      const paused = svg.classList.toggle('paused');
+      btn.textContent = paused ? 'PLAY' : 'PAUSE';
+      btn.setAttribute('aria-pressed', String(paused));
+    });
+  });
+  </script>
+</body>
+</html>
