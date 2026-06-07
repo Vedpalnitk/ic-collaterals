@@ -101,3 +101,13 @@ adjust before Phase 2.
    to non-existent primers (06, 07, 08, 09, 11, 12). This is intentional —
    the links light up as Phase 2 lands — but worth flagging in the course
    readme.
+7. **Pin a single keyframe-naming convention.** Primer 5 used positional
+   names (`stage1`, `stage2`, `stagelabel`); Primer 17 used behavior names
+   (`flowAcross`, `flowThroughSeam`, `seamPulse`). Both work but the next
+   animated primer will copy whichever it cribs from. Behavior-named is
+   the better default (survives refactor, reads correctly in DevTools).
+   Document this in the spec alongside the animation toggle pattern.
+8. **Pin the `prefers-reduced-motion` block shape.** Primer 5 and Primer
+   17 both handle it correctly but with different declaration order and
+   one with an explicit fallback rule. Pick one canonical shape (Primer 5
+   is the more defensive of the two) and document it.
