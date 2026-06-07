@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 3 — Tool Use & Structured Output · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; max-height: none; } }
+
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .progress::before { transition: none; } }
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <!-- PER-PRIMER REPLACE: masthead-right "MODULE N · PRIMER NN / 20" -->
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE I · PRIMER 03 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">Tool Use &amp; Structured Output</h1>
+    <p class="subtitle"><em>The model decides; your harness executes. The schema is what makes it reliable.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">COLD START</span>
+    <p>If you haven't read Primer 2 — the system prompt is the model's standing instructions. Tool definitions are read every turn alongside it; treat their descriptions like prompt prose.</p>
+  </aside>
+
+  <div class="layout">
+    <!-- PER-PRIMER REPLACE: TOC entries + prev/next nav hrefs -->
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">What tool use actually is</a></li>
+        <li><a href="#s2" class="toc-link">Defining a tool</a></li>
+        <li><a href="#s3" class="toc-link">Schema discipline</a></li>
+        <li><a href="#s4" class="toc-link">Structured output: schemas as guardrails</a></li>
+        <li><a href="#s5" class="toc-link">Validation, retries, and the parse loop</a></li>
+        <li><a href="#s6" class="toc-link">When to force a tool vs let the model choose</a></li>
+        <li><a href="#s7" class="toc-link">What this connects to</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="02-prompting-and-context-engineering.html">← Primer 2 — Prompting &amp; Context Engineering</a>
+        <a class="nav-link next" href="04-retrieval-augmented-generation.html">Primer 4 — Retrieval-Augmented Generation →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — What tool use actually is
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">What tool use actually is</h2>
+
+        <p>"Tool use" is a phrase that misleads beginners because it implies the model is reaching out and doing something. It isn't. The model emits a structured <strong>tool call</strong> — a JSON-shaped payload with a tool name and a dictionary of arguments — as part of its normal token stream. Your code, the harness, sees that call, runs the actual function, and feeds the result back as a <code>tool_result</code> message on the next turn. The model then continues generating, now conditioned on whatever your tool returned. The model decides; your code executes. The pattern is the same across every major SDK — names differ, the shape doesn't.</p>
+
+        <p>Three consequences fall out of this that builders frequently miss:</p>
+
+        <p><strong>The model doesn't actually call anything — it asks.</strong> Nothing in the model's runtime touches your database, your filesystem, or the open internet. The model produces tokens that the harness parses into "I would like you to run <code>screen_sanctions</code> with these arguments." The harness is what calls. This is also where every authorization decision lives: the model can ask for anything; the harness decides what gets executed. Primer 12 will return to this — it is the single highest-leverage place to install guardrails.</p>
+
+        <p><strong>The tool's behavior is invisible to the model except through what comes back.</strong> The model has no introspection into your code, no sense of whether the tool hit a cache or a cold database, no way to know that one customer ID returned in 40ms and another in 4 seconds. The only signal it gets is the <code>tool_result</code> string. If that string is rich and self-describing, the model can act on it intelligently. If it's a bare ID or an opaque error code, the model is left guessing.</p>
+
+        <p><strong>If the tool result is ambiguous, the model will guess.</strong> Returning <code>{"status": "ok"}</code> on a screening hit and <code>{"status": "ok"}</code> on a clean record will produce confidently wrong downstream behavior — the model has no choice but to fill in the missing distinction. Make tool output structured and self-describing: include the matched fields, the confidence score, the source list, the timestamp. Verbose, parseable results are cheaper than retries.</p>
+
+        <p>"Tool use" is the agent's superpower not because the model gains new capabilities — it is still the same next-token predictor it was a turn ago — but because the model gains <em>eyes</em> (search, retrieval, file reads) and <em>hands</em> (writes, queries, transactions, side-effecting actions) inside your system. Everything else in this course — the agent loop, sub-agents, RAG, evaluation harnesses — depends on getting this primitive right. If the tool call protocol is sloppy at this layer, no amount of orchestration above it will rescue the system.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — Defining a tool
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">Defining a tool</h2>
+
+        <p>A tool definition is small: a name, a description, an input schema. That is the entire surface. Each of those three fields does a different job, and getting the proportions right is most of the craft. The model reads all three of them on every turn, alongside the system prompt — they are prompt material, not configuration. A sloppy tool description is a sloppy prompt, paid for on every call.</p>
+
+        <p><strong>The name.</strong> Imperative verb, snake_case, narrow scope. <code>screen_sanctions</code>, not <code>do_screening</code>. <code>fetch_customer_record</code>, not <code>customer_api</code>. <code>send_escalation_email</code>, not <code>notify</code>. The model picks tools the way a developer picks library functions — by reading the name first and the description second. A vague name forces the model to lean on the description to disambiguate; a precise name lets the description do narrower work. When you find yourself wanting to suffix a tool with <code>_v2</code> or <code>_advanced</code>, the underlying name is wrong — rename, don't decorate.</p>
+
+        <p><strong>The description.</strong> One or two sentences. Three things in priority order: what it does, when to use it, and any constraints worth flagging (cost, latency, side effects, prerequisites). "Screen a customer against a sanctions list. Returns hits with match-confidence scores. Use for any new customer or any payment above the screening threshold." That is enough. What the description should not contain: instructions about other tools, lore about the system, motivation, or hedges. The model needs a contract, not a paragraph.</p>
+
+        <p><strong>The schema.</strong> JSON Schema is the lingua franca — every SDK accepts a subset of it. Five things matter: the property types, a one-line <code>description</code> on every property, an <code>enum</code> wherever the values are bounded, a <code>required</code> list, and the avoidance of free-form blobs. If a property could in principle hold "anything," that property is a future bug report. Either narrow it or split it into the cases you actually care about.</p>
+
+        <div class="code">
+          <span class="code-tag">PYTHON</span>
+<pre>tools = [{
+    "name": "screen_sanctions",
+    "description": "Screen a customer against a sanctions list. Returns hits with match-confidence scores. Use for any new customer or any payment above the screening threshold.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "customer_id": {
+                "type": "string",
+                "description": "The internal customer identifier."
+            },
+            "list": {
+                "type": "string",
+                "enum": ["OFAC_SDN", "UN", "EU", "HMT", "ALL"],
+                "description": "Which list to screen against. Use ALL for new customers."
+            }
+        },
+        "required": ["customer_id", "list"]
+    }
+}]</pre>
+        </div>
+
+        <p>Notice the shape. The name is a verb. The description tells the model when to reach for this tool, not just what it does. Every property has a <code>description</code>. The <code>list</code> field is an enum, not a string — there is no universe in which "OFAC" and "OFAC_SDN" should both be accepted, and the enum makes the model's choice deterministic. Both properties are required: there is no sensible default for either, and "optional with a default" is how you end up screening against the wrong list on the second Tuesday of the month.</p>
+
+        <p>A tool definition that looks like this on day one keeps working on day ninety. A tool definition with three free-form strings and no descriptions starts failing the moment the agent encounters a customer record it hasn't seen before. The schema is where reliability is bought.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — Schema discipline
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">Schema discipline</h2>
+
+        <p>If §2 was the shape of a good tool, this section is the disciplined habit that produces one. Of every craft technique in this course, schema tightening has the highest leverage-to-effort ratio. Ten minutes per tool, paid once, removes an entire category of failures that would otherwise show up as flaky behavior in production and burn days of debugging.</p>
+
+        <p>Four common sins account for most schema-induced failures:</p>
+
+        <ul>
+          <li><strong>Missing <code>description</code> on properties.</strong> The model has to guess what the field means. Sometimes it guesses right. The cases where it guesses wrong are the ones you remember.</li>
+          <li><strong>Free-form <code>string</code> where an <code>enum</code> belongs.</strong> Anywhere the valid values are bounded — risk tiers, country codes, status names, severity levels — an enum makes the model's output predictable. A string field invites the model to compose something plausible and wrong.</li>
+          <li><strong>Optional everything.</strong> If nothing is required, the model will omit half the fields on half the calls, especially the ones it considers "obvious." Required fields force the model to fill them; their presence in the schema is also a signal to the model that they are load-bearing.</li>
+          <li><strong>Nested objects with no descriptions.</strong> A bare <code>type: object</code> blob tells the model "put a dictionary here" and nothing else. Sub-schemas with their own property descriptions turn the nested shape from a hint into a contract.</li>
+        </ul>
+
+        <p>Show the same field in both registers and the difference becomes obvious. The same model, given a tight schema, will produce parseable output on inputs it would have fumbled with a loose one.</p>
+
+        <table class="cmp">
+          <thead><tr><th>Pattern</th><th>Reliable</th><th>Brittle</th></tr></thead>
+          <tbody>
+            <tr><td>Bounded values</td><td><code>enum: ["LOW", "MID", "HIGH"]</code></td><td><code>type: string</code> with hopes</td></tr>
+            <tr><td>Required keys</td><td>Explicitly listed in <code>required</code></td><td>All optional, model guesses</td></tr>
+            <tr><td>Property descriptions</td><td>One sentence per property</td><td>None — model infers intent</td></tr>
+            <tr><td>Nested shapes</td><td>Sub-schema with own descriptions</td><td><code>type: object</code> blob</td></tr>
+          </tbody>
+        </table>
+
+        <p>A working heuristic: read your schema aloud to a colleague who has never seen the tool. If, for any property, they would ask "what does that mean?" or "what values can it take?" — the schema is too loose. Add the description; add the enum. The five minutes it costs you pays back the first time the model encounters a customer whose record uses a slightly different vocabulary than the one in your prompt.</p>
+
+        <p>One more piece of discipline: avoid optional fields with defaults baked into the schema. If a field has a sensible default, set the default in your <em>tool implementation</em>, not in the schema. The schema is what the model sees; the implementation is what the harness runs. Putting defaults in the schema teaches the model it can skip the field, which it then does in cases where you really wanted it to think about the value.</p>
+
+        <p>A tight schema is the difference between a tool that works 95% of the time and one that works 75%. Every property description is a prompt, paid for in tokens once per turn and earning its keep on every call. Treat schemas with the same care you give prose — they are prose, just typed.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — Structured output: schemas as guardrails
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">Structured output: schemas as guardrails</h2>
+
+        <p>The JSON Schema mechanism you learned for tool inputs has a second, equally important use: <strong>constraining the model's output</strong> when you want a parseable response rather than free text. Anywhere you would have written a regex to extract a field from a model's prose, the schema does it cleanly and at the source. The model emits structured output directly; your code parses it as a typed object.</p>
+
+        <p>There are two ways to get this in practice. The first is the one you can use today on any model with tool calling: <strong>force a tool call</strong> by setting <code>tool_choice</code> to a specific tool name. The model must emit a call matching that tool's input schema, even if you have no intention of actually "using" the tool. You define a tool called <code>return_classification</code> with the schema of the output you want, force the model to call it, and read the arguments. It feels like a hack — it is a hack — but it is the most reliable structured-output mechanism available across providers today.</p>
+
+        <p>The second is a model-native structured-output feature. Several providers now expose first-class JSON-schema-constrained generation that doesn't pretend to be a tool call. The output is cleaner — no fake tool wrapper — but the feature is newer, the schema-coverage is narrower, and the edge cases are still being shaken out. For production work today, forced tool use is the conservative choice; native structured output is the direction to migrate toward as the feature matures across the providers you target.</p>
+
+        <p>The trade-off is real. Forced tool calls always work, but the output is tool-shaped: you parse <code>block.input</code> rather than a clean response object. Native structured output is cleaner code, but you accept whatever the provider's schema support actually covers — which today is "most things, sometimes." Pick the option whose failure mode you can live with, and write the wrapper that lets you swap them out without rewriting the call sites.</p>
+
+        <div class="note">
+          <span class="note-tag">RELIABILITY</span>
+          <p class="note-head"><em>Constrain the output, then constrain less.</em></p>
+          <p>Start with a tight schema and a forced tool. Once your eval suite shows reliable parsing across 50+ varied inputs, you can experiment with loosening — letting the model choose tools, falling back to free text when no tool fits. Loosen one constraint at a time; eval after each step.</p>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — Validation, retries, and the parse loop
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">Validation, retries, and the parse loop</h2>
+
+        <p>Even with a tight schema and a forced tool, the model will occasionally hand you something that doesn't validate. An enum value just outside the allowed set. A nested object missing a required key. A confidence score expressed as the string "high" when the schema asked for a float between 0 and 1. These are rare in good prompts and unavoidable at scale, and the difference between an agent that survives them and one that doesn't is a small amount of harness code applied consistently.</p>
+
+        <p>The pattern is three steps:</p>
+
+        <p><strong>Validate the result against the schema before treating it as truth.</strong> Pydantic, a JSON Schema validator, hand-written type guards — pick a tool and use it on every tool call's arguments. A successfully parsed tool call is not a validated one; the SDK only checks the shape, not the semantics. <code>list: "ALL"</code> is a valid string, but if your real list of accepted values is <code>["OFAC_SDN", "UN", "EU", "HMT", "ALL"]</code>, only the validator will catch the typo before it hits the database.</p>
+
+        <p><strong>On validation failure, feed the error back to the model as a <code>tool_result</code> with <code>is_error: true</code></strong> and the validation message as the content. The model treats this as exactly what it is: a signal that its previous output did not satisfy the contract, with a specific reason. In practice the model corrects itself on the next turn for the vast majority of these cases. Two retries is enough — any more and you are papering over a schema problem you should fix at its source.</p>
+
+        <p><strong>After 2 failed retries, log and escalate.</strong> Do not fall back to a default value or a "best effort" guess. The model has demonstrated, three times, that it does not know what the right answer looks like. Quietly substituting a default turns a visible failure into a silent one, which is the worst class of bug in production agents. Surface the escalation, capture the trace, and look at it during your next eval review.</p>
+
+        <div class="code">
+          <span class="code-tag">PYTHON</span>
+<pre>from anthropic import Anthropic
+import json
+
+MAX_RETRIES = 2
+
+def call_with_validation(client, system, user_msg, tools, validator):
+    history = [{"role": "user", "content": user_msg}]
+    for attempt in range(MAX_RETRIES + 1):
+        resp = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=1024,
+            system=system,
+            tools=tools,
+            tool_choice={"type": "tool", "name": tools[0]["name"]},
+            messages=history,
+        )
+        for block in resp.content:
+            if block.type == "tool_use":
+                try:
+                    return validator(block.input)
+                except ValueError as e:
+                    history.append({"role": "assistant", "content": resp.content})
+                    history.append({"role": "user", "content": [{
+                        "type": "tool_result",
+                        "tool_use_id": block.id,
+                        "content": f"Validation failed: {e}",
+                        "is_error": True,
+                    }]})
+                    break
+    raise RuntimeError(f"Validation failed after {MAX_RETRIES} retries")</pre>
+        </div>
+
+        <p>The shape is small, deliberately. <code>MAX_RETRIES = 2</code> is a constant, not a parameter — when you find yourself wanting to raise it, the right move is to revisit the schema, not the retry budget. The error message gets propagated verbatim because the model is good at correcting against a specific complaint and bad at correcting against "something is wrong." The final <code>raise</code> is the escalation; this is where your tracing and alerting should hook in, so the failure shows up where humans will see it.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — When to force a tool vs let the model choose
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">When to force a tool vs let the model choose</h2>
+
+        <p>The <code>tool_choice</code> parameter is small — three modes — and the right setting is decided by what the agent is being asked to do, not by personal preference. Most production reliability problems on tool-using agents come down to either picking the wrong mode for the task, or leaving the choice unset and letting the model drift between modes turn-to-turn.</p>
+
+        <p><strong>Forced tool</strong> (<code>tool_choice: {type: "tool", name: "X"}</code>) — the model <em>must</em> emit a call to tool <code>X</code>. Use it whenever you know exactly what shape the next response should take: a single-step classification, a structured extraction from a document, a "return-this-shape" pseudo-tool you defined just to constrain the output. This is the safest mode for a non-interactive pipeline step.</p>
+
+        <p><strong>Any tool</strong> (<code>tool_choice: {type: "any"}</code>) — the model must call <em>some</em> tool, but it picks which one. Use it for agents whose job is to act, not chat: the user has asked for something to happen, and a text-only response would mean the agent gave up. The model still has to choose well, but it cannot escape into "let me explain why I won't do this."</p>
+
+        <p><strong>Auto</strong> (<code>tool_choice: "auto"</code> or unset) — the model decides whether to call a tool at all, and which one. Use it for conversational agents that mix dialogue and action: the user might be asking a question, asking for help, or asking the agent to do something concrete, and the model needs the discretion to pick.</p>
+
+        <table class="cmp">
+          <thead><tr><th>tool_choice</th><th>Use for</th><th>Failure mode</th></tr></thead>
+          <tbody>
+            <tr><td><code>forced tool</code></td><td>Single-step extraction, structured output</td><td>Wrong tool used as a hammer</td></tr>
+            <tr><td><code>any</code></td><td>Multi-step agents that must act, not chat</td><td>Model picks the wrong tool</td></tr>
+            <tr><td><code>auto</code></td><td>Conversational mixed text + tools</td><td>Refuses to call when it should</td></tr>
+          </tbody>
+        </table>
+
+        <p>The default for new agent code should be more constrained than feels comfortable. Start with <code>forced tool</code> for any step where you know what shape you want; move to <code>any</code> when the agent has multiple legitimate next steps; reach for <code>auto</code> only when the agent must hold a conversation. It is far easier to loosen a constraint after the eval suite proves the next step is safe than to chase down a phantom "the model just stopped calling the tool" bug in week three.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — What this connects to
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">What this connects to</h2>
+
+        <p>Tool use and structured output is the primitive every later module builds on. The pointers worth carrying forward:</p>
+
+        <ul>
+          <li><strong><a href="02-prompting-and-context-engineering.html">Primer 2 — Prompting &amp; Context Engineering</a></strong> — tool descriptions and property descriptions are prompts. Every word in them is read every turn, and the same discipline that produces a good system prompt produces a good tool description: imperative, specific, no lore.</li>
+          <li><strong><a href="05-agent-loop.html">Primer 5 — The Agent Loop</a></strong> — tools are how the agent's loop iterates. A loop without tools is a chat; a loop with tools is an agent. This primer is the static view of a single tool call; Primer 5 is the dynamic view of many of them composed in sequence.</li>
+          <li><strong><a href="09-sub-agents-skills-harnesses.html">Primer 9 — Sub-Agents, Skills &amp; Harnesses</a></strong> — when one tool isn't enough, you compose tools into skills, and skills into sub-agents. The schemas you wrote here are the contracts that hold those compositions together.</li>
+          <li><strong><a href="12-safety-guardrails-prompt-injection.html">Primer 12 — Safety, Guardrails &amp; Prompt Injection</a></strong> — tool authorization is where most agent security incidents live. The harness decides what gets executed; that decision is your last clean line of defense.</li>
+        </ul>
+
+        <p>Tight schemas, forced tool choice where you know the shape, and a small parse-retry loop on every call together solve perhaps 95% of agent reliability problems before they appear. Build them in from the first tool, not after the first incident. The cost is small and front-loaded; the benefit compounds every turn the agent runs.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE I · PRIMER 03 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+  </script>
+</body>
+</html>
