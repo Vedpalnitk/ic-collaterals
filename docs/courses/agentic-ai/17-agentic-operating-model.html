@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 17 — The Agentic Operating Model · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; max-height: none; } }
+
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+.cmp td strong { font-family: var(--display); font-weight: 500; color: var(--pavement); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+/* ============================================================
+   Animated figure — own / assist / escalate stream diagram
+   Three lanes, ~6s cycle, tokens flow with staggered delays.
+   ============================================================ */
+.animated-figure { position: relative; }
+.org-anim { width: 100%; height: auto; display: block; }
+
+/* OWN: token travels left-to-right across the lane, no pause. */
+@keyframes flowAcross {
+  0%   { transform: translateX(0);     opacity: 1; }
+  95%  {                               opacity: 1; }
+  100% { transform: translateX(540px); opacity: 1; }
+}
+
+/* ASSIST: token travels across; the seam pulse handles the "stop and verify"
+   visual. The token continues forward after passing the seam. */
+@keyframes flowThroughSeam {
+  0%   { transform: translateX(0);     opacity: 1; fill: #007CC3; }
+  44%  { transform: translateX(238px); opacity: 1; fill: #007CC3; }
+  48%  { transform: translateX(258px); opacity: 1; fill: #3699DA; }
+  56%  { transform: translateX(282px); opacity: 1; fill: #3699DA; }
+  60%  { transform: translateX(302px); opacity: 1; fill: #007CC3; }
+  100% { transform: translateX(540px); opacity: 1; fill: #007CC3; }
+}
+
+/* ESCALATE — most tokens hit the seam and drop out (closed). */
+@keyframes flowDropAtSeam {
+  0%   { transform: translateX(0)   translateY(0);   opacity: 1; fill: #007CC3; }
+  44%  { transform: translateX(238px) translateY(0); opacity: 1; fill: #007CC3; }
+  52%  { transform: translateX(270px) translateY(28px); opacity: 0.6; fill: #A7A9AC; }
+  62%  { transform: translateX(270px) translateY(36px); opacity: 0.35; fill: #A7A9AC; }
+  100% { transform: translateX(270px) translateY(36px); opacity: 0.25; fill: #A7A9AC; }
+}
+
+/* ESCALATE — one token escalates through the seam to the specialist. */
+@keyframes flowToSpecialist {
+  0%   { transform: translateX(0);     opacity: 1; fill: #007CC3; }
+  44%  { transform: translateX(238px); opacity: 1; fill: #007CC3; }
+  50%  { transform: translateX(260px); opacity: 1; fill: #3699DA; }
+  60%  { transform: translateX(310px); opacity: 1; fill: #007CC3; }
+  100% { transform: translateX(540px); opacity: 1; fill: #007CC3; }
+}
+
+/* Seam icons pulse when a token is passing through them. */
+@keyframes seamPulse {
+  0%, 38%      { fill: #E6F2FA; stroke: #007CC3; }
+  44%, 58%     { fill: #007CC3; stroke: #007CC3; }
+  64%, 100%    { fill: #E6F2FA; stroke: #007CC3; }
+}
+
+/* Specialist icon pulses slightly later — when the escalated token arrives. */
+@keyframes specialistPulse {
+  0%, 56%      { fill: #E6F2FA; stroke: #007CC3; }
+  62%, 78%     { fill: #007CC3; stroke: #007CC3; }
+  84%, 100%    { fill: #E6F2FA; stroke: #007CC3; }
+}
+
+.org-anim .token-own,
+.org-anim .token-assist,
+.org-anim .token-esc-drop,
+.org-anim .token-esc-route {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.org-anim .token-own    { animation: flowAcross      6s linear infinite; }
+.org-anim .token-assist { animation: flowThroughSeam 6s linear infinite; }
+.org-anim .token-esc-drop  { animation: flowDropAtSeam   6s linear infinite; }
+.org-anim .token-esc-route { animation: flowToSpecialist 6s linear infinite; }
+
+.org-anim .seam-assist    { animation: seamPulse       6s linear infinite; transform-box: fill-box; transform-origin: center; }
+.org-anim .seam-escalate  { animation: seamPulse       6s linear infinite; transform-box: fill-box; transform-origin: center; }
+.org-anim .specialist     { animation: specialistPulse 6s linear infinite; transform-box: fill-box; transform-origin: center; }
+
+.org-anim.paused * { animation-play-state: paused !important; }
+
+.anim-toggle { background: var(--white); border: 1px solid var(--rule); padding: 4px 10px; cursor: pointer; margin-top: 8px; color: var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+.anim-toggle:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.anim-toggle:hover { background: var(--tint-blue); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .progress::before { transition: none; }
+  .org-anim * { animation: none !important; }
+  .anim-toggle { display: none; }
+}
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <!-- PER-PRIMER REPLACE: masthead-right "MODULE N · PRIMER NN / 20" -->
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE V · PRIMER 17 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">The Agentic Operating Model</h1>
+    <p class="subtitle"><em>Humans don't disappear. They concentrate at the seams.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">COLD START</span>
+    <p>If you haven't read Primer 15 — agents in banking compliance do the <em>gather</em> work and humans do the <em>judge</em> work, with a strict evidence chain. This primer generalises that pattern across the org: the seam where the human sits is the load-bearing piece of an agentic operating model.</p>
+  </aside>
+
+  <div class="layout">
+    <!-- PER-PRIMER REPLACE: TOC entries + prev/next nav hrefs -->
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">The operating-model problem</a></li>
+        <li><a href="#s2" class="toc-link">Humans at the seam</a></li>
+        <li><a href="#s3" class="toc-link">Own / assist / escalate</a></li>
+        <li><a href="#s4" class="toc-link">Work redesign</a></li>
+        <li><a href="#s5" class="toc-link">Control points</a></li>
+        <li><a href="#s6" class="toc-link">Measuring an agentic function</a></li>
+        <li><a href="#s7" class="toc-link">The change-management curve</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="15-agentic-kyc-surveillance.html">← Primer 15 — Agentic KYC &amp; Surveillance</a>
+        <a class="nav-link next" href="index.html">Course syllabus →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — The operating-model problem
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">The operating-model problem</h2>
+
+        <p>There is a pattern every team that ships agents eventually trips on. The first deployment lands inside an existing workflow. The agent picks up a task an analyst used to do, executes it faster, and the team congratulates itself. Six months in, the productivity curve flattens. The agent is doing the same case in two minutes that used to take twenty, but the case still has to wait three days for a human approval that was designed for human throughput, still has to be re-keyed into a downstream system that nobody owns, still gets blocked at a compliance handoff that nobody has revisited in years. The pilot plateaus at 2× — far short of what the technology can do — and nobody can quite say why.</p>
+
+        <p>The reason is that the agent inherited the friction. Workflows that grew up around human pace have human-paced handoffs, human-paced approvals, human-paced silos. Dropping a faster worker into the same shape of work amplifies the parts that were already constraints. The agent does the cheap step in seconds; the rest of the line still moves at the cadence the human era built. <em>The agent is doing the old work, faster, in the same shape.</em> That is the ceiling.</p>
+
+        <p>The teams that break through don't get there by deploying a better agent. They get there by redesigning the work around what an agent can actually do — what shrinks, what grows, where the seam between agent and human sits, who owns the new pieces, what gets measured. The operating-model rebuild <em>is</em> the product. Skipping it is the most common reason a technically successful pilot fails to compound into business value.</p>
+
+        <p>The client-tier POV deck at <a href="../primers/agentic-ai-banking-primer.html">Agentic AI in Banking</a> makes this argument for buyers — banking executives weighing where to invest. This primer is the builder's version of the same insight. The deck names the shift; this primer is the playbook for the people who have to do the redesign. The vocabulary is identical (humans at the seam, own/assist/escalate, role atomisation), but the audience is different. There, the question is "is this strategic?" Here, it is "how do I actually run my function tomorrow?"</p>
+
+        <p>The rest of this primer walks the operating-model decisions in the order you will hit them — first the seam thesis, then the three routing modes, then the work-redesign mechanics, then the control points, then the KPIs you will report on, then the change-management curve the function has to walk through.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — Humans at the seam
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">Humans at the seam</h2>
+
+        <p>Pre-agent, work flowed horizontally — through handoffs between humans. An analyst gathered evidence; another analyst reviewed it; a manager approved it; a downstream team executed it. Each handoff was a queue, an inbox, a ticket. The geometry of the function was a chain of human-to-human passes, and most of the optimisation work for the past two decades has been about making those passes faster: shared systems, single windows of glass, lean process redesign.</p>
+
+        <p>Post-agent, the geometry rotates ninety degrees. Most of the flow is now agent-to-agent: one tool's output is another tool's input, the model orchestrates the sequence, and the work proceeds at machine cadence with no inbox in between. But at certain points — and only certain points — the flow has to turn vertical and pass through a human. A regulatory checkpoint. A novel situation the agent has never seen. A high-risk approval the firm has policy-bound to a named person. The humans don't disappear; they <em>concentrate at the seams</em>, where the agent flow has to surface into human judgment before it can continue.</p>
+
+        <p>This matters for three reasons, and they are the three reasons the seam thesis has held up across every function we have deployed agents into.</p>
+
+        <p><strong>Productivity.</strong> When humans were the workers, their attention was spread across the whole flow — most of it on gathering (pulling documents, copying numbers, reading prior cases), some on judging (the actual decision). Most analyst time, by minute count, went to the gather. After the rebuild, the gather is agent work; the human time concentrates on the judge — the cases where judgment is the constraint, not the gathering. Fewer hours go into the function; the hours that remain are spent on the part that was always the point.</p>
+
+        <p><strong>Risk.</strong> The seam is a control point. It is where the audit trail of human accountability is recorded. When the regulator asks "who decided this?", the answer cannot be "the model." It has to be a named person who reviewed the case, who saw the agent's recommendation and the evidence behind it, and who signed off. The seam is where that signature lives. Placing the seam well — at the regulatory checkpoints, not at every routine confirmation — is the operational equivalent of designing a control framework. It is a first-class operating-model decision, not a UI choice.</p>
+
+        <p><strong>Roles.</strong> The seam changes what a person does. The work shifts from <em>doing the work</em> to <em>authorizing the work</em>: reading a case the agent has assembled, applying judgment to the parts the agent flagged, and making the call. That is a different cognitive load. It is a different skill — pattern matching, sense-making, edge-case calibration — and it is often a different person. The senior analyst whose career was built on being faster at the gather has to relearn the job. The new hire who never had to do the gather has a steeper path to becoming someone the firm trusts to authorize. The shift is not subtle, and the function has to plan for it.</p>
+
+        <blockquote class="pull">The future of work is not fewer humans. It's humans at the seams between agents.</blockquote>
+
+        <p>The phrase is shorthand for the whole rebuild. If you take one image away from this primer, take this one: an agent flow with named, well-placed seams — and at every seam, a human with the time, the training, and the authority to make the call.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — Own / assist / escalate (animated)
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">Own / assist / escalate</h2>
+
+        <p>Once you accept the seam thesis, the next question is the obvious one: where do the seams go? The answer is a routing decision that every case in the function has to be classified against. Three modes — own, assist, escalate — cover the space.</p>
+
+        <p><strong>Own.</strong> The agent executes end-to-end. There is no human in the path. Used for work that is well-bounded, high-volume, low-risk, and where the agent's accuracy on the task suite is above the bar the function has set. Routine identity refreshes for low-risk customers. Auto-disposition of obvious false-positive alerts. The cases where adding a human would slow the work and add no judgment value, because the judgment is already encoded in the policy the agent is following.</p>
+
+        <p><strong>Assist.</strong> The agent prepares the case; a human reviews and decides. The seam is in the middle: agent gathers, human authorises. Used for moderate-risk, high-stakes work where judgment is still the point — a credit decision, a customer complaint that has escalated, a periodic review of a mid-risk relationship. The agent's job is to make the human's review fast: the case pack from Primer 15 is the right deliverable. The human's job is to read, judge, sign.</p>
+
+        <p><strong>Escalate.</strong> The agent does not act. It flags, packages context, and routes to a specialist. Used for the cases the agent should not be making calls on: novel situations the task suite did not cover, low-confidence outputs, high-risk thresholds, anything the policy has named as specialist-only. The escalate path is what keeps the function safe at the edges. It is also a feedback signal — a rising escalate rate is the function telling you the agent's scope is wrong, or the world has moved.</p>
+
+        <div class="figure animated-figure">
+          <span class="figure-tag">FIG. 02 · ANIMATED</span>
+          <svg id="fig02-org-anim" viewBox="0 0 600 320" class="org-anim" role="img" aria-label="Three work streams — Own, Assist, Escalate — showing how tokens flow through each routing mode">
+            <defs>
+              <marker id="arrOrg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M0,0 L10,5 L0,10 z" fill="#007CC3"/>
+              </marker>
+            </defs>
+
+            <!-- Row labels -->
+            <g font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="1" fill="#007CC3">
+              <text x="12" y="68"  >OWN</text>
+              <text x="12" y="164" >ASSIST</text>
+              <text x="12" y="260" >ESCALATE</text>
+            </g>
+
+            <!-- Stream rules (thin horizontal lines) -->
+            <g stroke="#E2E4E7" stroke-width="1">
+              <line x1="80"  y1="80"  x2="580" y2="80" />
+              <line x1="80"  y1="176" x2="580" y2="176"/>
+              <line x1="80"  y1="272" x2="580" y2="272"/>
+            </g>
+
+            <!-- Stream arrow heads (right edge), separate so they don't move -->
+            <g stroke="#007CC3" stroke-width="1.5" fill="none">
+              <line x1="560" y1="80"  x2="578" y2="80"  marker-end="url(#arrOrg)"/>
+              <line x1="560" y1="176" x2="578" y2="176" marker-end="url(#arrOrg)"/>
+              <line x1="560" y1="272" x2="578" y2="272" marker-end="url(#arrOrg)"/>
+            </g>
+
+            <!-- ASSIST row: seam icon mid-stream -->
+            <g>
+              <circle class="seam-assist" cx="330" cy="176" r="14" fill="#E6F2FA" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="330" y="180" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#007CC3" font-weight="600">H</text>
+              <text x="330" y="148" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" letter-spacing="0.5" fill="#6D6E71">SEAM</text>
+            </g>
+
+            <!-- ESCALATE row: seam icon mid-stream + specialist icon at end -->
+            <g>
+              <circle class="seam-escalate" cx="330" cy="272" r="14" fill="#E6F2FA" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="330" y="276" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#007CC3" font-weight="600">H</text>
+              <text x="330" y="244" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" letter-spacing="0.5" fill="#6D6E71">SEAM</text>
+
+              <!-- specialist box at end of escalate row -->
+              <rect class="specialist" x="478" y="258" width="62" height="28" rx="4" fill="#E6F2FA" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="509" y="276" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" letter-spacing="0.5" fill="#007CC3">SPECIALIST</text>
+            </g>
+
+            <!-- Closed/dropped markers under escalate seam (static, faded) -->
+            <g fill="#A7A9AC" opacity="0.55">
+              <circle cx="318" cy="300" r="4"/>
+              <circle cx="330" cy="304" r="4"/>
+              <circle cx="342" cy="300" r="4"/>
+            </g>
+            <text x="330" y="318" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" letter-spacing="0.5" fill="#A7A9AC">CLOSED</text>
+
+            <!-- ===== Tokens ===== -->
+            <!-- OWN row: three tokens, staggered -->
+            <circle class="token-own" cx="40" cy="80" r="7" fill="#007CC3" style="animation-delay: 0s;"/>
+            <circle class="token-own" cx="40" cy="80" r="7" fill="#007CC3" style="animation-delay: -2s;"/>
+            <circle class="token-own" cx="40" cy="80" r="7" fill="#007CC3" style="animation-delay: -4s;"/>
+
+            <!-- ASSIST row: three tokens, staggered -->
+            <circle class="token-assist" cx="40" cy="176" r="7" fill="#007CC3" style="animation-delay: 0s;"/>
+            <circle class="token-assist" cx="40" cy="176" r="7" fill="#007CC3" style="animation-delay: -2s;"/>
+            <circle class="token-assist" cx="40" cy="176" r="7" fill="#007CC3" style="animation-delay: -4s;"/>
+
+            <!-- ESCALATE row: two dropouts + one routed, staggered -->
+            <circle class="token-esc-drop"  cx="40" cy="272" r="7" fill="#007CC3" style="animation-delay: 0s;"/>
+            <circle class="token-esc-route" cx="40" cy="272" r="7" fill="#007CC3" style="animation-delay: -2s;"/>
+            <circle class="token-esc-drop"  cx="40" cy="272" r="7" fill="#007CC3" style="animation-delay: -4s;"/>
+          </svg>
+          <button class="anim-toggle" type="button" data-target="#fig02-org-anim" aria-pressed="false" aria-label="Pause or resume animation">PAUSE</button>
+          <p class="figure-caption">Three modes of agentic work. Own flows straight through; assist passes through a human seam; escalate branches at the seam — most cases close, one routes to a specialist.</p>
+        </div>
+
+        <p>The mode mix is the operating-model dial. A function that is 90% own, 9% assist, 1% escalate runs lean and ships volume; one that is 10% own, 80% assist, 10% escalate is just a workflow tool with an LLM in it. Most functions settle somewhere with own as the bulk of volume and assist carrying the cases where judgment matters. Where they settle is a policy decision driven by risk appetite, regulator expectation, and how confident the function is in its evaluation suite. None of those are model decisions. All of them are management ones.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — Work redesign
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">Work redesign</h2>
+
+        <p>The unit of work changes. The pre-agent unit was a task: "do this thing." A case got opened; an analyst worked through a checklist; the checklist got signed off; the case got closed. The agent operating model shifts the unit upward to an outcome: "achieve this state." A case enters; whatever combination of agent steps, tool calls, sub-agents and human reviews is needed to get to the right disposition runs; the case exits with a result. The checklist is internal to the system, not the unit of measurement.</p>
+
+        <p>That sounds abstract until you watch it bite. Roles built around tasks atomise. Roles built around outcomes re-bundle. The function ends up reshaped in a way most teams underestimate the size of.</p>
+
+        <h3>What shrinks</h3>
+
+        <p>The volume of pure-gather work collapses. Document retrieval, list lookups, reading prior cases, hand-aggregating numbers from three systems, drafting the boilerplate sections of a memo, copying status updates between trackers — all of it. It does not disappear; it gets done by agents and tools. But the human-minutes it used to consume reach the function as recoverable capacity. Status reporting, routine routing decisions, narrative drafting of the parts that follow a template — same story.</p>
+
+        <h3>What grows</h3>
+
+        <p>Judgment. Exception handling. Evals and QA — somebody has to maintain the task suite from Primer 10, and that person is now part of the operating model, not an offline support function. Change management for the cases the agent is starting to handle but the policy has not yet caught up to. Vendor and platform management for the model layer. Customer-facing communication when the agent's output needs an empathetic human to deliver it. The new work is not lower-skill; if anything it is higher-skill, because the routine ladder rungs that used to teach people the function are no longer there.</p>
+
+        <h3>Role atomisation, then re-bundling</h3>
+
+        <p>The mechanic is two-step. First, existing roles split along the seam. The senior analyst's job used to be both <em>gather the evidence</em> and <em>decide the case</em>; agents take the first half; the second half stays with a human. Mid-tier roles whose value was in being faster at the gather lose their reason for existing in the old form. Junior roles that were learning the function by doing the gather lose their path in. This is the atomisation step. It is uncomfortable and it is the part where most rebuilds stall, because the org cannot articulate the new path.</p>
+
+        <p>Second, the remaining work re-bundles. The new senior role oversees a portfolio of agent-driven workstreams instead of one human workstream — they read the dashboards, intervene at the exceptions, sign at the seams, tune the policies, and feed the evals. Span of control changes shape: from "I supervise ten analysts doing the same work" to "I own a function whose work is mostly done by agents and I supervise three people who keep that running." That role grows in scope and in skill bar, and there are fewer of it.</p>
+
+        <p>The framing that gets a function through this is not "you are being replaced" but "your role is being reshaped." It is true; it is also the right thing to say only if the function has actually built the path from the old role to the new one. Atomisation without re-bundling is just a layoff with extra steps. Re-bundling that the people who held the old roles cannot reach is the same outcome dressed up. The work that keeps a function intact — clear new role definitions, training, internal mobility, honest conversations about which roles are growing and which are not — is part of the operating-model rebuild, not a separate HR programme.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — Control points
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">Control points</h2>
+
+        <p>Where the seam goes is a policy decision, not a technical one. The model can be technically capable of handling a case end-to-end and still be the wrong place to let it. The seam belongs where the firm has decided a human signature is required — and the discipline of placing it well is what separates an operating model from a deployment.</p>
+
+        <p>The default seam locations are the ones every function eventually converges on:</p>
+
+        <ul>
+          <li><strong>Regulatory checkpoints.</strong> KYC tier sign-off, suitability review for an investment product, final SAR filing decisions, anything where the rulebook names a human accountable for the call. The seam goes there because the rulebook puts it there, regardless of how good the agent is at the task.</li>
+          <li><strong>Customer-impacting decisions.</strong> Credit denial, account closure, anything that changes the customer's relationship in a way they will perceive. The seam is at the action, not the recommendation. The agent can recommend; the human authorises.</li>
+          <li><strong>Material-amount thresholds.</strong> Any decision above $X. The threshold is set by the firm's risk appetite; below it, the agent owns; above it, the case becomes assist or escalate. The threshold is reviewed quarterly and tightens or loosens based on the override and audit-finding signals from §6.</li>
+          <li><strong>Novel situations.</strong> The agent flags low confidence, or the case does not match anything in the task suite, or a model-routing rule fires. The seam there is escalate by construction — the function has told the agent "don't act on cases that look like this; route them."</li>
+        </ul>
+
+        <p>The discipline is in what you do <em>not</em> put a seam on. The three anti-patterns recur across every function we have rebuilt.</p>
+
+        <p><strong>Seams everywhere.</strong> The function gets nervous about losing the human review and re-inserts approvals at every step. The agent gathers, a human checks; the agent drafts, a human checks; the agent recommends, a human checks; the agent sends, a human checks. The throughput gain collapses, the humans become a checklist they cannot read carefully because the volume is unchanged, and the operating model is back to where it started with extra tooling. The seam should guard the decisions, not the work.</p>
+
+        <p><strong>Seams nowhere.</strong> The opposite — the function trusts the agent on everything and writes the human out of the audit trail. This is a regulatory finding waiting to happen, and the first time the model gets a case wrong in a way that hits a customer, there is no name on the disposition to take accountability. Functions that fall here usually do so under throughput pressure from above. The right response is to push back on the pressure, not to remove the seam.</p>
+
+        <p><strong>Seams on the wrong axis.</strong> The most insidious. The function puts the human on confirming the high-volume routine work — because that is easy to define and easy to staff — while letting the agent take novel, low-confidence, high-risk decisions on its own. The human ends up rubber-stamping cases that did not need a stamp; the agent ends up making the calls that did. The seam must guard the high-risk cases, not the high-volume ones. If the dashboard shows the human review queue is 90% trivial confirmations and the escalate path is empty, the seam is in the wrong place.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — Measuring an agentic function
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">Measuring an agentic function</h2>
+
+        <p>The KPI stack for an agentic function is small and it is mostly the same metrics the function reported before — counted differently. Six numbers cover the operating reality. Read them as a system, not a stack.</p>
+
+        <table class="cmp">
+          <thead>
+            <tr>
+              <th>KPI</th>
+              <th>What it measures</th>
+              <th>Failure signal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Throughput</strong></td>
+              <td>Cases handled per unit time, by mode (own / assist / escalate).</td>
+              <td>Flat or declining after deployment — the redesign hasn't actually compressed the work.</td>
+            </tr>
+            <tr>
+              <td><strong>Cost-per-case</strong></td>
+              <td>Fully loaded cost — people, platform, model, infrastructure — divided by cases.</td>
+              <td>Falling alongside rising audit findings: you bought cheaper output, not better output.</td>
+            </tr>
+            <tr>
+              <td><strong>Escalation rate</strong></td>
+              <td>Share of cases routed to specialist out of the agent's total.</td>
+              <td>Too high — scope is wrong, the agent is being asked to do work it cannot. Too low alongside rising audit findings — the function is suppressing escalations.</td>
+            </tr>
+            <tr>
+              <td><strong>Override rate</strong></td>
+              <td>Share of assist cases where the human changes the agent's recommendation, tracked per mode and per case type.</td>
+              <td>Rising — leading indicator of model drift, a stale policy, or a population shift. Falling toward zero — humans may have stopped reading.</td>
+            </tr>
+            <tr>
+              <td><strong>Audit findings</strong></td>
+              <td>Quarterly review by second line or internal audit — material errors, missed evidence, traceability gaps.</td>
+              <td>The lagging indicator that matters most. Rising findings while other KPIs look good is the single clearest red flag in the system.</td>
+            </tr>
+            <tr>
+              <td><strong>Agent ROI</strong></td>
+              <td>Cost saved, minus platform and model cost, minus risk capital held against agent-driven decisions.</td>
+              <td>Positive only on the gross line — be honest about the denominator. Risk capital is a real cost and it does not show up on the platform invoice.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>Two notes on how to read them together. First, the override rate and the audit findings are the ones that catch the failure modes the throughput and cost numbers will hide. If override drops to zero while findings rise, the humans have stopped engaging with the agent's recommendations — they are clicking approve because the queue is too long and the work has become rubber-stamping. The fix is in §5; the diagnosis is in these two numbers read against each other.</p>
+
+        <p>Second, the agent ROI calculation is where most teams overclaim. The honest formula is the gross saving (analyst hours reclaimed times their loaded cost) minus the run cost (model spend, platform spend, the SREs and product people the function did not have before) minus the risk capital the firm holds against agent-driven decisions. The first number is large and visible; the second and third are smaller but real, and they only become visible after a quarter or two of operating. Report ROI quarterly with the full denominator; do not let the function tell the story off the gross alone.</p>
+
+        <p>The point of holding the six together is that no single number tells you the function is healthy. Throughput rising while audit findings rise is not a victory; cost falling while override drops to zero is not a victory either. The KPIs are a system. The dashboard the function runs should show all six on one screen, and the conversation in the operating review should be about how they move against each other.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — The change-management curve
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">The change-management curve</h2>
+
+        <p>Every function that rebuilds around agents walks the same adoption curve. It is predictable enough that you can plan against it, and the teams that come out the other side healthy are the ones that planned. Four stages.</p>
+
+        <p><strong>Enthusiasm.</strong> The pilot ships. Early results are striking — a case that used to take an hour takes four minutes; an analyst processes triple the volume. The function is excited; leadership is excited; the slides write themselves. This is the easy stage. Don't trust it. The pilot is running on selected cases, with selected reviewers, with the model in a configuration that has not yet been stressed by edge cases or population drift.</p>
+
+        <p><strong>Skepticism.</strong> The first real failure lands. The agent gets a case wrong in a way that is visible — a customer complaint, an audit flag, a missed escalation. The function pulls back: more cases go to assist, fewer to own; the throughput numbers regress; some people stop using the agent's recommendation at all and revert to the old workflow. This stage is uncomfortable and it is necessary. A function that does not go through it has not actually tested the system; it is still running on the polished pilot subset.</p>
+
+        <p><strong>Pragmatism.</strong> The function rebuilds confidence on the back of the evaluation discipline from Primer 10. The task suite catches the failure that caused the skepticism stage; the policy gets a new line; the override rate is read carefully; the seam moves where it needs to. Trust is rebuilt — not as enthusiasm, but as a working calibration of where the agent is good and where it is not. The mode mix stabilises. The KPI dashboard becomes something the function actually looks at.</p>
+
+        <p><strong>Institutionalisation.</strong> The agentic operating model stops being a project and becomes how the function runs. New hires are trained into the new roles directly. Quarterly reviews include the override and audit numbers as a matter of course. The platform team's roadmap is part of the function's plan. The work is no longer "agent-augmented compliance"; it is just compliance, the way the function does it now.</p>
+
+        <p>The dip between skepticism and pragmatism is the dangerous one. It is where most rebuilds stall. What moves a function through it, in our experience, is a small set of deliberate choices:</p>
+
+        <ul>
+          <li><strong>Clear seam ownership.</strong> A named person — usually the head of the function — accountable for the human-side checks at every seam. Not the platform team, not the model owner. The line manager who has always been accountable for the work.</li>
+          <li><strong>Visible metrics dashboards.</strong> The same six KPIs from §6, on a screen the whole function can see, refreshed weekly. The dashboard is what makes the rebuild real. If the function cannot see the numbers, it will not trust them.</li>
+          <li><strong>Training on the new role, not just the new tool.</strong> The skill change is bigger than the software change. A two-hour walkthrough of the agent UI is not enough; the function needs structured training on how to read a case pack, when to override, what an escalation looks like, how to give the eval team a useful failure report.</li>
+          <li><strong>Career paths for the people whose old roles atomised.</strong> If there is no upward path from the new junior role, attrition will burn the function out from underneath the rebuild. The HR work of redrawing the ladder is part of the operating-model design, not a separate workstream.</li>
+        </ul>
+
+        <p>None of this is novel as change management goes. It is, on purpose, the boring version. The reason it has to be said explicitly is that teams routinely underestimate it — they treat the agent rollout as a technology project and the change management as something that will be picked up by the line, in spare time, after the platform is live. It does not work that way. The technology is the easy part. The function rebuild is the hard part, and the function rebuild <em>is</em> the product.</p>
+
+        <blockquote class="pull">You don't deploy agents. You deploy an agentic function — and a function has people in it.</blockquote>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE V · PRIMER 17 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  // Scroll-spy: rAF-throttled, divide-by-zero-safe.
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+
+  // Animation pause/play toggle. Button uses data-target="#svg-id" to find its SVG.
+  document.querySelectorAll('.anim-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.target;
+      const svg = target ? document.querySelector(target) : null;
+      if (!svg) return;
+      const paused = svg.classList.toggle('paused');
+      btn.textContent = paused ? 'PLAY' : 'PAUSE';
+      btn.setAttribute('aria-pressed', String(paused));
+    });
+  });
+  </script>
+</body>
+</html>
