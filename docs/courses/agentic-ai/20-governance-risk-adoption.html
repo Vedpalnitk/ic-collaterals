@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 20 — Governance, Risk & Adoption · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+.layout > * { min-width: 0; }
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+/* mobile / narrow widths -------------------------------------- */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+  .sidebar { position: static; max-height: none; overflow-y: visible; padding-right: 0; padding-bottom: 16px; margin-bottom: 8px; border-right: none; border-bottom: 1px solid var(--rule); }
+  .toc { margin-bottom: 16px; }
+  .title-band { padding: 32px 20px 20px; }
+  .title { font-size: 40px; line-height: 1.05; }
+  .subtitle { font-size: 18px; }
+  .masthead { padding: 10px 20px; }
+  .cold-start { margin-left: 20px; margin-right: 20px; padding: 14px 16px; }
+  .footer { padding: 20px; margin: 32px auto 0; flex-wrap: wrap; gap: 12px; }
+  .content { max-width: 100%; }
+  .stat { font-size: 48px; }
+  .pull { font-size: 22px; padding-left: 18px; margin: 24px 0; }
+  .twocol { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .progress::before { transition: none; } }
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE IV · PRIMER 20 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">Governance, Risk &amp; Adoption</h1>
+    <p class="subtitle"><em>Engineering rigor that happens to be visible to a regulator.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">COLD START</span>
+    <p>If you haven't read Primers 17 and 18 — the operating model says humans sit at the seams; the platform team owns the rails. Governance is the framework that holds both accountable.</p>
+  </aside>
+
+  <div class="layout">
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">Governance is just engineering with stakes</a></li>
+        <li><a href="#s2" class="toc-link">The policy stack</a></li>
+        <li><a href="#s3" class="toc-link">Risk tiering</a></li>
+        <li><a href="#s4" class="toc-link">Model cards and lineage</a></li>
+        <li><a href="#s5" class="toc-link">KPIs for agent ROI</a></li>
+        <li><a href="#s6" class="toc-link">The deploy-and-measure loop</a></li>
+        <li><a href="#s7" class="toc-link">What this connects to</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="19-workforce-roles-skills-transition.html">← Primer 19 — Workforce, Roles &amp; Skills Transition</a>
+        <a class="nav-link next" href="15-agentic-kyc-surveillance.html">Primer 15 — Agentic KYC &amp; Surveillance →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — Governance is just engineering with stakes
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">Governance is just engineering with stakes</h2>
+
+        <p>The word "governance" arrives in most agent programmes the way a clipboard arrives at a construction site — late, from the side, and usually attached to someone who has not seen what is being built. By the time it shows up, the team has been shipping for months, the architecture has settled, and the conversation reduces to "what evidence do you have that this is safe?" The answer is whatever you wrote down along the way, which is usually not much.</p>
+
+        <p>This primer takes the opposite stance. Governance, risk and audit are not a compliance overlay applied at the end. They are the same engineering disciplines you already practice — specification, testing, change control, monitoring, incident response — written down in a form a non-engineer can read. The clipboard exists because a regulator, an auditor, or a board member needs to verify, without reading your code, that the system does what you say it does. If your engineering is rigorous, the clipboard is a transcription job. If it isn't, no amount of policy text will save you.</p>
+
+        <p>The shift is in how you frame the work. A risk register is not a forecast of doom; it is a list of failure modes you have committed to monitor. A model card is not a marketing artifact; it is the spec sheet that lets a successor maintain the system. A deployment gate is not a slowdown; it is the same check you would run in your CI pipeline, with one extra signature. Each governance artifact is a piece of engineering work whose audience happens to include a regulator.</p>
+
+        <blockquote class="pull">Treat the regulator as a stakeholder, not an obstacle. Their question is the same as yours: does this system do what we say it does?</blockquote>
+
+        <p>The teams that survive their first serious audit are the ones who already had the answers in a system, because they needed them to run the agent. The teams that fail are the ones who treated governance as paperwork and ran the agent on vibes. This primer is the second framing made concrete: what to write down, where to enforce it, and what to measure once the agent is live.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — The policy stack
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">The policy stack</h2>
+
+        <p>A working agent programme has a stack of policies, not a single document. Each layer answers a different question, and each is enforced somewhere in code rather than only on a slide. If a policy exists only in a PDF, it is decoration. If it gates a deploy, it is real.</p>
+
+        <p>The five layers, top to bottom:</p>
+
+        <p><strong>Acceptable use.</strong> The outermost layer — what the agent is and is not for. Inputs it will accept, outputs it will not produce, use cases that are out of scope. Enforced as input filters, output classifiers, and refusals wired into the agent's system prompt and middleware. Drafted by the business owner; signed off by legal and risk.</p>
+
+        <p><strong>Risk tiering.</strong> Every agent gets classified before it ships — low, medium, or high. The tier determines the rest of the stack's posture: how much human-in-loop, how often the audits run, who has to sign off on a change. Tiering is detailed in the next section and enforced as metadata that the deployment pipeline reads.</p>
+
+        <p><strong>Model approval.</strong> Which foundation models and which prompt versions are approved for which tier. A new model is not a configuration change; it is a procurement and security review. Enforced as an allowlist in the model gateway — the agent cannot call a model that isn't on the list, and the list is the artifact the risk function signs.</p>
+
+        <p><strong>Tool authorization.</strong> Which tools the agent may call, and under what conditions. Read tools are usually permissive; write tools, dangerous queries, and anything that touches money or PII need explicit scopes. Enforced at the tool gateway — the agent's identity carries scopes, and tools refuse calls that exceed them. This is the layer where the gap between "the agent could in principle do X" and "the agent is allowed to do X" gets closed.</p>
+
+        <p><strong>Deployment gates.</strong> The CI checks that have to pass before a change reaches production: evals at the required pass rate, safety suite green, model card updated, change ticket linked, on-call notified. Enforced as required status checks on the deploy pipeline. This is the layer that turns the rest of the stack from intention into observed behaviour.</p>
+
+        <div class="figure">
+          <span class="figure-tag">FIG. 01</span>
+          <svg viewBox="0 0 600 360" role="img" aria-label="A five-layer policy stack diagram with each layer labeled and accented with a blue bar.">
+            <defs>
+              <style>
+                .lyr { fill: #F2F2F3; stroke: #E2E4E7; stroke-width: 1; }
+                .bar { fill: #007CC3; }
+                .ttl { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 500; fill: #404040; }
+                .sub { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; fill: #6D6E71; text-transform: uppercase; }
+                .axis { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.1em; fill: #A7A9AC; text-transform: uppercase; }
+              </style>
+            </defs>
+
+            <!-- axis label -->
+            <text x="20" y="24" class="axis">POLICY STACK · TOP TO BOTTOM</text>
+
+            <!-- 5 layers -->
+            <g transform="translate(40, 50)">
+              <rect class="lyr" x="0" y="0" width="520" height="52" />
+              <rect class="bar" x="0" y="0" width="4" height="52" />
+              <text x="20" y="24" class="ttl">Acceptable use</text>
+              <text x="20" y="42" class="sub">WHAT THE AGENT IS FOR</text>
+            </g>
+
+            <g transform="translate(40, 110)">
+              <rect class="lyr" x="0" y="0" width="520" height="52" />
+              <rect class="bar" x="0" y="0" width="4" height="52" />
+              <text x="20" y="24" class="ttl">Risk tiering</text>
+              <text x="20" y="42" class="sub">HOW MUCH OVERSIGHT</text>
+            </g>
+
+            <g transform="translate(40, 170)">
+              <rect class="lyr" x="0" y="0" width="520" height="52" />
+              <rect class="bar" x="0" y="0" width="4" height="52" />
+              <text x="20" y="24" class="ttl">Model approval</text>
+              <text x="20" y="42" class="sub">WHICH MODELS · WHICH PROMPTS</text>
+            </g>
+
+            <g transform="translate(40, 230)">
+              <rect class="lyr" x="0" y="0" width="520" height="52" />
+              <rect class="bar" x="0" y="0" width="4" height="52" />
+              <text x="20" y="24" class="ttl">Tool authorization</text>
+              <text x="20" y="42" class="sub">WHICH TOOLS · WHICH SCOPES</text>
+            </g>
+
+            <g transform="translate(40, 290)">
+              <rect class="lyr" x="0" y="0" width="520" height="52" />
+              <rect class="bar" x="0" y="0" width="4" height="52" />
+              <text x="20" y="24" class="ttl">Deployment gates</text>
+              <text x="20" y="42" class="sub">WHAT MUST PASS TO SHIP</text>
+            </g>
+          </svg>
+          <p class="figure-caption">Five layers, each enforced in code rather than only on a slide. A policy that does not gate a deploy is decoration.</p>
+        </div>
+
+        <p>The point of the stack is not bureaucracy. It is that any incident — a wrong answer, a leaked field, a tool misfire — can be traced to exactly one layer that failed, and that layer can be fixed without rewriting the others. A stack with clear boundaries is debuggable. A monolithic "AI policy" is not.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — Risk tiering
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">Risk tiering</h2>
+
+        <p>Not every agent is the same, and treating them as if they were is the fastest way to make governance unusable. A summarization agent that drafts a meeting note is not in the same risk class as one that adjusts a customer's credit limit, and asking them to clear the same gates wastes the senior reviewers on the small case and underweights them on the big one. Risk tiering is the act of classifying each agent up front so the rest of the stack can scale its posture accordingly.</p>
+
+        <p>The simplest tiering that works in production has three levels, and they map directly onto the operating-model modes from Primer 17 — own, assist, escalate. A <strong>low-risk</strong> agent runs on its own; a human spot-checks samples after the fact. A <strong>medium-risk</strong> agent runs with a human in the loop on every case; the human reads what the agent produced before it acts. A <strong>high-risk</strong> agent does not act at all until a senior reviewer with explicit authority approves the specific decision.</p>
+
+        <table class="cmp">
+          <thead><tr><th>Tier</th><th>Agent autonomy</th><th>Audit cadence</th></tr></thead>
+          <tbody>
+            <tr><td>Low</td><td>Autonomous · agent acts without per-case review</td><td>Sampled audit · 1–5% of cases reviewed after the fact</td></tr>
+            <tr><td>Medium</td><td>Human-in-loop · agent drafts, human approves before action</td><td>Full audit on approvals · weekly drift review</td></tr>
+            <tr><td>High</td><td>Senior approval · agent recommends, accountable officer decides</td><td>Per-case sign-off · monthly committee review</td></tr>
+          </tbody>
+        </table>
+
+        <p>The tier is not a property of the model. It is a property of the work. The same Claude model behind a meeting-note summarizer (low) and a sanctions-screening triage (high) carries entirely different governance burdens because the consequence of a wrong answer is entirely different. Tiering forces that judgment to be made explicitly, by the business owner, before the agent ships.</p>
+
+        <p>Two practical rules keep tiering honest. First, the tier is set by the worst plausible outcome, not the average one. A low-frequency, high-impact failure pushes the agent up a tier even if it would behave well 99% of the time. Second, a tier change is itself a governed event — moving an agent from medium to low because "it's been fine for a quarter" requires the same evidence and sign-off as promoting any other production system to a higher trust posture.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — Model cards and lineage
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">Model cards and lineage</h2>
+
+        <p>Every model and every prompt that runs in production has a card. Not the marketing page the provider published, and not the README in the repo — a structured artifact that lives next to the system and gets updated whenever the system changes. The card is what an auditor reads when they want to understand the component without reading the code, and it is what a successor reads when they take over the system in eighteen months and the original team has moved on.</p>
+
+        <p>A useful model card is short and structured. It names the model and version, the prompt version, the intended use, the eval results on the suites that matter, the known failure modes, the owner and the on-call rotation, and the date of last review. It is not a research paper. It is a spec sheet — the thing you would want to find in the glove box of a system you inherited.</p>
+
+        <p>Lineage is the chain that connects today's behaviour to a decision someone made. Every output the agent produced should be traceable to the prompt version, the model version, the tool versions, the retrieved documents, and the configuration that produced it. Most of this falls out of the trace infrastructure from Primer 10 — but only if the trace records the versions, not just the content. A trace that says "the agent answered X" without recording which prompt and model generated X is debugging telemetry, not an audit trail.</p>
+
+        <div class="note">
+          <span class="note-tag">AUDIT</span>
+          <p class="note-head"><em>If you can't show the lineage, you don't get to deploy.</em></p>
+          <p>The deployment gate that catches the most teams is not eval pass rate; it is missing lineage. A model card that lists "Claude Sonnet" without a version, an eval suite without a date, or a prompt without a hash means an auditor cannot verify which behaviour was approved against which evidence. Treat lineage capture as a release-blocking requirement, not a nice-to-have.</p>
+        </div>
+
+        <p>Two failure modes are common enough to name. The first is the card that goes stale: someone updates the prompt or swaps the model and forgets the card. Solve this by making the card a file in the repo, gated by the same pull-request review that gates the change, with the version pinned in the code reading from the card at deploy time. The second is the card that drowns in detail — twenty pages of methodology with the actual approved configuration buried on page nineteen. Solve this by keeping the card to a page, with links out to the underlying evidence for anyone who needs to dig.</p>
+
+        <p>Done well, model cards and lineage make the audit conversation short. The reviewer asks "what is in production?" and you hand them a one-page card. They ask "how do you know it works?" and you point them at the linked eval run. They ask "who is responsible if it breaks?" and the card has a name and a rotation. None of this is harder than what the engineering team is already tracking — it is the same information, written down for a different reader.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — KPIs for agent ROI
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">KPIs for agent ROI</h2>
+
+        <p>The metrics that matter for running an agent — throughput, cost-per-case, escalation rate, override rate, audit findings, ROI — were already introduced in Primer 17 as the operating-model dashboard. This section is not a repeat. This is about how those same metrics get read in the room where governance decisions are made, which is a different room with a different audience.</p>
+
+        <p>An operating-model meeting asks "are we running well?" A governance committee asks "are we comfortable that the controls are working?" The metrics are identical; the lens is different. The committee is not optimising for throughput. They are looking for evidence that the agent is behaving inside the envelope the policy stack defined for it. A 40% throughput gain is reassuring when the override rate is steady. The same throughput gain alongside a rising override rate is a warning — the agent may be getting faster precisely because it is taking more cases the humans then have to correct.</p>
+
+        <p>The six KPIs, restated for a governance audience:</p>
+
+        <ul>
+          <li><strong>Throughput.</strong> Cases handled per unit time. A capacity measure. Useful only when paired with quality measures — throughput on its own is a vanity number.</li>
+          <li><strong>Cost-per-case.</strong> All-in cost (model, infra, human review) divided by completed cases. Trends matter more than absolute values; a stable downward slope is the signal.</li>
+          <li><strong>Escalation rate.</strong> Share of cases the agent handed to a human as designed. The expected value depends on the risk tier — high for medium-risk agents, near zero for low-risk ones. Movement off the expected baseline is the signal.</li>
+          <li><strong>Override rate.</strong> Share of cases a human reversed after the agent acted or recommended. The single most important quality metric. A rising override rate means the agent's judgment is drifting from the humans' judgment, and the system needs intervention before the next audit cycle, not after.</li>
+          <li><strong>Audit findings.</strong> Items raised by sampled review — wrong answers, missing evidence, scope violations. Counted, categorized, and trended. Zero findings on a sampled audit is a hint to widen the sample, not to celebrate.</li>
+          <li><strong>Agent ROI.</strong> Realised value (cost saved, revenue enabled, risk reduced) minus all-in cost. Computed at the same cadence as a standard product P&amp;L. The number the executive committee actually reads.</li>
+        </ul>
+
+        <p>The six together are a small enough set to fit on a single page and a large enough set to make the rare bad direction visible. A governance committee that sees these six every month, for every production agent, is in a position to ask the right questions. A committee that sees a narrative deck about "AI progress" is not.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — The deploy-and-measure loop
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">The deploy-and-measure loop</h2>
+
+        <p>The discipline that turns "we deployed an agent" into "we deployed a function" is a loop, not a launch. Pilot, measure, expand, measure, standardize — five stages with a governance checkpoint between each, designed so that scale follows evidence and not the other way around.</p>
+
+        <p><strong>Pilot.</strong> One business line, one well-defined task, a single risk tier, a fixed evaluation window. The pilot is small enough that a failure is recoverable and large enough that the metrics mean something — typically a few hundred cases over a few weeks, not a demo on twenty. The governance checkpoint at the end asks one question: did the metrics land inside the envelope the risk tier promised?</p>
+
+        <p><strong>Measure.</strong> Not as a phase but as a habit. The KPIs from the previous section run continuously from the pilot onward. The first measurement window is the baseline; every subsequent window is compared against it. Drift is detected by the comparison, not by intuition. A team that says "it feels like the agent is getting worse" without numbers is asking the committee to act on a feeling.</p>
+
+        <p><strong>Expand.</strong> Move to a second business line, a second task, a higher case volume — pick one of those vectors at a time. Expanding two dimensions at once means a regression cannot be localized. The governance checkpoint at expansion asks whether the operating envelope from the pilot still holds at the new scale, and whether the controls that worked at pilot volume still work at production volume.</p>
+
+        <p><strong>Measure (again).</strong> The expansion measurement window often shows the failure modes the pilot did not. New input distributions, new edge cases, new ways the humans use the agent. This is normal; it is also the reason expansion has its own checkpoint rather than being a continuation of the pilot.</p>
+
+        <p><strong>Standardize.</strong> When two or three expansions have shown the same shape of behaviour, the agent becomes a standard component. Its model card moves into the platform catalog, its eval suite becomes a release gate for other agents that use the same pattern, and the team that built it transitions from project mode to operations. Standardization is the moment the agent becomes a function — predictable, reusable, owned by someone whose job is not "the AI project."</p>
+
+        <p>The loop is unsentimental about which stage the agent is in. An agent that does not pass the pilot checkpoint does not expand. An agent whose metrics drift during expansion goes back to a smaller footprint, not forward. The committee that enforces this is the same one reading the KPIs every month. Governance is not separate from the loop. It is the mechanism that makes the loop honest.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — What this connects to
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">What this connects to</h2>
+
+        <p>This primer closes Module IV, and with it the body of the course. Governance is the framework that holds the rest of the modules accountable — and the connections, looking backwards and forwards, are worth naming.</p>
+
+        <ul>
+          <li><strong><a href="10-evaluations-for-agents.html">Primer 10 — Evaluations for Agents</a></strong> — eval suites are the evidence the policy stack and the model cards point to. Without them, the deployment gate is a signature on nothing. With them, the gate is a defensible artefact.</li>
+          <li><strong><a href="12-safety-and-redteaming.html">Primer 12 — Safety &amp; Red-teaming</a></strong> — safety testing produces the known failure modes the model card lists. Red-team findings feed straight into the acceptable-use and tool-authorization layers; closing the loop is what turns a red-team exercise into governance value.</li>
+          <li><strong><a href="17-agentic-operating-model.html">Primer 17 — Agentic Operating Model</a></strong> — the own / assist / escalate modes are the same map as the risk tiers in this primer. The operating model is how the work flows; governance is how the work is held to a standard.</li>
+          <li><strong><a href="15-agentic-kyc-surveillance.html">Primer 15 — Agentic KYC &amp; Surveillance →</a></strong> — Module V opens with banking applications. The governance discipline above is what gets a KYC or surveillance agent from a sandbox into a regulated production environment. The mechanics in Primer 15 only make sense once the rails in Module IV are in place.</li>
+        </ul>
+
+        <p>Module IV has been the connective tissue: the platform, the workforce, the operating model, and now the framework that holds them together. Module V applies them. The course concludes here as a body of theory and practice; Module V shows that body of work doing useful things in a specific industry.</p>
+
+        <p>One closing observation. The teams who succeed with agents are not the ones with the most sophisticated models. They are the ones who treat the agent as a system that has to be specified, tested, deployed, measured, and held accountable like any other production system — and who have built the engineering and governance habits to do so on repeat. Everything in this course has been preparation for that habit. The agents will keep getting better. The discipline is what makes the value land.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE IV · PRIMER 20 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+  </script>
+</body>
+</html>

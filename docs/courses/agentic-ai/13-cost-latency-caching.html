@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 13 — Cost, Latency & Caching · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+.layout > * { min-width: 0; }
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+/* mobile / narrow widths -------------------------------------- */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+  .sidebar { position: static; max-height: none; overflow-y: visible; padding-right: 0; padding-bottom: 16px; margin-bottom: 8px; border-right: none; border-bottom: 1px solid var(--rule); }
+  .toc { margin-bottom: 16px; }
+  .title-band { padding: 32px 20px 20px; }
+  .title { font-size: 40px; line-height: 1.05; }
+  .subtitle { font-size: 18px; }
+  .masthead { padding: 10px 20px; }
+  .cold-start { margin-left: 20px; margin-right: 20px; padding: 14px 16px; }
+  .footer { padding: 20px; margin: 32px auto 0; flex-wrap: wrap; gap: 12px; }
+  .content { max-width: 100%; }
+  .stat { font-size: 48px; }
+  .pull { font-size: 22px; padding-left: 18px; margin: 24px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .progress::before { transition: none; } }
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE III · PRIMER 13 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">Cost, Latency &amp; Caching</h1>
+    <p class="subtitle"><em>Multiplicative factors. Cache the system prompt; route the model; batch the rest.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">COLD START</span>
+    <p>If you haven't read Primer 1 — the context window is a budget. Most of this primer is about how that budget multiplies across turns, agents, and users.</p>
+  </aside>
+
+  <div class="layout">
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">The components of cost</a></li>
+        <li><a href="#s2" class="toc-link">Prompt caching: the biggest lever</a></li>
+        <li><a href="#s3" class="toc-link">Model routing</a></li>
+        <li><a href="#s4" class="toc-link">Batching</a></li>
+        <li><a href="#s5" class="toc-link">Streaming for perceived latency</a></li>
+        <li><a href="#s6" class="toc-link">Cost regressions</a></li>
+        <li><a href="#s7" class="toc-link">What this connects to</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="12-safety-guardrails-prompt-injection.html">← Primer 12 — Safety, Guardrails &amp; Prompt Injection</a>
+        <a class="nav-link next" href="14-fine-tuning-and-adaptation.html">Primer 14 — Fine-Tuning &amp; Adaptation →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — The components of cost
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">The components of cost</h2>
+
+        <p>The bill for an LLM-powered system is not a single number you negotiate with a vendor. It is a product. Per-token rate, times tokens per call, times turns per session, times sessions per user, times users. Five factors. Each one is independently a knob. A change in any one of them moves the bill — and because they multiply rather than add, the moves compound.</p>
+
+        <p>Consider the numbers that show up in practice. A premium model is roughly an order of magnitude more expensive per token than a small one. A conversational agent that re-sends a 20K-token system prompt on every turn carries ten to twenty times the input tokens of a single-turn classifier. A user session that runs 10 turns costs ten times what a single-shot session does. And the user count is whatever your product reaches.</p>
+
+        <p>The arithmetic is unforgiving. A pilot that costs eight cents per user per day looks free. The same architecture at a hundred thousand active users costs eight thousand dollars a day, and at a million it is six figures a month. The pilot did not warn you. The factors did.</p>
+
+        <div class="stat-block">
+          <div class="stat">10&times;</div>
+          <div class="stat-label">COST MULTIPLIER · UNCACHED SYSTEM PROMPT IN A LOOP</div>
+        </div>
+
+        <p>The temptation, when the bill arrives, is to find the one factor that fits in a slide and squeeze it. That's a mistake. Because the factors multiply, a 30% cut to any one of them yields the same headline reduction — but the engineering effort to get there varies by an order of magnitude. Prompt caching is usually the cheapest 5–10&times; you will ever find. Switching a routing decision to a smaller model is a one-line change. Trimming the system prompt by 40% is a half-day of editing. Negotiating a 15% discount with a vendor is a quarter of meetings.</p>
+
+        <p>The rest of this primer is the ranked menu of moves. Caching first, because it pays for almost any agent. Routing second, because most turns do not need your best model. Batching third, for the work that does not need to happen now. Streaming for the latency users actually feel. And cost regressions, because none of this stays fixed if you don't watch it.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — Prompt caching: the biggest lever
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">Prompt caching: the biggest lever</h2>
+
+        <p>Prompt caching is the single highest-leverage cost move in agent design, and most teams discover it three months later than they should. The mechanism is simple: the provider caches the key/value tensors for a stable prefix of your input, and on subsequent calls that hit the same prefix, you pay roughly 10% of the normal input-token rate for the cached portion instead of the full rate. The write costs slightly more than a normal read, but you pay that once and amortize it over every subsequent call.</p>
+
+        <p>For an agent loop, this is transformative. The system prompt — your role, mandate, constraints, tool definitions, possibly few-shot examples — is read on every turn but never changes within a session. Same for the early conversation history once a few turns are committed. Cache the stable prefix; pay full rate only for the volatile tail.</p>
+
+        <p>The worked example below makes the ratio concrete. Take a 10-turn agent loop. System prompt: 20K tokens (a realistic agent with tool definitions and policy). User message: 1K tokens per turn. Output: 500 tokens per turn. Illustrative rates: $3 per million input tokens, $15 per million output tokens, cached input at 10% (so $0.30 per million).</p>
+
+        <p><strong>Without caching</strong>, every turn re-pays for the full system prompt. Input per turn: 20K + 1K = 21K. Across 10 turns: 210K input tokens. Output: 5K tokens. Cost: 210K &times; $3/M + 5K &times; $15/M = $0.63 + $0.075 ≈ <strong>~$0.71 per session</strong>. If you also re-send the growing conversation history each turn (which a naive loop does), the input climbs into the 250–300K range and you land near <strong>~$0.90 per session</strong>.</p>
+
+        <p><strong>With caching</strong>, the 20K system prompt is paid at full rate once (cache write), then at 10% on the nine subsequent turns. System-prompt cost: 20K &times; $3/M + 9 &times; 20K &times; $0.30/M = $0.060 + $0.054 = $0.114. Plus user inputs: 10K &times; $3/M = $0.030. Plus output: 5K &times; $15/M = $0.075. Total: <strong>~$0.22 per session</strong> — and if history is also cached as it grows, you land near <strong>~$0.36 per session</strong> in the realistic case.</p>
+
+        <p>The ratio is the point. $0.90 vs $0.36 is a 2.5&times; reduction with the system prompt cached. A more system-prompt-heavy agent — say a 50K prompt with rich tool definitions — pushes the ratio to 5&times; or more. The numbers above are illustrative; your real rates depend on the model and provider tier. The shape of the saving does not.</p>
+
+        <div class="code">
+          <span class="code-tag">PYTHON</span>
+<pre>from anthropic import Anthropic
+
+# Cache-controlled system prompt. The cache_control marker tells
+# the provider this prefix is stable and should be cached for reuse.
+system = [
+    {
+        "type": "text",
+        "text": LARGE_SYSTEM_PROMPT,  # 20K tokens of role + mandate + tools
+        "cache_control": {"type": "ephemeral"},
+    }
+]
+
+resp = Anthropic().messages.create(
+    model="claude-sonnet-4-6",
+    max_tokens=1024,
+    system=system,
+    messages=[{"role": "user", "content": "Assemble case pack for 88312."}],
+)
+
+# Inspect cache behavior on the response.
+print(resp.usage.cache_creation_input_tokens)  # paid once
+print(resp.usage.cache_read_input_tokens)      # paid at ~10% rate</pre>
+        </div>
+
+        <p>Three operational notes. First, the cache is short-lived — typically minutes — so it serves an active session well and a long-idle one poorly. Second, the cached prefix must match exactly; a single token of drift invalidates the cache and you pay the write cost again. Treat the cached portion as immutable per session. Third, your monitoring needs to track cache hit rate as a first-class metric. A drop in hit rate is a regression that looks normal in latency dashboards but doubles your input bill quietly.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — Model routing
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">Model routing</h2>
+
+        <p>Not every turn of an agent needs your best model. A premium model is built to handle the hardest case in your distribution. Most turns are not the hardest case. Treating every call as if it were is paying premium pricing for routine work — the API equivalent of taking a taxi to the mailbox.</p>
+
+        <p>The discipline is to identify which calls actually need the top model and route the rest down. The distinction usually splits along a few axes. <strong>Routing decisions</strong> — classify this request, pick a tool, decide which agent to hand off to — are short, structured, and forgiving; a small model handles them well. <strong>Drafting and reasoning</strong> — write the analysis, plan the sequence of tool calls, reconcile contradictory evidence — is where the top model earns its rate. <strong>Mechanical transforms</strong> — re-format JSON, summarize an output for a UI card, translate a snippet — do not need reasoning at all; the smallest model in the family is enough.</p>
+
+        <table class="cmp">
+          <thead><tr><th>Request type</th><th>Suggested tier</th><th>Typical cost ratio</th></tr></thead>
+          <tbody>
+            <tr><td>Intent classification, routing decisions</td><td>Small (Haiku-class)</td><td>~1&times;</td></tr>
+            <tr><td>Summarization, reformatting, simple extract</td><td>Small (Haiku-class)</td><td>~1&times;</td></tr>
+            <tr><td>Tool selection within a known toolset</td><td>Mid (Sonnet-class)</td><td>~3–4&times;</td></tr>
+            <tr><td>Multi-step reasoning, planning, drafting</td><td>Mid (Sonnet-class)</td><td>~3–4&times;</td></tr>
+            <tr><td>Hard reasoning, ambiguous evidence, high stakes</td><td>Large (Opus-class)</td><td>~10–15&times;</td></tr>
+          </tbody>
+        </table>
+
+        <p>Wire the routing decision itself with a small model. A common pattern: every incoming request first hits a small-model router that returns a structured verdict — <code>{"complexity": "simple|moderate|hard", "tier": "small|mid|large"}</code> — and the orchestrator dispatches to the matching backend model. The router is cheap enough that even if it's wrong 5% of the time, the savings on the other 95% dominate. Add an escape valve: if the chosen backend produces a low-confidence answer or fails a quick self-check, retry once with the next tier up.</p>
+
+        <p>The trap to avoid is using your top model for the router. It defeats the point. The router needs to be fast and cheap, not perfect. A good small-model router is sufficient if you've given it a clear prompt and a few examples; it does not need to reason about the underlying request, only to classify it.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — Batching
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">Batching</h2>
+
+        <p>The Batch API exists for the half of your workload that doesn't have to happen right now. You hand the provider a file of requests; they process them within a 24-hour window; you get the results back at roughly half the cost of synchronous calls. The discount is meaningful — 50% off the line item — and the operational cost is just a queue and a callback.</p>
+
+        <p>The decision rule is simple. If a request is on the user-facing critical path — a chat turn, a real-time form completion, a tool call inside an agent loop — it must run synchronously and pay full rate. If a request is anywhere else, batching is on the table. The candidates are usually obvious once you look:</p>
+
+        <ul>
+          <li><strong>Eval runs.</strong> You run hundreds or thousands of test cases against a new prompt or model. None of them is time-sensitive. Batch.</li>
+          <li><strong>Backfills.</strong> You add a new field to a record and need to populate it across the existing corpus. Batch.</li>
+          <li><strong>Nightly enrichment.</strong> Tag, classify, or summarize the day's incoming data for tomorrow's dashboards. Batch.</li>
+          <li><strong>Offline data pipelines.</strong> Turning unstructured documents into structured records for a downstream warehouse. Batch.</li>
+          <li><strong>A/B comparisons across models.</strong> Run the same hundred prompts against two model versions for an offline comparison. Batch both.</li>
+        </ul>
+
+        <p>The trap is using batch for anything a user is waiting on. The Batch API does not commit to a fast turnaround inside the 24-hour window — it might come back in five minutes or twenty hours, and you cannot tell which in advance. If your dashboard widget waits on a batch result, your dashboard widget will be empty for stretches. Keep batch on the offline side of the system and the question of when answers it for you.</p>
+
+        <p>One adjacent point: the eval discipline from Primer 10 pairs naturally with batch. The biggest single user of the Batch API in mature agent shops is the evals pipeline — every prompt change kicks off a batch run of the test set, which lands by morning at half cost. The economics of doing serious eval work are noticeably better once batching is wired in.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — Streaming for perceived latency
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">Streaming for perceived latency</h2>
+
+        <p>Streaming does not make the model faster. The model takes the same wall-clock time to produce the same number of tokens whether you stream or not. What streaming changes is when the user <em>sees</em> the tokens — and for any human-facing surface, that perceived latency is what gets called "speed."</p>
+
+        <p>A 1,500-token response at 60 tokens per second takes about 25 seconds to finish. Without streaming, the user stares at a spinner for 25 seconds and then the whole response appears at once. With streaming, the first word appears in roughly 800 milliseconds — the time-to-first-token — and the rest scrolls in as it generates. The total time is identical. The experience is not.</p>
+
+        <p>The decision matrix is short. <strong>Chat-style interfaces should always stream.</strong> The user is reading as the tokens arrive; the streaming pace is matched to reading speed; the first-token latency dominates the perceived experience. <strong>Tool-loop interiors usually should not stream.</strong> When the model's output is consumed by another piece of code — to be parsed for a tool call, validated against a schema, fed into the next step — streaming buys you nothing and complicates the parsing logic. Wait for the full message and act on it cleanly. <strong>Long-form artifacts</strong> — a generated report, a draft document — are a judgment call. If the user is actively watching, stream. If you're rendering into a saved artifact they'll review later, batch the write.</p>
+
+        <p>Two implementation notes. First, the time-to-first-token (TTFT) metric is more useful than total latency for any streaming surface. Track it explicitly. A regression in TTFT — caused by a larger system prompt, a slower cache hit, a model swap — degrades the chat experience even if total latency is unchanged. Second, design the UI to make the streaming legible. A response that streams smoothly feels alive; a response that streams in jerky bursts feels broken. Pick a rendering cadence that smooths the bursts and shows a cursor at the leading edge.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — Cost regressions
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">Cost regressions</h2>
+
+        <p>Cost is an eval. It deserves the same treatment as accuracy, latency, and safety: tracked per release, compared across versions, alarmed on drift. Most teams don't think of it this way, and most teams are surprised by their bill at the end of the quarter. The pattern is recognizable. Someone adds a few sentences to the system prompt to fix a behavior. Someone else adds a new tool with a verbose schema. A third change inadvertently breaks the cache prefix. None of these show up in accuracy metrics. All of them show up in the bill.</p>
+
+        <p>The discipline is to run a small, fixed set of representative tasks against each release, measure tokens-per-task — input tokens, output tokens, cache hit rate, all broken out — and compare to the previous release. A 30% increase in tokens-per-task with no measurable quality gain is a regression. It might be intentional and worth it. More often, it's an accidental side effect of a change that shipped without anyone looking.</p>
+
+        <p>The metrics worth tracking are concrete. <strong>Tokens per task</strong> — split input and output. <strong>Cache hit rate</strong> on the cacheable portion of the prompt. <strong>Cost per session</strong> at p50 and p95. <strong>Latency per call</strong> and <strong>time-to-first-token</strong> for streaming surfaces. Plot them over time. The drift will be obvious if you're watching.</p>
+
+        <div class="note">
+          <span class="note-tag">DISCIPLINE</span>
+          <p class="note-head"><em>Cost is an eval. Track it with the others.</em></p>
+          <p>Tokens-per-task and cache hit rate belong on the same dashboard as accuracy. A 30% increase with no quality bump is a regression — find which change caused it and decide deliberately whether to keep paying for it.</p>
+        </div>
+
+        <p>One organizational note. Cost regressions are almost always solvable, but they get solved only when someone owns the number. If no one is reviewing the cost dashboard, the dashboard does not exist. Pick someone — usually the same engineer who owns the eval set — and put "weekly review of cost-per-task" on their calendar. The discipline is not subtle. It's just consistent.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — What this connects to
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">What this connects to</h2>
+
+        <p>Cost, latency, and caching sit at the operational floor of the whole course. They turn the design choices upstream into a number on a bill, and they constrain what is buildable at scale. The pointers worth carrying forward:</p>
+
+        <ul>
+          <li><strong><a href="01-llm-mental-model.html">Primer 1 — LLM Mental Model</a></strong> — the budget framing for the context window. This primer is the operational consequence: a token spent is paid for every turn it's in scope, by every user, across every session. The budget in Primer 1 is also a literal budget in dollars.</li>
+          <li><strong><a href="05-agent-loop.html">Primer 5 — The Agent Loop</a></strong> — the loop is where the multiplicative cost effects compound. Every architectural decision in the loop — what to keep in context, how often to call, when to summarize — is a cost decision dressed as a design decision.</li>
+          <li><strong><a href="10-evals-and-measurement.html">Primer 10 — Evals &amp; Measurement</a></strong> — the eval discipline extends to cost. Tokens-per-task is an eval metric. The same pipeline that catches accuracy regressions should catch cost regressions, and the Batch API makes the eval run itself cheaper.</li>
+          <li><strong><a href="18-agent-platforms-and-internal-tooling.html">Primer 18 — Agent Platforms &amp; Internal Tooling</a></strong> — model routing is most naturally a platform capability. A model gateway that handles routing, caching, batching, and cost reporting in one place is the right home for everything in this primer. Most production agent shops build this gateway before they build their third agent.</li>
+        </ul>
+
+        <p>Cost is not glamorous. It is also not optional. The architectures that survive contact with production traffic are the ones that took these numbers seriously from the pilot — not the ones that got a surprise invoice in month three.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE III · PRIMER 13 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 11 — Observability & Traces · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+.layout > * { min-width: 0; }
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+/* ============================================================
+   Animated figure — the trace viewer with drill-down (Section 3)
+   4 phases × 2s each = 8s total, infinite loop.
+   Behavior-named keyframes: spanScrub, nestedReveal, deeperReveal,
+   siblingPulse, scrubberSweep, drillIndicator.
+   ============================================================ */
+.animated-figure { position: relative; }
+.trace-anim { width: 100%; height: auto; display: block; }
+
+/* Phase 1 (0-25%): root span "agent.run" is the active scrubber target. */
+@keyframes spanScrub {
+  0%, 25%        { fill: #007CC3; stroke: #007CC3; }
+  25.01%, 100%   { fill: #F2F2F3; stroke: #E2E4E7; }
+}
+@keyframes spanScrubText {
+  0%, 25%        { fill: #FFFFFF; }
+  25.01%, 100%   { fill: #404040; }
+}
+
+/* Phase 2 (25-50%): nested "model.call" highlights as drill-down target. */
+@keyframes nestedReveal {
+  0%, 25%        { fill: #F2F2F3; stroke: #E2E4E7; }
+  25.01%, 50%    { fill: #007CC3; stroke: #007CC3; }
+  50.01%, 100%   { fill: #F2F2F3; stroke: #E2E4E7; }
+}
+@keyframes nestedRevealText {
+  0%, 25%        { fill: #404040; }
+  25.01%, 50%    { fill: #FFFFFF; }
+  50.01%, 100%   { fill: #404040; }
+}
+
+/* Phase 3 (50-75%): deeper nested "tool.search" lights up in LT_BLUE. */
+@keyframes deeperReveal {
+  0%, 50%        { fill: #F2F2F3; stroke: #E2E4E7; }
+  50.01%, 75%    { fill: #3699DA; stroke: #3699DA; }
+  75.01%, 100%   { fill: #F2F2F3; stroke: #E2E4E7; }
+}
+@keyframes deeperRevealText {
+  0%, 50%        { fill: #404040; }
+  50.01%, 75%    { fill: #FFFFFF; }
+  75.01%, 100%   { fill: #404040; }
+}
+
+/* Phase 4 (75-100%): sibling "executor.act" briefly highlights as the
+   viewer zooms back out to the parent level. */
+@keyframes siblingPulse {
+  0%, 75%        { fill: #F2F2F3; stroke: #E2E4E7; }
+  75.01%, 100%   { fill: #007CC3; stroke: #007CC3; }
+}
+@keyframes siblingPulseText {
+  0%, 75%        { fill: #404040; }
+  75.01%, 100%   { fill: #FFFFFF; }
+}
+
+/* Time-axis scrubber sweeps left-to-right across the 8s loop. */
+@keyframes scrubberSweep {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(560px); }
+}
+
+/* The drill-down indicator (a small arrow / magnifier) fades in when
+   the viewer is "inside" a nested span (phases 2 and 3). */
+@keyframes drillIndicator {
+  0%, 25%        { opacity: 0; }
+  25.01%, 75%    { opacity: 1; }
+  75.01%, 100%   { opacity: 0; }
+}
+
+/* Phase label cycles through the four positions. */
+@keyframes phaselabel {
+  0%, 25%        { opacity: 1; }
+  25.01%, 100%   { opacity: 0.25; }
+}
+
+.trace-anim .span-root      { animation: spanScrub      8s infinite; }
+.trace-anim .span-root-text { animation: spanScrubText  8s infinite; }
+.trace-anim .span-model     { animation: nestedReveal   8s infinite; }
+.trace-anim .span-model-text{ animation: nestedRevealText 8s infinite; }
+.trace-anim .span-tool      { animation: deeperReveal   8s infinite; }
+.trace-anim .span-tool-text { animation: deeperRevealText 8s infinite; }
+.trace-anim .span-sibling   { animation: siblingPulse   8s infinite; }
+.trace-anim .span-sibling-text { animation: siblingPulseText 8s infinite; }
+.trace-anim .scrubber       { animation: scrubberSweep  8s infinite linear; }
+.trace-anim .drill          { animation: drillIndicator 8s infinite; }
+
+.trace-anim .phase-1 { animation: phaselabel 8s infinite; animation-delay: 0s; }
+.trace-anim .phase-2 { animation: phaselabel 8s infinite; animation-delay: -6s; }
+.trace-anim .phase-3 { animation: phaselabel 8s infinite; animation-delay: -4s; }
+.trace-anim .phase-4 { animation: phaselabel 8s infinite; animation-delay: -2s; }
+
+.trace-anim.paused * { animation-play-state: paused !important; }
+
+.anim-toggle { background: var(--white); border: 1px solid var(--rule); padding: 4px 10px; cursor: pointer; margin-top: 8px; color: var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+.anim-toggle:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.anim-toggle:hover { background: var(--tint-blue); }
+
+/* mobile / narrow widths -------------------------------------- */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+  .sidebar { position: static; max-height: none; overflow-y: visible; padding-right: 0; padding-bottom: 16px; margin-bottom: 8px; border-right: none; border-bottom: 1px solid var(--rule); }
+  .toc { margin-bottom: 16px; }
+  .title-band { padding: 32px 20px 20px; }
+  .title { font-size: 40px; line-height: 1.05; }
+  .subtitle { font-size: 18px; }
+  .masthead { padding: 10px 20px; }
+  .cold-start { margin-left: 20px; margin-right: 20px; padding: 14px 16px; }
+  .footer { padding: 20px; margin: 32px auto 0; flex-wrap: wrap; gap: 12px; }
+  .content { max-width: 100%; }
+  .stat { font-size: 48px; }
+  .pull { font-size: 22px; padding-left: 18px; margin: 24px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trace-anim * { animation: none !important; }
+  .trace-anim .drill { opacity: 1; }
+  /* Animation is off — the toggle would lie about state, so hide it. */
+  .anim-toggle { display: none; }
+  html { scroll-behavior: auto; }
+  .progress::before { transition: none; }
+}
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE III · PRIMER 11 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">Observability &amp; Traces</h1>
+    <p class="subtitle"><em>The data that turns a black-box loop into something you can debug.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">COLD START</span>
+    <p>If you haven't read Primer 10 — evals tell you THAT a regression happened. Traces tell you WHERE. The two ship together; neither stands alone.</p>
+  </aside>
+
+  <div class="layout">
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">What a trace is</a></li>
+        <li><a href="#s2" class="toc-link">The span model</a></li>
+        <li><a href="#s3" class="toc-link">A trace viewer, drilling down</a></li>
+        <li><a href="#s4" class="toc-link">What to capture</a></li>
+        <li><a href="#s5" class="toc-link">Sampling and storage</a></li>
+        <li><a href="#s6" class="toc-link">Debugging from a trace</a></li>
+        <li><a href="#s7" class="toc-link">What this connects to</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="10-evaluations-for-agents.html">← Primer 10 — Evaluations for Agents</a>
+        <a class="nav-link next" href="12-safety-guardrails-prompt-injection.html">Primer 12 — Safety, Guardrails &amp; Prompt Injection →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — What a trace is
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">What a trace is</h2>
+
+        <p>A <strong>trace</strong> is the full record of one run of your agent: every model call, every tool call, every retry, with timings, inputs, outputs, and the parent-child relationships that connect them. It is the receipt the system writes for itself. Without it, an agent is a black box that either produced the right answer or did not; with it, you can replay what happened, where it spent its time, which tool returned the bad value, and which model call hallucinated the wrong city.</p>
+
+        <p>It helps to be precise. A trace is not "logs." Logs are unstructured strings emitted in execution order; you grep them. A trace is a structured, hierarchical object: a tree of timed units with named parents. You can ask a trace "show me everything that happened inside the model call that produced this final answer" and it answers in one query, because the structure is in the data. Logs cannot do that without a heroic amount of regex.</p>
+
+        <p>For a single-shot LLM call, the trace is almost trivial — one unit of work, one input, one output. For an agent loop, a trace is where complexity lives. Twenty turns, each one calling the model, each model call possibly emitting tool calls, each tool call possibly spawning a sub-agent with its own model calls underneath. A non-trivial run produces hundreds of nested units of work. The trace is how you make sense of them at all.</p>
+
+        <p>Treat traces as the unsung hero of agent engineering. Evals get the credit because they give you a number. Traces are what let you fix the number. Most teams under-invest in tracing until the first late-night production incident teaches them, expensively, that they cannot debug what they cannot see. Build the tracing layer early, with the harness, not after the first incident.</p>
+
+        <blockquote class="pull">An agent without traces is a coin flip you cannot replay.</blockquote>
+
+        <p>The rest of this primer is the operational version of that idea: how traces are structured, what to capture, what to keep, and how to turn a trace into a fixture you can ship into your eval suite.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — The span model
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">The span model</h2>
+
+        <p>The unit of a trace is the <strong>span</strong>. A span represents one bounded piece of work — one model call, one tool execution, one HTTP request, one sub-agent run. Every span has the same minimal shape: a name, a start time, an end time, a parent reference, an ID of its own, a status (ok or error), and a bag of attributes that describe what happened. The model is borrowed almost wholesale from distributed tracing — OpenTelemetry, Jaeger, that lineage — because the problem is exactly the same: many timed units of work, nested, that need to be reconstructed into one story.</p>
+
+        <p>Spans nest. The root span is usually the whole agent run — call it <code>agent.run</code>. Inside it sit the per-turn spans (one per iteration of the loop), and inside each of those sit the model call and the tool calls. A sub-agent that the parent spawns becomes its own subtree under the parent's tool-call span. The trace, as a whole, is a tree of spans rooted at <code>agent.run</code>.</p>
+
+        <p>That nesting is the load-bearing piece. With it, "show me the tool calls inside the model call that produced the final answer on turn 7" is a tree traversal. Without it — if you only have flat events — you are joining timestamps and hoping nothing else fired in the same millisecond. The tree is what makes a trace queryable.</p>
+
+        <div class="figure">
+          <span class="figure-tag">FIG. 01</span>
+          <svg viewBox="0 0 640 280" role="img" aria-label="Static span tree showing agent.run as root with nested child spans">
+            <g font-family="JetBrains Mono, monospace" font-size="11">
+              <!-- root: agent.run -->
+              <rect x="40" y="30" width="160" height="40" rx="3" fill="#E6F2FA" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="120" y="55" text-anchor="middle" fill="#007CC3">agent.run</text>
+
+              <!-- child 1: planner.decide -->
+              <line x1="80" y1="70" x2="80" y2="100" stroke="#007CC3" stroke-width="1"/>
+              <line x1="80" y1="100" x2="220" y2="100" stroke="#007CC3" stroke-width="1"/>
+              <rect x="220" y="80" width="160" height="40" rx="3" fill="#FFFFFF" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="300" y="105" text-anchor="middle" fill="#404040">planner.decide</text>
+
+              <!-- child 2: model.call -->
+              <line x1="80" y1="120" x2="80" y2="150" stroke="#007CC3" stroke-width="1"/>
+              <line x1="80" y1="150" x2="220" y2="150" stroke="#007CC3" stroke-width="1"/>
+              <rect x="220" y="130" width="160" height="40" rx="3" fill="#FFFFFF" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="300" y="155" text-anchor="middle" fill="#404040">model.call</text>
+
+              <!-- grandchild under model.call: tool.search -->
+              <line x1="260" y1="170" x2="260" y2="200" stroke="#3699DA" stroke-width="1"/>
+              <line x1="260" y1="200" x2="400" y2="200" stroke="#3699DA" stroke-width="1"/>
+              <rect x="400" y="180" width="160" height="40" rx="3" fill="#FFFFFF" stroke="#3699DA" stroke-width="1.5"/>
+              <text x="480" y="205" text-anchor="middle" fill="#404040">tool.search</text>
+
+              <!-- child 3: executor.act -->
+              <line x1="80" y1="220" x2="80" y2="250" stroke="#007CC3" stroke-width="1"/>
+              <line x1="80" y1="250" x2="220" y2="250" stroke="#007CC3" stroke-width="1"/>
+              <rect x="220" y="230" width="160" height="40" rx="3" fill="#FFFFFF" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="300" y="255" text-anchor="middle" fill="#404040">executor.act</text>
+
+              <!-- legend tag -->
+              <text x="420" y="55" font-size="9" fill="#6D6E71" letter-spacing="1">ROOT SPAN</text>
+              <text x="420" y="70" font-size="9" fill="#6D6E71" letter-spacing="1">CHILDREN NEST UNDERNEATH</text>
+            </g>
+          </svg>
+          <p class="figure-caption">A span tree. The root span <code>agent.run</code> contains nested children; <code>tool.search</code> nests one level deeper inside <code>model.call</code>.</p>
+        </div>
+
+        <p>Two operational pieces fall out of this. First, every span needs a stable <strong>trace ID</strong> shared across the whole tree, and its own <strong>span ID</strong> within it. The trace ID is how you reconstruct one run; the span ID is how children point at their parent. Generate both at the root and propagate them through every call site. If a sub-agent runs in a separate process, the trace ID has to travel with it — through HTTP headers, message queues, whatever — or its spans show up as a separate trace and the story falls apart.</p>
+
+        <p>Second, attributes are where the real value lives. Span name and timing tell you what ran and how long it took. Attributes tell you why: the model ID, the prompt fingerprint, the token counts, the tool's arguments, the request body of the HTTP call. A span without attributes is a tombstone. The next section is mostly about which attributes to put on which span.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — A trace viewer, drilling down (animated)
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">A trace viewer, drilling down</h2>
+
+        <p>What a tracing UI actually shows you is a horizontal timeline of span bars, indented to reflect nesting, with a scrubber across the top. You click a bar; it expands; you see its attributes; you see its children; you click one of those; the viewer drills in. The animation below walks one cycle of that drill-down — root span, then the model call inside it, then the tool call inside that, then back out to the next sibling.</p>
+
+        <p>Watch the four phases. The scrubber sweeps across the top, the active span lights up at each level, and a small drill indicator appears whenever the viewer is "inside" a nested level. Pause whenever you want to dwell on a step.</p>
+
+        <p><strong>Phase 1 — root.</strong> The viewer opens on the whole run. <code>agent.run</code> highlights. This is your entry point: total wall-clock time, total cost, the user's original request. You scan it and decide where to look next.</p>
+
+        <p><strong>Phase 2 — drill into the model call.</strong> You suspect the model picked the wrong tool, so you open the <code>model.call</code> span. Now you see its attributes — the full prompt, the response, the token counts, which tool was selected.</p>
+
+        <p><strong>Phase 3 — drill into the tool call.</strong> The model called <code>tool.search</code>. You open it. Now you see the exact query that went out and the exact result that came back. This is usually where the bug lives: the tool returned something the model could not interpret, or returned the right thing but slowly.</p>
+
+        <p><strong>Phase 4 — zoom back out.</strong> You climb back to the parent level and look at the next sibling, <code>executor.act</code>. The trace lets you move both down and across — drilling into children, then stepping to siblings — without losing your place in the tree.</p>
+
+        <div class="figure animated-figure">
+          <span class="figure-tag">FIG. 02 · ANIMATED</span>
+          <svg id="fig02-trace-anim" viewBox="0 0 700 320" class="trace-anim" role="img" aria-label="Animated trace viewer drilling down through nested spans of an agent run">
+            <defs>
+              <marker id="arrTrace" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M0,0 L10,5 L0,10 z" fill="#007CC3"/>
+              </marker>
+            </defs>
+
+            <!-- phase labels along the top -->
+            <g font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="1" fill="#007CC3">
+              <text x="90"  y="22" text-anchor="middle" class="phase-1">1 · ROOT</text>
+              <text x="240" y="22" text-anchor="middle" class="phase-2">2 · MODEL CALL</text>
+              <text x="410" y="22" text-anchor="middle" class="phase-3">3 · TOOL CALL</text>
+              <text x="580" y="22" text-anchor="middle" class="phase-4">4 · NEXT SIBLING</text>
+            </g>
+
+            <!-- time axis -->
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="#6D6E71">
+              <line x1="80" y1="50" x2="660" y2="50" stroke="#E2E4E7" stroke-width="1"/>
+              <text x="80"  y="42" text-anchor="middle">0ms</text>
+              <text x="225" y="42" text-anchor="middle">500ms</text>
+              <text x="370" y="42" text-anchor="middle">1000ms</text>
+              <text x="515" y="42" text-anchor="middle">1500ms</text>
+              <text x="660" y="42" text-anchor="middle">2000ms</text>
+              <!-- tick marks -->
+              <line x1="80"  y1="48" x2="80"  y2="54" stroke="#A7A9AC" stroke-width="1"/>
+              <line x1="225" y1="48" x2="225" y2="54" stroke="#A7A9AC" stroke-width="1"/>
+              <line x1="370" y1="48" x2="370" y2="54" stroke="#A7A9AC" stroke-width="1"/>
+              <line x1="515" y1="48" x2="515" y2="54" stroke="#A7A9AC" stroke-width="1"/>
+              <line x1="660" y1="48" x2="660" y2="54" stroke="#A7A9AC" stroke-width="1"/>
+            </g>
+
+            <!-- scrubber: a thin vertical line that sweeps across the time axis -->
+            <g class="scrubber">
+              <line x1="80" y1="50" x2="80" y2="290" stroke="#007CC3" stroke-width="1.5" stroke-dasharray="2,3" opacity="0.8"/>
+              <circle cx="80" cy="50" r="3" fill="#007CC3"/>
+            </g>
+
+            <!-- span labels (left column, fixed) -->
+            <g font-family="JetBrains Mono, monospace" font-size="11" fill="#404040">
+              <text x="20" y="86">agent.run</text>
+              <text x="36" y="126">planner.decide</text>
+              <text x="36" y="166">model.call</text>
+              <text x="52" y="206">tool.search</text>
+              <text x="36" y="246">executor.act</text>
+            </g>
+
+            <!-- span bars (the body of the trace viewer) -->
+            <!-- agent.run: full width -->
+            <rect class="span-root" x="160" y="72" width="500" height="24" rx="2" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1.5"/>
+            <text x="410" y="89" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" class="span-root-text" fill="#404040">1980ms</text>
+
+            <!-- planner.decide: ~100ms early -->
+            <rect x="160" y="112" width="60" height="24" rx="2" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1.5"/>
+            <text x="190" y="129" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#404040">112ms</text>
+
+            <!-- model.call: ~600ms in the middle -->
+            <rect class="span-model" x="240" y="152" width="180" height="24" rx="2" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1.5"/>
+            <text x="330" y="169" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" class="span-model-text" fill="#404040">624ms</text>
+
+            <!-- tool.search: nested under model.call -->
+            <rect class="span-tool" x="280" y="192" width="90" height="24" rx="2" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1.5"/>
+            <text x="325" y="209" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" class="span-tool-text" fill="#404040">318ms</text>
+
+            <!-- executor.act: ~400ms toward the end -->
+            <rect class="span-sibling" x="440" y="232" width="130" height="24" rx="2" fill="#F2F2F3" stroke="#E2E4E7" stroke-width="1.5"/>
+            <text x="505" y="249" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" class="span-sibling-text" fill="#404040">442ms</text>
+
+            <!-- drill-down indicator: small magnifier / arrow pointing into nested level -->
+            <g class="drill" font-family="JetBrains Mono, monospace" font-size="9" fill="#007CC3">
+              <circle cx="630" cy="200" r="14" fill="none" stroke="#007CC3" stroke-width="1.5"/>
+              <line x1="640" y1="210" x2="648" y2="218" stroke="#007CC3" stroke-width="1.5"/>
+              <text x="630" y="203" text-anchor="middle" fill="#007CC3">↓</text>
+              <text x="630" y="234" text-anchor="middle" letter-spacing="0.5">DRILL</text>
+            </g>
+
+            <!-- footer caption inside SVG -->
+            <text x="350" y="290" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6D6E71" letter-spacing="1">SCRUBBER SWEEPS · ACTIVE SPAN HIGHLIGHTS · DRILL DOWN, THEN OUT</text>
+          </svg>
+          <button class="anim-toggle" type="button" data-target="#fig02-trace-anim" aria-pressed="false" aria-label="Pause or resume animation">PAUSE</button>
+          <p class="figure-caption">A trace viewer drilling through one run. Root, then model call, then tool call, then back out to the next sibling.</p>
+        </div>
+
+        <p>The pattern works because the data is structured. The viewer is doing nothing exotic — it is rendering a tree and letting you focus on one node at a time. The only reason that experience is possible at all is that someone, upstream, instrumented the agent to emit the spans in the first place.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — What to capture
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">What to capture</h2>
+
+        <p>The temptation, the first time you wire up tracing, is to capture everything. Every byte that crosses every boundary. It is the wrong instinct, and not just for cost reasons. A trace that captures everything is unreadable; the signal drowns in the noise, and the things that actually matter — the prompt fingerprint, the token count, the error code — are buried inside multi-megabyte payloads no human will ever scroll through.</p>
+
+        <p>Think of attributes in three tiers. <strong>Always capture</strong>: the structural metadata that makes the trace useful at all. <strong>Sample</strong>: heavy payloads that are sometimes load-bearing, but not on every span. <strong>Never capture</strong>: anything you would be unable to defend in a privacy review.</p>
+
+        <table class="cmp">
+          <thead><tr><th>Always capture</th><th>Sample</th><th>Never capture</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Span name, start/end, parent ID</td>
+              <td>Full prompt text (hash always, body on error or eval)</td>
+              <td>Raw PII (names, IDs, account numbers)</td>
+            </tr>
+            <tr>
+              <td>Model ID, model version</td>
+              <td>Full tool input/output bodies</td>
+              <td>API keys, OAuth tokens, session cookies</td>
+            </tr>
+            <tr>
+              <td>Input/output token counts</td>
+              <td>Retrieved RAG passages</td>
+              <td>Customer message bodies (in regulated contexts)</td>
+            </tr>
+            <tr>
+              <td>Tool name, arguments hash, latency</td>
+              <td>HTTP request/response bodies</td>
+              <td>Anything covered by a data-residency rule you'd violate</td>
+            </tr>
+            <tr>
+              <td>Error code, error class, retry count</td>
+              <td>Intermediate state snapshots</td>
+              <td>Free-form notes from prior internal incidents</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>The "always" column is small on purpose. Those eight or ten attributes per span are enough to answer most operational questions — what ran, when, for how long, with what model, with how many tokens, and did it error. Multiply by hundreds of spans per run and millions of runs per month, and you can afford to keep all of it forever.</p>
+
+        <p>The "sample" column is where engineering judgement lives. The full prompt body is huge and almost always redundant — same system prompt every turn, same tool definitions — but you need it on the runs where something went wrong. The discipline is to store a content hash on every span (cheap, small, lets you join across runs) and the full body conditionally: on errors, on flagged outcomes, on a random sample for eval-set mining.</p>
+
+        <p>The "never" column is non-negotiable. PII, secrets, regulated payloads. The cost of a trace store breach scales with the worst thing in any record; one mishandled customer message is enough to blow up the program. Redact at ingest, not in the viewer. The trace store should never have seen the thing you cannot afford to leak.</p>
+
+        <p>One practical move: build redaction into the instrumentation layer, not as a downstream cleanup pass. The span emitter should know that the field named <code>account_number</code> is replaced with its last four digits and the field named <code>api_key</code> is replaced with a tag of the token, before the span object ever leaves the process. Downstream redaction is a race you eventually lose.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — Sampling and storage
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">Sampling and storage</h2>
+
+        <p>Capturing every byte of every trace is uneconomic. Even for a mid-sized agent, full-fidelity tracing of every run produces terabytes a month. The question is not whether to sample — it is how to sample in a way that keeps the runs you actually need.</p>
+
+        <p>The principle is <strong>outcome-aware sampling</strong>. Errors are rare and high-value: keep all of them, full fidelity, indefinitely. Successes are common and mostly redundant: keep a representative sample, drop the rest after a short hot window. The math works out because errors are usually a single-digit percentage of traffic and successes are most of the volume.</p>
+
+        <p>A working sampling policy has three tiers:</p>
+
+        <ul>
+          <li><strong>Errored runs</strong> — keep 100%, full payloads, indefinitely. These are how you debug production and how you mine new eval cases.</li>
+          <li><strong>Flagged runs</strong> — runs the agent itself marked as low-confidence, or runs an automated check flagged as anomalous (high latency, high cost, repeated tool calls). Keep 100%, full payloads, 30-90 days.</li>
+          <li><strong>Successful runs</strong> — keep span structure and metadata always; keep full bodies on a 1-5% random sample. Drop or roll up the rest after a short hot window.</li>
+        </ul>
+
+        <div class="code">
+          <span class="code-tag">PYTHON</span>
+<pre>import random
+
+# Outcome-aware sampling: every byte for errors, a slice for successes.
+SUCCESS_SAMPLE_RATE = 0.02  # 2% of clean runs get full payloads
+
+def should_capture_full_payload(trace) -> bool:
+    if trace.has_error:
+        return True                        # always, no exceptions
+    if trace.was_flagged_low_confidence:
+        return True                        # eval candidate
+    if trace.latency_ms &gt; LATENCY_P99:
+        return True                        # anomaly worth keeping
+    if trace.cost_usd &gt; trace.expected_cost * 3:
+        return True                        # cost outlier
+    return random.random() &lt; SUCCESS_SAMPLE_RATE
+
+# Storage tiering: hot for fast queries, cold for archive.
+def storage_tier(trace) -> str:
+    age_days = (now() - trace.started_at).days
+    if trace.has_error:        return "hot"   if age_days &lt; 90  else "warm"
+    if age_days &lt; 7:           return "hot"
+    if age_days &lt; 30:          return "warm"
+    return "cold"</pre>
+        </div>
+
+        <p>Tier the storage to match the access pattern. Recent traces — anything from the last week — sit in hot storage with fast indexing, because that is where on-call queries go. Older traces move to warm storage where queries are slower but still possible. Anything past 30-90 days goes to cold storage (object store, parquet, the cheapest tier you have) and is mostly there for compliance and the occasional deep retrospective.</p>
+
+        <p>One subtle thing worth flagging. Sample <em>traces</em>, not <em>spans</em>. If you randomly drop spans within a kept trace, the tree becomes unreconstructible — children pointing at parents that no longer exist, gaps in the timeline. Decide at the root span whether to keep the whole tree or none of it. Span-level sampling is the most common mistake teams make when they wire this up.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — Debugging from a trace
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">Debugging from a trace</h2>
+
+        <p>The most valuable thing a trace gives you is not the immediate debug session — it is the next eval case. The diagnostic loop, when traces are wired up well, is a tight cycle: production bug → trace captures it → trace becomes a fixture → fixture becomes an eval case → fix lands → eval guards the fix forever.</p>
+
+        <p>Concretely, here is how it runs. A customer reports that the agent produced the wrong KYC verdict. You pull the trace by ID. You scrub through it — root, then the model call that emitted the verdict, then the tool call that retrieved the underlying screening result. The trace shows you that the screening tool returned a record with a name mismatch the model glossed over. The bug is in the prompt, not the tool: the model was not told to be paranoid about name mismatches.</p>
+
+        <p>You fix the prompt. Before you ship, you take the trace's inputs — the original customer record, the original screening result — and add them to your eval suite as a fixture. Now the eval suite checks that the fixed prompt produces the right verdict on this case. The next time someone touches the prompt and accidentally re-introduces the bug, the eval catches it on the CI run. The customer-reported bug becomes a permanent guard.</p>
+
+        <p>This is the pattern that compounds. Every production bug that survives more than one turnaround is a bug that should have been an eval. Every trace you save is a potential eval candidate. Traces are how evals get their fixtures; evals are how you stop regressing the same bug twice.</p>
+
+        <div class="note">
+          <span class="note-tag">FIXTURE</span>
+          <p class="note-head"><em>Every prod bug becomes a trace, then a fixture, then an eval.</em></p>
+          <p>The diagnostic loop is short, and it has a defined exit. A bug surfaces; the trace replays it; you turn the trace into a fixture and add it to the eval suite; you fix the underlying cause; the next eval run guards the fix. Skip the fixture step and you will debug the same bug six months from now.</p>
+        </div>
+
+        <p>The trace also matters for anomaly detection, the other direction of the loop. Latency spikes, cost outliers, runs that hit the iteration cap, runs where the same tool got called five times in a row — these are signals worth automating. A trace-aware monitoring layer surfaces the anomalies; an engineer drills in; nine times out of ten, the anomaly is a real regression the eval suite did not yet cover, and the trace becomes the next fixture. The wheel keeps turning.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — What this connects to
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">What this connects to</h2>
+
+        <p>Observability is the connective tissue across the whole course. The pointers worth carrying forward:</p>
+
+        <ul>
+          <li><strong><a href="05-agent-loop.html">Primer 5 — The Agent Loop</a></strong> — every tick of the loop is a span. The READ-DECIDE-EMIT-EXECUTE-APPEND cycle from Primer 5 is what the trace tree is recording, one iteration at a time. If the loop is the verb, the trace is the receipt.</li>
+          <li><strong><a href="10-evaluations-for-agents.html">Primer 10 — Evaluations for Agents</a></strong> — traces and evals are two halves of the same discipline. Evals tell you a regression happened; traces tell you where. Traces are also where eval fixtures come from, as §6 above lays out. Neither ships without the other.</li>
+          <li><strong><a href="12-safety-guardrails-prompt-injection.html">Primer 12 — Safety, Guardrails &amp; Prompt Injection</a></strong> — traces are how you catch prompt injections in the wild. A retrieved passage that suddenly contains "ignore prior instructions" shows up as a specific span attribute; an injected instruction shows up as a model behavior change traceable to the offending input. Without the trace, prompt injection is a ghost story; with it, it is a debuggable event.</li>
+          <li><strong><a href="13-cost-latency-caching.html">Primer 13 — Cost, Latency, Caching</a></strong> — traces have the token math. Per-span input and output token counts, per-span latency, cache-hit attributes, model IDs — everything the cost and latency primer asks you to optimize is something the trace already records. Tune what you measure; you only measure what you traced.</li>
+        </ul>
+
+        <p>For the engineering deep-dive on harness instrumentation, span emitters, and the operational toolchain — OpenTelemetry, replay harnesses, the practical details of wiring all this into a working agent — see the companion engineering note <strong><a href="../engineering-notes/agentic-harness-evals-traces.html">Agentic Harness, Evals &amp; Traces</a></strong>. This primer is the why and the what; that note is the how.</p>
+
+        <p>Traces are the unsung hero of agent engineering. They will not get you credit on a demo. They will get you sleep when the agent is in production and the pager goes off at 3 a.m. Build them early, build them right, and treat every trace you keep as a future eval case waiting to be promoted.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE III · PRIMER 11 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  // Scroll-spy: rAF-throttled, divide-by-zero-safe.
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+
+  // Animation pause/play toggle. Button uses data-target="#svg-id" to find its SVG.
+  document.querySelectorAll('.anim-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.target;
+      const svg = target ? document.querySelector(target) : null;
+      if (!svg) return;
+      const paused = svg.classList.toggle('paused');
+      btn.textContent = paused ? 'PLAY' : 'PAUSE';
+      btn.setAttribute('aria-pressed', String(paused));
+    });
+  });
+  </script>
+</body>
+</html>

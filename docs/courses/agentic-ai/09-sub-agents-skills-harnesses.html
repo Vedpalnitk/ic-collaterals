@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 9 — Sub-Agents, Skills & Harnesses · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+.layout > * { min-width: 0; }
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+/* mobile / narrow widths -------------------------------------- */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+  .sidebar { position: static; max-height: none; overflow-y: visible; padding-right: 0; padding-bottom: 16px; margin-bottom: 8px; border-right: none; border-bottom: 1px solid var(--rule); }
+  .toc { margin-bottom: 16px; }
+  .title-band { padding: 32px 20px 20px; }
+  .title { font-size: 40px; line-height: 1.05; }
+  .subtitle { font-size: 18px; }
+  .masthead { padding: 10px 20px; }
+  .cold-start { margin-left: 20px; margin-right: 20px; padding: 14px 16px; }
+  .footer { padding: 20px; margin: 32px auto 0; flex-wrap: wrap; gap: 12px; }
+  .content { max-width: 100%; }
+  .stat { font-size: 48px; }
+  .pull { font-size: 22px; padding-left: 18px; margin: 24px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .progress::before { transition: none; } }
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE II · PRIMER 09 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">Sub-Agents, Skills &amp; Harnesses</h1>
+    <p class="subtitle"><em>Four primitives. Every agent stack is some arrangement of these.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">COLD START</span>
+    <p>If you haven't read Primer 3 — tools are functions the model can call. This primer is about the layer between tools and agents: skills, sub-agents, and the harness that runs the loop.</p>
+  </aside>
+
+  <div class="layout">
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">The vocabulary</a></li>
+        <li><a href="#s2" class="toc-link">Tool registries</a></li>
+        <li><a href="#s3" class="toc-link">Skills as the unit of reuse</a></li>
+        <li><a href="#s4" class="toc-link">Sub-agent dispatch</a></li>
+        <li><a href="#s5" class="toc-link">Harnesses: the code around the loop</a></li>
+        <li><a href="#s6" class="toc-link">Cross-SDK patterns</a></li>
+        <li><a href="#s7" class="toc-link">What this connects to</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="08-multi-agent-patterns.html">← Primer 8 — Multi-Agent Patterns</a>
+        <a class="nav-link next" href="10-evaluations-for-agents.html">Primer 10 — Evaluations for Agents →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — The vocabulary
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">The vocabulary</h2>
+
+        <p>The agent ecosystem has overloaded almost every word it uses. "Agent" means a chatbot in one repo and an autonomous research loop in the next. "Skill" means a markdown file in one SDK and an entire microservice in another. Before any of the patterns in this primer are useful, the four words have to be pinned down. The rest of the course returns to these definitions, so it is worth spending a paragraph on each.</p>
+
+        <p><strong>A tool is a function.</strong> It takes structured arguments, does something — calls an API, runs a query, writes a file — and returns a result the model can read on the next turn. That is the whole definition. A tool has no prompt, no judgment, no memory. It is the executable atom of the system. <code>get_weather(city)</code> is a tool. <code>search_kb(query, top_k)</code> is a tool. So is <code>send_email(to, subject, body)</code>, even though it has consequences in the outside world.</p>
+
+        <p><strong>A skill is a tool plus its prompt plus its eval.</strong> Where a tool is a raw function, a skill is the function packaged with the instructions for when to use it, the schema for how to call it, and the test set that proves it still works. A skill is what you actually ship and reuse. Two teams sharing a "search_kb tool" will use it differently and get different results. Two teams sharing a "search_kb skill" — same tool, same canonical system fragment, same eval set — get the same behavior. The skill, not the tool, is the unit of portability.</p>
+
+        <p><strong>A sub-agent is a skill that has its own loop.</strong> Most skills are stateless: the model calls them, they return, the conversation continues. A sub-agent is the case where the skill is itself an agent — it takes a goal, runs its own model calls and tool calls until it produces a result, and returns that result to the caller. The boundary is the loop. If the unit runs at most one model call per invocation, it is a skill. If it runs many, it is a sub-agent.</p>
+
+        <p><strong>A harness is the code around all of this.</strong> The model does not call tools by itself; something has to read the model's tool-use request, dispatch the actual function, capture the result, format it back into a message, and call the model again. That something is the harness. It also owns the things the model is not responsible for: timeouts, retries, budget caps, tracing, auth, error surfaces. The harness is where engineering rigor lives. Most failures attributed to "the model" are actually failures in the harness.</p>
+
+        <p>Four primitives. Tool, skill, sub-agent, harness. Everything else in the agent stack — orchestrators, planners, controllers, routers — is some arrangement of these. The rest of this primer is the operational view: how each one is built and what crosses the boundary between them.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — Tool registries
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">Tool registries</h2>
+
+        <p>The first mistake builders make with tools is treating them as strings. A tool gets defined inline next to where it is used, its name is hardcoded into the prompt, its schema lives in a dict literal three files away from its implementation, and its auth scopes are implicit in whatever credentials the process happens to hold. This works for the demo. It does not survive contact with a second tool, a second team, or a second environment.</p>
+
+        <p>The fix is to treat tools as objects in a <strong>registry</strong>. Each tool is a typed entity with a name, a JSON schema, a callable implementation, a version, an owner, and an auth scope. The registry is the lookup table the harness consults at runtime: given a tool-use request from the model, find the matching entry, check the caller is authorized for it, validate the arguments against the schema, run the implementation, return the result. The model never sees the registry directly — it only sees the subset of tool definitions the harness chose to expose this turn.</p>
+
+        <p>The pattern below is deliberately small. Production registries add concurrency, structured errors, observability hooks, and per-tenant filtering. The shape stays the same.</p>
+
+        <div class="code">
+          <span class="code-tag">PYTHON</span>
+<pre>from dataclasses import dataclass
+from typing import Any, Callable
+
+@dataclass(frozen=True)
+class Tool:
+    name: str
+    version: str
+    description: str
+    schema: dict          # JSON schema for arguments
+    scopes: frozenset     # auth scopes required to invoke
+    impl: Callable[..., Any]
+
+class ToolRegistry:
+    def __init__(self) -> None:
+        self._tools: dict[str, Tool] = {}
+
+    def register(self, tool: Tool) -> None:
+        key = f"{tool.name}@{tool.version}"
+        if key in self._tools:
+            raise ValueError(f"duplicate tool: {key}")
+        self._tools[key] = tool
+
+    def expose(self, names: list[str], caller_scopes: frozenset) -> list[dict]:
+        """Return the tool definitions the model will see this turn."""
+        out = []
+        for key in names:
+            tool = self._tools[key]
+            if not tool.scopes.issubset(caller_scopes):
+                continue
+            out.append({
+                "name": tool.name,
+                "description": tool.description,
+                "input_schema": tool.schema,
+            })
+        return out
+
+    def invoke(self, name: str, version: str, args: dict, caller_scopes: frozenset) -> Any:
+        tool = self._tools[f"{name}@{version}"]
+        if not tool.scopes.issubset(caller_scopes):
+            raise PermissionError(f"missing scopes for {name}")
+        return tool.impl(**args)</pre>
+        </div>
+
+        <p>Three properties matter and are worth naming. <strong>Tools are versioned</strong> — <code>search_kb@1.2</code> and <code>search_kb@2.0</code> can coexist while callers migrate, and a regression in 2.0 does not break callers pinned to 1.2. <strong>Tools are scoped</strong> — the registry knows which scopes a caller holds and silently omits tools they cannot use, rather than exposing them and failing on invocation. <strong>Exposure is per-turn</strong> — the harness decides which tools the model sees this turn, not which tools exist in the system. A registry of forty tools can be presented as four to the model on any given call.</p>
+
+        <p>Once tools are objects, the rest of the stack stops fighting them. The harness can log every invocation. The skill package can reference tools by name and version. The eval suite can mock specific tools without monkey-patching the world. None of that is possible when the tool is a string the model is asked to incant.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — Skills as the unit of reuse
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">Skills as the unit of reuse</h2>
+
+        <p>Raw tools do not compose well. Two agents can call the same <code>search_kb</code> tool and behave completely differently — one because its system prompt told it to search before answering, one because its prompt told it to search only when uncertain. The behavior lives in the prompt, not in the tool. Sharing the tool without the prompt shares almost nothing useful.</p>
+
+        <p>The unit that does compose is the <strong>skill</strong>: the smallest portable bundle of "model knows when to use it, model knows how to call it, the team can prove it still works." Concretely, a skill is four things shipped together:</p>
+
+        <ul>
+          <li><strong>A prompt fragment</strong> — the system-prompt instructions that tell the model when this skill is appropriate, what it does, and any pitfalls. Usually one paragraph.</li>
+          <li><strong>A tool (or small set of tools)</strong> — registered with a name and version, exposed when this skill is in scope for the turn.</li>
+          <li><strong>A schema</strong> — the JSON schema the model sees, plus any output schema the harness validates against before passing results downstream.</li>
+          <li><strong>An eval</strong> — a small test set the skill must pass before it ships and before any change to its prompt or tool is accepted. The eval is the skill's specification; the prompt and tool are the implementation.</li>
+        </ul>
+
+        <p>Once skills are the unit, composition gets simple. An agent is "a system prompt plus a list of skills." A new agent built for a different team is "the same skills, a different system prompt." A regression in a skill is caught by its own eval before it cascades into every agent that uses it. A skill that gets adopted by three teams is upgraded in one place. None of that holds when the unit of reuse is a tool — the prompt that taught the model when to use the tool is what made the tool useful, and that prompt was attached to an agent, not to the tool.</p>
+
+        <p>A working test for whether something is a skill: can a second team adopt it without reading your agent code? If yes — they get the prompt fragment, register the tool from your package, and run the eval to confirm it works in their environment — it is a skill. If they have to copy paragraphs out of your system prompt and guess at when the tool fires, it is not a skill yet, no matter what the directory is called.</p>
+
+        <p>This is why later primers treat the skill, not the tool and not the agent, as the natural unit of evaluation. The eval lives with the skill, travels with the skill, and gates changes to the skill. Without that coupling, agent quality is something you measure end-to-end and cannot localize when it drops.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — Sub-agent dispatch
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">Sub-agent dispatch</h2>
+
+        <p>Most skills resolve in one model call: the model decides to use the skill, the harness invokes a tool, the result comes back, the conversation continues. A <strong>sub-agent</strong> is the case where resolving the skill itself takes a loop. The model calls a skill named <code>research_company</code>; behind that call, a separate loop runs — its own model, its own system prompt, its own tools — until it produces a synthesized result, which is what the outer model finally sees.</p>
+
+        <p>Sub-agents earn their cost in two situations. The first is when the work has its own multi-step reasoning that would clutter the parent's context — a research task that needs to issue six searches, read three documents, and synthesize a paragraph. Running that inside the parent loop pollutes the parent's history with eighteen turns of intermediate state; running it as a sub-agent collapses all of that into a single tool result. The second is when the work needs a different model, a different system prompt, or a different tool set than the parent — a SQL-writing sub-agent with database tools and a precise schema-aware system prompt that the parent agent has no business carrying.</p>
+
+        <div class="figure">
+          <span class="figure-tag">FIG. 01</span>
+          <svg viewBox="0 0 700 280" role="img" aria-label="Main loop with one node delegating into a nested sub-agent loop">
+            <defs>
+              <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#007CC3"/>
+              </marker>
+              <marker id="arrow-ltblue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#3699DA"/>
+              </marker>
+            </defs>
+
+            <!-- Main loop (left) -->
+            <text x="150" y="32" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" letter-spacing="1.5" fill="#007CC3">MAIN LOOP</text>
+
+            <!-- Three nodes in a triangle -->
+            <circle cx="150" cy="90"  r="36" fill="#FFFFFF" stroke="#007CC3" stroke-width="1.5"/>
+            <text x="150" y="94" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#404040">decide</text>
+
+            <circle cx="80" cy="200" r="36" fill="#FFFFFF" stroke="#007CC3" stroke-width="1.5"/>
+            <text x="80" y="204" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#404040">state</text>
+
+            <circle cx="220" cy="200" r="36" fill="#E6F2FA" stroke="#007CC3" stroke-width="2"/>
+            <text x="220" y="204" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#404040">act</text>
+
+            <!-- Curved arrows between nodes -->
+            <path d="M 118 110 Q 80 150 95 168" fill="none" stroke="#007CC3" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+            <path d="M 115 196 Q 150 180 185 196" fill="none" stroke="#007CC3" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+            <path d="M 205 170 Q 200 130 178 112" fill="none" stroke="#007CC3" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+
+            <!-- Boundary crossing: dashed arrow from "act" to sub-loop -->
+            <path d="M 258 200 L 430 160" fill="none" stroke="#007CC3" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow-blue)"/>
+            <text x="340" y="180" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="1" fill="#007CC3">dispatch</text>
+
+            <!-- Return path -->
+            <path d="M 430 220 L 258 218" fill="none" stroke="#3699DA" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow-ltblue)"/>
+            <text x="344" y="240" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="1" fill="#3699DA">result</text>
+
+            <!-- Vertical boundary line -->
+            <line x1="380" y1="60" x2="380" y2="260" stroke="#E2E4E7" stroke-width="1" stroke-dasharray="3 3"/>
+
+            <!-- Sub-loop (right) -->
+            <text x="540" y="32" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" letter-spacing="1.5" fill="#007CC3">SUB-AGENT LOOP</text>
+
+            <circle cx="540" cy="90"  r="30" fill="#FFFFFF" stroke="#007CC3" stroke-width="1.5"/>
+            <text x="540" y="94" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#404040">plan</text>
+
+            <circle cx="480" cy="190" r="30" fill="#FFFFFF" stroke="#007CC3" stroke-width="1.5"/>
+            <text x="480" y="194" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#404040">call</text>
+
+            <circle cx="600" cy="190" r="30" fill="#FFFFFF" stroke="#007CC3" stroke-width="1.5"/>
+            <text x="600" y="194" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#404040">read</text>
+
+            <path d="M 514 108 Q 480 145 490 162" fill="none" stroke="#007CC3" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+            <path d="M 510 188 Q 540 175 570 188" fill="none" stroke="#007CC3" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+            <path d="M 588 165 Q 580 130 564 110" fill="none" stroke="#007CC3" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+          </svg>
+          <p class="figure-caption">The sub-agent has its own loop. The parent sees a single skill call; the boundary crossing hides an entire inner conversation.</p>
+        </div>
+
+        <p>The crucial property is the <strong>boundary</strong>. The parent agent does not see the sub-agent's intermediate turns. It sees a single tool result — the synthesized output. The sub-agent's context is private; it can use a different model, hold a different system prompt, and run for fifteen turns without any of that leaking back. From the parent's perspective, calling a sub-agent is no different from calling any other tool.</p>
+
+        <p>This is also where sub-agents get expensive and dangerous. A sub-agent that takes thirty seconds to return is a tool call that blocks the parent loop for thirty seconds. A sub-agent that loops indefinitely is a leak. The harness — not the model — is responsible for putting a turn cap, a time cap, and a token cap on every sub-agent invocation, and for surfacing partial results when those caps trigger. Treat the sub-agent as a process you are dispatching, not a function you are calling, and the engineering follows.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — Harnesses: the code around the loop
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">Harnesses: the code around the loop</h2>
+
+        <p>The loop itself is a few lines. Call the model with the current message stack; if it asks for a tool, run the tool, append the result, call the model again; stop when it returns a final answer. Anyone can write that in an afternoon. What separates a demo from a production agent is everything around that loop. That everything is the <strong>harness</strong>.</p>
+
+        <p>A useful frame: the loop owns the conversation; the harness owns the system. The model is responsible for the next decision; the harness is responsible for everything the model is not. When something goes wrong in production — a tool times out, a model returns malformed JSON, a sub-agent leaks tokens, a downstream system rate-limits — the harness either handled it gracefully or the user saw a stack trace. There is rarely a middle ground.</p>
+
+        <table class="cmp">
+          <thead><tr><th>In the loop</th><th>In the harness</th></tr></thead>
+          <tbody>
+            <tr><td>Choosing the next tool</td><td>Looking up the tool in the registry and validating args</td></tr>
+            <tr><td>Composing the natural-language response</td><td>Formatting tool results back into messages the model can read</td></tr>
+            <tr><td>Deciding when the task is done</td><td>Enforcing the turn cap, time cap, and token cap</td></tr>
+            <tr><td>Generating a synthesis from sub-agent results</td><td>Dispatching the sub-agent and supervising its budget</td></tr>
+            <tr><td>Asking the user a clarifying question</td><td>Retries, timeouts, structured-output validation</td></tr>
+            <tr><td>(Nothing else)</td><td>Tracing, auth, observability, error surfaces, partial results</td></tr>
+          </tbody>
+        </table>
+
+        <p>Notice the asymmetry. The model's responsibilities are short and qualitative. The harness's responsibilities are long, quantitative, and unglamorous. This is why most "the agent failed" post-mortems trace back to harness gaps rather than model gaps — the model produced a reasonable next step on a partial context, and the harness had no plan for what to do when that step took longer than expected, or returned a 503, or used 90% of the token budget on the first turn.</p>
+
+        <p>Two harness disciplines matter more than the rest. <strong>Every external call is wrapped</strong> — tool invocations, model calls, sub-agent dispatches — with a timeout, a retry policy, and a structured error that the loop can read on the next turn rather than crash on. <strong>Every loop run has a budget</strong> — wall clock, model tokens, tool invocations — and the harness enforces it from outside the model, returning a partial result with a clear cap-hit message rather than letting the loop spin. These two together separate a tutorial agent from one you can let a user touch.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — Cross-SDK patterns
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">Cross-SDK patterns</h2>
+
+        <p>The four primitives — tool, skill, sub-agent, harness — are not specific to any single SDK. They appear across every credible agent stack, with different vocabulary attached. Once you can map a new framework onto these four words, learning the framework is mostly learning its terminology and its defaults.</p>
+
+        <p>A quick translation, by SDK family:</p>
+
+        <ul>
+          <li><strong>Claude Agent SDK.</strong> Tools are <code>@tool</code>-decorated functions registered with the runtime. Skills are markdown-defined packages that bundle a prompt fragment, a tool set, and resources. Sub-agents are explicit — you spawn a child agent with its own system prompt and tool set, and it returns its result to the parent. The harness is the SDK runtime itself, which owns the loop, budgets, and tracing.</li>
+          <li><strong>LangChain / LangGraph.</strong> Tools are <code>Tool</code> objects or <code>@tool</code>-decorated functions. Skills don't have a single name — they are implied by the combination of a tool and the prompt template that introduces it. Sub-agents appear as nested graphs or as agents-as-tools. The harness is split between the framework's executor and whatever you wrap around it.</li>
+          <li><strong>OpenAI Assistants / Responses.</strong> Tools are function-calling schemas. Skills are not a first-class concept — you assemble them yourself out of system prompts and tool selections. Sub-agents are handled via the Assistants API's nested runs or by composing your own. The harness is largely on you.</li>
+          <li><strong>Home-rolled stacks.</strong> Tools are whatever your function-calling adapter accepts. Skills, sub-agents, and the harness are whatever you've built. The risk in home-rolled stacks is not that the primitives are absent — they always emerge — but that they emerge implicitly, get named inconsistently, and end up entangled with each other.</li>
+        </ul>
+
+        <div class="note">
+          <span class="note-tag">PATTERN</span>
+          <p class="note-head"><em>Names differ across SDKs. The four primitives don't.</em></p>
+          <p>When a new framework lands on your desk, the first useful question is not "what is its abstraction?" — it is "where does this framework put each of the four primitives, and what does it make easy versus hard?" The frameworks that succeed are the ones that make the four primitives explicit and orthogonal. The ones that struggle conflate them — usually fusing skill and sub-agent, or merging harness concerns into the model's prompt.</p>
+        </div>
+
+        <p>The practical consequence is that you can design an agent independent of SDK and port it later. Decide which tools the system needs, which combinations are skills, which skills warrant their own loop as sub-agents, and what the harness has to guarantee. Once those decisions exist, mapping them onto any specific SDK is mechanical. Decide them inside an SDK's vocabulary and you will rewrite them every time you change SDKs.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — What this connects to
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">What this connects to</h2>
+
+        <p>This primer named the vocabulary the rest of Module II uses. The connecting threads:</p>
+
+        <ul>
+          <li><strong><a href="03-tool-use-and-structured-output.html">Primer 3 — Tool Use &amp; Structured Output</a></strong> — tools as the atom. This primer's "tool" is the same object Primer 3 defines; the registry pattern here is what survives when you have more than three of them.</li>
+          <li><strong><a href="05-agent-loop.html">Primer 5 — The Agent Loop</a></strong> — the loop that the harness wraps. Primer 5 explains what happens inside the model's turn; this primer is about everything outside it.</li>
+          <li><strong><a href="08-multi-agent-patterns.html">Primer 8 — Multi-Agent Patterns</a></strong> — the structural patterns (supervisor, peer, blackboard) for when multiple agents collaborate. Sub-agent dispatch is the lowest-level mechanic those patterns are built from.</li>
+          <li><strong><a href="10-evaluations-for-agents.html">Primer 10 — Evaluations for Agents</a></strong> — the natural next step, because <em>skills are the unit of evaluation</em>. Primer 10 picks up where this primer leaves off: if the skill is the portable bundle, the eval is what makes that portability trustworthy.</li>
+          <li><strong><a href="../engineering-notes/claude-agent-sdk-ic.html">The Claude Agent SDK engineering note</a></strong> — the SDK-specific deep dive on how Anthropic's runtime materializes these four primitives. Read it when you need the concrete API surface; this primer is the cross-SDK framing that note assumes.</li>
+        </ul>
+
+        <p>The four primitives are the load-bearing vocabulary the rest of the course returns to. When a later primer says "skill," it means a tool plus its prompt plus its eval. When it says "harness," it means the code that owns the loop, the budgets, and the traces. When it says "sub-agent," it means a skill that earned its own loop. Keep the definitions stable and the rest of the system gets easier to reason about.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE II · PRIMER 09 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 16 — Code-Modernization Agents · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+.layout > * { min-width: 0; }
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+/* mobile / narrow widths -------------------------------------- */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+  .sidebar { position: static; max-height: none; overflow-y: visible; padding-right: 0; padding-bottom: 16px; margin-bottom: 8px; border-right: none; border-bottom: 1px solid var(--rule); }
+  .toc { margin-bottom: 16px; }
+  .title-band { padding: 32px 20px 20px; }
+  .title { font-size: 40px; line-height: 1.05; }
+  .subtitle { font-size: 18px; }
+  .masthead { padding: 10px 20px; }
+  .cold-start { margin-left: 20px; margin-right: 20px; padding: 14px 16px; }
+  .footer { padding: 20px; margin: 32px auto 0; flex-wrap: wrap; gap: 12px; }
+  .content { max-width: 100%; }
+  .stat { font-size: 48px; }
+  .pull { font-size: 22px; padding-left: 18px; margin: 24px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .progress::before { transition: none; } }
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE V · PRIMER 16 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">Code-Modernization Agents</h1>
+    <p class="subtitle"><em>Translation plus verification. The agent writes the code AND the tests.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">PREREQUISITES</span>
+    <p>If you haven't read Primer 15 — agents in banking compliance do the gather work while humans do the judge work, with a strict evidence chain. This primer is the engineering-side analogue: the agent translates code while humans review for behavior parity.</p>
+  </aside>
+
+  <div class="layout">
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">Why code modernization is the canonical agentic engineering app</a></li>
+        <li><a href="#s2" class="toc-link">The translation pattern</a></li>
+        <li><a href="#s3" class="toc-link">Test generation is the load-bearing part</a></li>
+        <li><a href="#s4" class="toc-link">The human at the seam</a></li>
+        <li><a href="#s5" class="toc-link">Working with verification</a></li>
+        <li><a href="#s6" class="toc-link">Trace-driven modernization</a></li>
+        <li><a href="#s7" class="toc-link">What this connects to</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="15-agentic-kyc-surveillance.html">← Primer 15 — Agentic KYC &amp; Surveillance</a>
+        <a class="nav-link next" href="index.html">Course syllabus →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — Why code modernization is the canonical agentic engineering app
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">Why code modernization is the canonical agentic engineering app</h2>
+
+        <p>Every large bank carries millions of lines of code that no one wants to write any more, and that no one currently on the payroll wrote in the first place. COBOL on the mainframe still books the deposits. SAS still runs the risk batch overnight. PL/SQL still hosts the pricing rules. Java 1.4 still answers the channel calls. The estate is enormous, the language skills are scarce, and the cost of doing nothing keeps compounding as the people who understood the original code retire faster than the workload shrinks.</p>
+
+        <p>This is the canonical application of agentic engineering. Three properties make it so. First, <strong>volume</strong>: the work is measured in millions of lines, not thousands, and any per-module improvement multiplies. Second, <strong>narrow output</strong>: a modernization task produces exactly two artefacts — the modernized module and a test suite that verifies behavior parity with the legacy one. There is no open-ended creative surface; the output shape is fixed. Third, <strong>verifiable outcome</strong>: behavior parity is a binary, runnable property. You either pass the legacy test suite against the new code or you do not. There is no judgement call hiding behind the answer.</p>
+
+        <p>The same three properties recurred in Primer 15. KYC and surveillance work because they are high-volume, narrow-output, audit-checkable. Code modernization works because it is high-volume, narrow-output, test-checkable. The patterns are siblings. The engineering one is in some ways easier — a passing test suite is a cleaner ground truth than an analyst's confirm-click — but it carries the same discipline: the agent does the gather, the human ratifies the result, and the verification artefact is the contract between them.</p>
+
+        <p>The same pattern proves out across the rest of the engineering modernization surface: schema migrations, framework upgrades, build-system rewrites, API-version transitions, log-format normalisations. Anything where a piece of code has to be expressed in a new vocabulary while keeping its behavior, and where the new behavior can be tested against the old, is in scope. The bank starts with COBOL because the budget is biggest there; the same harness handles a Spring 2 to Spring 6 migration the following quarter.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — The translation pattern
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">The translation pattern</h2>
+
+        <p>The unit of work is not "translate this file." It is <strong>translate this module and ship the tests that prove the translation works</strong>. The agent reads the legacy module, infers its behavior, produces equivalent code in the target language, and produces a test suite that exercises the behavior in both languages. Two outputs, not one. This is the move that distinguishes a real modernization agent from a clever transpiler.</p>
+
+        <p>The flow has three stages. The agent first <em>reads</em> — it pulls the legacy module, any data structures it references, the calling conventions of the modules around it, and whatever runbook or documentation exists. It infers what the module is for: this calculates daily interest accrual, this normalizes a customer-record field, this posts a settlement instruction. The inference is grounded by sample inputs and outputs harvested from production logs where they exist, or constructed from the module's own internal structure where they do not.</p>
+
+        <p>The agent then <em>translates</em>. The new code is written in the target language — Java for the COBOL batch, Python for the SAS analytics, whichever modern stack the bank has standardised on. The translation is not line-by-line; it is behavior-preserving. Idioms move from COBOL's verbose verb forms to Java's expression syntax, from SAS's procedural data steps to Python's pandas operations. What is held invariant is what the module <em>does</em>, not how it looks.</p>
+
+        <p>The agent <em>also</em> generates a test suite. This is the part that makes the pattern work, and the part most early modernization efforts skip. The test suite is written in the target language's test framework, but it is structured to be runnable against both implementations: each test case is a triplet of inputs, expected outputs, and a label naming the behavior under test. The same triplets that drive the JUnit suite against the new Java module also drive a harness that exercises the legacy COBOL module on the mainframe with the same inputs, and asserts byte-equal outputs. The tests are the contract between old and new.</p>
+
+        <div class="figure">
+          <span class="figure-tag">FIG. 01</span>
+          <svg viewBox="0 0 700 260" role="img" aria-label="A three-stage pipeline: a legacy module enters an agent that produces both code and tests, both of which feed a verification stage">
+            <!-- Stage 1: Legacy module -->
+            <rect x="20" y="100" width="150" height="70" fill="#F2F2F3" stroke="#404040" stroke-width="1.5"/>
+            <text x="95" y="130" text-anchor="middle" font-family="Fraunces, serif" font-size="16" font-weight="500" fill="#404040">Legacy module</text>
+            <text x="95" y="152" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#6D6E71">COBOL · 1986</text>
+
+            <!-- Arrow from Stage 1 to Stage 2 -->
+            <line x1="170" y1="135" x2="240" y2="135" stroke="#007CC3" stroke-width="1.5"/>
+            <polygon points="240,135 232,131 232,139" fill="#007CC3"/>
+
+            <!-- Stage 2: Agent -->
+            <rect x="240" y="100" width="170" height="70" fill="#FFFFFF" stroke="#007CC3" stroke-width="2"/>
+            <text x="325" y="130" text-anchor="middle" font-family="Fraunces, serif" font-size="16" font-weight="500" fill="#404040">Agent</text>
+            <text x="325" y="152" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#007CC3">read · infer · translate</text>
+
+            <!-- Two arrows out of agent -->
+            <!-- top arrow: modernized code -->
+            <line x1="410" y1="118" x2="500" y2="70" stroke="#007CC3" stroke-width="1.5"/>
+            <polygon points="500,70 491,71 495,78" fill="#007CC3"/>
+            <text x="455" y="80" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#007CC3" letter-spacing="0.5">modernized code</text>
+
+            <!-- bottom arrow: test suite -->
+            <line x1="410" y1="152" x2="500" y2="200" stroke="#007CC3" stroke-width="1.5"/>
+            <polygon points="500,200 495,192 491,199" fill="#007CC3"/>
+            <text x="455" y="216" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#007CC3" letter-spacing="0.5">test suite</text>
+
+            <!-- Stage 3: Verification (tall box containing two inputs and one output) -->
+            <rect x="500" y="50" width="180" height="170" fill="#E6F2FA" stroke="#007CC3" stroke-width="1.5"/>
+            <text x="590" y="80" text-anchor="middle" font-family="Fraunces, serif" font-size="16" font-weight="500" fill="#404040">Verification</text>
+
+            <!-- Verification inner labels -->
+            <text x="590" y="115" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#404040">run tests against</text>
+            <text x="590" y="135" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#007CC3">legacy COBOL</text>
+            <text x="590" y="155" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#404040">and</text>
+            <text x="590" y="175" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#007CC3">new Java</text>
+            <text x="590" y="200" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" font-style="italic" fill="#6D6E71">assert byte-equal</text>
+          </svg>
+          <p class="figure-caption">Three stages: read the legacy module, produce <em>both</em> the new code and the test suite, then verify by running the tests against the legacy and the new on the same inputs.</p>
+        </div>
+
+        <p>The shape of the output is what enforces discipline. A modernization agent that produces only code can hallucinate the behavior and ship a plausible-looking module that quietly drops a rounding rule. A modernization agent that produces code <em>and</em> a parity-test suite cannot — the missing rounding rule shows up as a failing test the first time the suite is run against the legacy module. The two outputs are not redundant; they are the front and back of the same contract.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — Test generation is the load-bearing part
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">Test generation is the load-bearing part</h2>
+
+        <p>Without generated tests, you have an unverified translation. With tests that run against both the old and the new code, you have something you can actually ship. This is the load-bearing claim of the whole pattern, and it is the place where most modernization attempts collapse. A translation that no one can verify is a liability dressed as an asset — it looks like progress, but it commits the firm to a piece of code whose behavior nobody has actually checked.</p>
+
+        <p>The test-generation step has its own shape. The agent enumerates behaviors from three sources: the legacy module's own branches and edge cases, the production logs that show what the module is actually called with, and the runbook or specification text that names invariants the module is supposed to preserve. Each behavior becomes a labelled triplet — <em>given this input, the module produces this output, because of this rule</em>. The triplets are the corpus; the corpus drives both the new test suite and the parity harness.</p>
+
+        <p>The parity harness is the piece that makes the discipline real. It takes a triplet, runs the input through the legacy implementation (over a mainframe RPC, a SAS-runner sidecar, whatever wraps the old runtime), runs the same input through the new implementation, and asserts that the outputs match. The new code passes only if every triplet passes on both sides. This is what test-generation buys you that hand-written tests never could: you do not need a human to specify "expected output" in advance, because the legacy module <em>is</em> the specification, and the harness queries it directly.</p>
+
+        <div class="code">
+          <span class="code-tag">PYTHON</span>
+<pre># test-generation harness sketch — legacy COBOL -&gt; new Java
+# the corpus is a list of (input, label) pairs harvested by the agent
+# the harness queries the legacy module for ground truth, then asserts parity
+
+from dataclasses import dataclass
+from typing import Any
+
+@dataclass
+class Triplet:
+    inp: dict
+    label: str          # "negative balance edge case", "month-end rounding", ...
+    legacy_out: Any = None
+    new_out: Any = None
+
+def harvest_corpus(legacy_module: str) -&gt; list[Triplet]:
+    """Agent-generated: enumerate behaviors from branches, logs, runbook."""
+    ...
+
+def run_legacy(inp: dict) -&gt; Any:
+    """RPC into the mainframe-hosted legacy module. Read-only."""
+    ...
+
+def run_new(inp: dict) -&gt; Any:
+    """In-process call to the new Java module via JNI / a sidecar."""
+    ...
+
+def verify(corpus: list[Triplet]) -&gt; list[Triplet]:
+    failures = []
+    for t in corpus:
+        t.legacy_out = run_legacy(t.inp)
+        t.new_out    = run_new(t.inp)
+        if t.legacy_out != t.new_out:
+            failures.append(t)
+    return failures
+
+# Each failure is a translation bug. The label names the behavior
+# that diverged; the trace (Primer 11) shows where the agent went wrong.
+fails = verify(harvest_corpus("ACCRUE-INTEREST"))
+assert not fails, f"{len(fails)} parity failures — translation is not behavior-preserving"</pre>
+        </div>
+
+        <p>Two properties of the sketch are worth naming. The legacy module is treated as a black-box oracle — the harness never assumes it can read or modify the COBOL, only that it can call it with inputs and receive outputs. This is what makes the pattern survive contact with mainframes that nobody is allowed to touch. And the corpus is the agent's output, not a human-written test plan — the agent's job is to find the behaviors that matter, and the parity harness's job is to confirm the new code reproduces them.</p>
+
+        <p>When the suite is incomplete, the translation is unverified, and the modernization team knows it. Coverage of behaviors — not coverage of lines — is the metric. A 90% line-covered translation that misses the leap-year branch is worse than a 60% line-covered translation that catches every branch the agent identified, because the second one is honest about what it does not yet know.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — The human at the seam
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">The human at the seam</h2>
+
+        <p>Senior engineers do not write the modernized code. They review the agent's output. Their checkpoint is exactly two questions: <em>does this preserve behavior?</em> and <em>is the test coverage real?</em> The engineer who used to translate the module by hand now spends the morning reading three modernization PRs the agent has prepared overnight, accepting two and rejecting one for thin coverage of a known edge case. The job shape changes from <em>author</em> to <em>auditor</em>, and the work the human does is the work the agent cannot — judging whether the test corpus actually represents the domain.</p>
+
+        <p>This is the same human-at-the-seam pattern as Primer 15's case-pack review. The agent prepares a complete deliverable — code, tests, parity-run results, a short note explaining the inferred behavior. The human reads the deliverable, not the model's reasoning trace, and the harness has constrained the deliverable to a fixed shape. The review is fast because the shape is fixed and because the parity numbers are right there on the PR. The override discipline is the same: every rejected translation gets a structured reason that feeds back into the eval suite.</p>
+
+        <table class="cmp">
+          <thead><tr><th>Agent</th><th>Human</th><th>Automated</th></tr></thead>
+          <tbody>
+            <tr><td>Reads legacy module</td><td>Reads PR-shaped deliverable</td><td>Pulls source from repo</td></tr>
+            <tr><td>Infers behaviors</td><td>Judges whether the inferred behavior list is complete for the domain</td><td>Harvests sample inputs from logs</td></tr>
+            <tr><td>Writes modernized code</td><td>Spot-checks idioms and edge-case handling</td><td>Lints, style-checks, runs static analysis</td></tr>
+            <tr><td>Generates test corpus</td><td>Judges whether the corpus covers the behaviors that matter</td><td>Counts behavior coverage, not line coverage</td></tr>
+            <tr><td>Runs parity harness</td><td>Reads parity results, decides ship / reject / request-more</td><td>Runs the harness, captures the trace</td></tr>
+            <tr><td>Drafts the PR description</td><td>Approves the merge</td><td>Posts the PR, gates the merge on green parity</td></tr>
+          </tbody>
+        </table>
+
+        <p>The reviewer's leverage is in the second column. The agent can write a thousand lines of Java overnight; the human cannot read a thousand lines of Java overnight and should not try. What the human is uniquely good at is reading the <em>behavior list</em> and noticing what is missing — that the agent did not enumerate the quarter-end accrual case, or that the runbook flagged a 1997 emergency patch that the trace never touched. The agent is the typist; the human is the domain conscience.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — Working with verification
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">Working with verification</h2>
+
+        <p>Verification is the hinge. Run the test suite against the legacy module and against the new module on identical inputs. Any divergence is a translation bug. Not "an interesting modelling choice," not "a slight behavioral drift," not "a refactor that improves the design" — a bug. Escalate to the human. The modernization agent does not get to argue with the oracle, because the oracle is the production system that is currently booking trades, and the production system has already won.</p>
+
+        <p>The discipline this enforces is severe and correct. It forbids the agent from rationalizing — from explaining that the divergence is because the legacy module had a bug and the new code is "better." Maybe it is, and maybe the legacy "bug" is a regulatory adjustment that survived three audits. Either way, the call is the human's, not the agent's. The agent flags the divergence with the failing triplet and the trace; the human decides whether to fix the new code, ratify the divergence, or open a ticket against the legacy module that will live for another five years.</p>
+
+        <div class="note">
+          <span class="note-tag">VERIFICATION</span>
+          <p class="note-head">Run the new tests against the old code. If they don't pass, the translation is wrong.</p>
+          <p>The same parity-test suite that proves the new module is correct also proves that the agent understood the old module in the first place. Failing tests on the legacy side mean the agent's behavior inference was wrong, not that the legacy code was wrong. Fix the inference, regenerate the corpus, re-run.</p>
+        </div>
+
+        <p>The infrastructure cost of verification is real and is part of the deployment plan. Spinning up a parity harness against a mainframe requires sandboxes, data masking, and rate-limited RPC into the old runtime. The bank that wants to modernize at scale invests in that harness once and pays the cost across every module it touches afterwards. Without it, modernization is theatre.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — Trace-driven modernization
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">Trace-driven modernization</h2>
+
+        <p>When verification fails, the trace shows where the translation diverged from the legacy behavior. This is where Primer 11's discipline — the structured, queryable record of what the agent saw, what it inferred, and what it produced — pays off. Without a trace, a failing parity run tells you that the new code is wrong; it does not tell you why. With a trace, you can walk back from the failing triplet to the inference step that produced the wrong behavior, see what the agent assumed, and patch the prompt, the corpus, or the harness rather than re-running and hoping.</p>
+
+        <p>The flow is concrete. A parity test fails on a leap-year input. The reviewer opens the trace for that translation. They see the agent's behavior-enumeration step, scan it, and find that "leap year" is not in the list. They see the source documents the agent consulted — runbook excerpts, sample inputs from logs — and observe that the log sample covered three years, none of which was a leap year. The fix is upstream of the model: extend the log-harvest window to span at least one leap year. Re-run. The behavior shows up in the corpus. The translation now passes.</p>
+
+        <p>This is the loop that makes the deployment improve. Every parity failure is a data point about where the inference machinery is brittle. The override log from Primer 15 has its analogue here in the <em>divergence log</em>: a structured record of which legacy modules the agent misread and why. Over a quarter, the divergence log tells the modernization team which parts of the harness need investment — better log sampling, richer runbook ingestion, a structured-comment parser for the COBOL source — and which parts are already pulling their weight. The agent gets better not by retraining but by improving the inputs it sees and the corpus it generates.</p>
+
+        <p>The trace is also what the regulator will read, eventually. A modernization PR that ships into a mainframe replacement project is a regulated change. Five years from now, when someone asks how the bank verified that the new Python risk engine matched the SAS one it replaced, the answer is: here is the parity corpus, here are the runs, here is the trace of the agent that produced both, and here are the signatures of the engineers who approved each merge. Modernization without traceability is unauditable; modernization with it is just engineering.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — What this connects to
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">What this connects to</h2>
+
+        <p><strong>Back to the engineering spine.</strong> The modernization agent is a loop (<a href="05-agent-loop.html">Primer 5 — The Agent Loop</a>) that calls a few tools — fetch the legacy module, run the harness, post the PR — under the discipline of a fixed output shape. Inside a real deployment it is usually a sub-agent (<a href="09-sub-agents-skills-harnesses.html">Primer 9 — Sub-Agents, Skills, Harnesses</a>): one node in a larger pipeline whose surrounding orchestrator hands it a module to modernize and reads back a PR. The trace work (<a href="11-observability-and-traces.html">Primer 11 — Observability &amp; Traces</a>) is what turns the divergence log into a feedback loop the team can act on.</p>
+
+        <p><strong>Sister application.</strong> The human-at-the-seam pattern that runs this primer is the same pattern that runs <a href="15-agentic-kyc-surveillance.html">Primer 15 — Agentic KYC &amp; Surveillance</a>. There, the agent gathers, the human judges, and the case pack is the contract. Here, the agent translates, the human ratifies, and the parity test suite is the contract. Two different application domains, the same operating-model shape. That is the point of the pattern — once a team has built the seam once, every subsequent agentic deployment plugs into the same review discipline.</p>
+
+        <blockquote class="pull">Building an agent is easy. Building an agent function is hard. By now the difference should be concrete: it is the test suite, the case pack, the evidence chain, the override log, the trace, the seam.</blockquote>
+
+        <p>This is the last primer. The path the course has traced started at "an LLM is a sampler" and ran through tools, retrieval, the loop, memory, planning, multi-agent patterns, sub-agents, evaluations, traces, safety, security, the operating model, and into two banking applications where the pattern lands. The working thesis — that the model is the easy part and the surrounding function is the hard part — has been the spine throughout. Whether the next deployment is a KYC pilot, a SAS migration, or something the syllabus did not anticipate, the moves are the same: define the seam, write the eval, capture the trace, ratify the output. You are now equipped for the hard part. Go build.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE V · PRIMER 16 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+  </script>
+</body>
+</html>

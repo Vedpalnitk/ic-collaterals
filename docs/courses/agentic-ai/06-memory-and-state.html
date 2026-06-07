@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 6 — Memory & State · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+.layout > * { min-width: 0; }
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+/* mobile / narrow widths -------------------------------------- */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+  .sidebar { position: static; max-height: none; overflow-y: visible; padding-right: 0; padding-bottom: 16px; margin-bottom: 8px; border-right: none; border-bottom: 1px solid var(--rule); }
+  .toc { margin-bottom: 16px; }
+  .title-band { padding: 32px 20px 20px; }
+  .title { font-size: 40px; line-height: 1.05; }
+  .subtitle { font-size: 18px; }
+  .masthead { padding: 10px 20px; }
+  .cold-start { margin-left: 20px; margin-right: 20px; padding: 14px 16px; }
+  .footer { padding: 20px; margin: 32px auto 0; flex-wrap: wrap; gap: 12px; }
+  .content { max-width: 100%; }
+  .stat { font-size: 48px; }
+  .pull { font-size: 22px; padding-left: 18px; margin: 24px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .progress::before { transition: none; } }
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <!-- PER-PRIMER REPLACE: masthead-right "MODULE N · PRIMER NN / 20" -->
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE II · PRIMER 06 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">Memory &amp; State</h1>
+    <p class="subtitle"><em>Short-term first. Long-term only when short-term hurts.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">COLD START</span>
+    <p>If you haven't read Primer 5 — an agent loop reads message history, decides, calls a tool, appends, repeats. Memory is what makes that history useful as it grows.</p>
+  </aside>
+
+  <div class="layout">
+    <!-- PER-PRIMER REPLACE: TOC entries + prev/next nav hrefs -->
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">The two memories</a></li>
+        <li><a href="#s2" class="toc-link">The message stack is your default memory</a></li>
+        <li><a href="#s3" class="toc-link">When to reach for long-term</a></li>
+        <li><a href="#s4" class="toc-link">Episodic vs semantic</a></li>
+        <li><a href="#s5" class="toc-link">Summarization and compaction</a></li>
+        <li><a href="#s6" class="toc-link">When memory is the wrong abstraction</a></li>
+        <li><a href="#s7" class="toc-link">What this connects to</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="05-agent-loop.html">← Primer 5 — The Agent Loop</a>
+        <a class="nav-link next" href="07-planning-and-task-decomposition.html">Primer 7 — Planning &amp; Task Decomposition →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — The two memories
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">The two memories</h2>
+
+        <p>Talk about agent memory long enough and the word starts doing too much work. "The agent remembers" can mean four different things to four different people. Before any of the engineering makes sense, pull the concept apart into the two pieces that actually matter.</p>
+
+        <p><strong>Short-term memory</strong> is the message stack. It is everything in the current context window: the system prompt, the tool definitions, the conversation history so far, the retrieved passages, the current user message. It is what the model sees on this call. It lives in RAM, exists only for the duration of the session, and disappears when the process ends. It is what Primer 5 called the loop's state — every turn reads it, every turn writes to it.</p>
+
+        <p><strong>Long-term memory</strong> is everything else. A database, a vector store, a key-value cache, a file on disk — anywhere durable that survives past the session and can be queried back into the context on a future call. The user closes the chat on Tuesday; on Friday they come back and the agent "remembers" their preferences. That recall is a database lookup, dressed up.</p>
+
+        <p>The distinction matters because the engineering for each is completely different. Short-term memory is a budgeting problem: you have a fixed token window and you need to decide what fits. Long-term memory is a storage and retrieval problem: you need a schema, a write path, a query path, and a story for what happens when the store grows. Conflating them produces the worst of both — a context full of stale facts and a database full of conversational noise.</p>
+
+        <p>Here is the load-bearing claim of this primer: <strong>most "memory" problems builders bring to a design review are short-term ones in disguise</strong>. The agent forgot a constraint from earlier in the same session. The agent kept making the same tool call because the prior result aged out of the window. The agent gave inconsistent answers on turn 14 versus turn 4. None of those are long-term-memory failures. They are short-term-memory failures — failures to manage the message stack — and adding a vector store to fix them only adds a second thing to debug.</p>
+
+        <p>Start with short-term. Get it right. Reach for long-term only when the short-term machinery genuinely cannot carry the load.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — The message stack is your default memory
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">The message stack is your default memory</h2>
+
+        <p>The conversation history <em>is</em> short-term memory. There is no separate "memory module" hiding behind the model — the model has no state between calls except what you put back into the context. Every turn, the loop reads the full message stack and rewrites whatever portion you chose to keep. Memory, at this level, is just deciding what survives the rewrite.</p>
+
+        <p>Primer 1 framed the context window as a budget; Primer 2 made that operational. Short-term memory engineering is the same discipline applied turn by turn: every token you keep is a token you cannot use for something else, and the budget is fixed. Three strategies dominate, and most production agents end up using all three, layered.</p>
+
+        <p><strong>Sliding window.</strong> Keep the last N turns; drop everything older. Simple, predictable, and works surprisingly well for agents whose useful context is local — a tool-using loop where the last three turns capture the active task. The failure mode is obvious: anything important that happened on turn 1 disappears by turn N+1, including constraints the user set up front.</p>
+
+        <p><strong>Summarized prefix.</strong> Keep the last N turns verbatim; replace everything older with a single summary message that compresses the dropped turns into a few sentences. This is the dominant pattern in long-running assistants. The summary preserves decisions and commitments while the recent window preserves the live working state. Done well, an eight-thousand-token history collapses into a five-hundred-token summary plus the last few exchanges.</p>
+
+        <p><strong>Tool-result compression.</strong> Tool outputs are the largest line item in most agent histories — a single API response can be ten thousand tokens of JSON. Replace old tool results with a short stand-in once the model has acted on them. "Result of <code>search_customer(88312)</code>: returned 14 records; agent selected #3 for case pack." That sentence is everything later turns need; the original payload can go.</p>
+
+        <table class="cmp">
+          <thead><tr><th>Strategy</th><th>Best for</th><th>Failure mode</th></tr></thead>
+          <tbody>
+            <tr><td>Sliding window</td><td>Short tool loops, local context</td><td>Drops setup constraints from early turns</td></tr>
+            <tr><td>Summarized prefix</td><td>Long sessions, multi-step tasks</td><td>Summary loses detail the model later needs</td></tr>
+            <tr><td>Tool-result compression</td><td>Agents with verbose tool outputs</td><td>Compression strips a field that mattered</td></tr>
+            <tr><td>System-prompt re-pinning</td><td>Constraints that must survive forever</td><td>System prompt bloats with stale rules</td></tr>
+          </tbody>
+        </table>
+
+        <p>None of these strategies require a database. They are all decisions about what the loop writes back into the next turn's context. That is the discipline: <strong>treat the message stack as a budget you actively manage</strong>, not as an append-only log you hope will fit.</p>
+
+        <p>One more move worth naming. If a constraint absolutely must hold across the whole session — a hard policy, a sensitive customer identifier, an output-format requirement — do not rely on it surviving in the rolling history. Lift it into the system prompt, where it is read every turn at the top of context. The system prompt is the one slot the model attends to without fail. Use it for the standing rules that the rolling memory cannot be trusted to carry.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — When to reach for long-term
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">When to reach for long-term</h2>
+
+        <p>Long-term memory exists for one reason: continuity across sessions. The user closes the chat, the process ends, the in-memory state evaporates — and yet, when the user comes back tomorrow, you want the agent to start somewhere other than zero. If your agent never has to do that, you do not need long-term memory. Most agents never have to do that.</p>
+
+        <p>Three patterns genuinely require it. <strong>Cross-session continuity</strong> for a single user — a coding assistant that should remember last week's project structure, a customer-service agent that should know this caller already had their refund processed. <strong>Recurring users with stable preferences</strong> — dark mode, preferred language, timezone, notification settings, the kind of facts that should not be re-derived on every conversation. <strong>Personalization grounded in history</strong> — recommendation systems, where the model's outputs should reflect what this specific user has done before.</p>
+
+        <p>Notice what is not on that list. One-shot tool-use agents. Stateless API endpoints. Anything where the session is the unit of work and what happened last week is irrelevant. For those, long-term memory is dead weight: an extra store to provision, a query path to debug, a write path to keep clean, and a privacy surface to defend.</p>
+
+        <blockquote class="pull">Don't add long-term memory until short-term memory hurts.</blockquote>
+
+        <p>The cost of adding it prematurely is not just the infrastructure. It is the operational complexity. A long-term store is a second source of truth. Every turn, you now have to decide whether to query it, what to retrieve, how to merge what you found with the current context, and what to write back. The retrieval logic becomes a system to maintain. The write logic becomes a system to debug. The privacy story — what we stored, who can read it, when we delete it — becomes a compliance question. And the model now has two places it can be wrong: the live context, and the recall from storage.</p>
+
+        <p>The honest test is this. Run the agent without long-term memory for a week. Watch what users actually do. If they routinely start their second session by re-stating what they told you in the first, you have a long-term-memory case. If they don't — if every session is naturally self-contained — you do not, and adding a memory store will create more bugs than it prevents.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — Episodic vs semantic
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">Episodic vs semantic</h2>
+
+        <p>Once you have decided long-term memory is warranted, the next decision is what kind. The cognitive-science distinction between episodic and semantic memory is a useful frame here — not because the model literally has either, but because the two map cleanly onto two very different storage problems.</p>
+
+        <p><strong>Episodic memory</strong> is "what happened." Time-stamped records of events: the user said X on Tuesday at 3pm; the agent called <code>refund_order(778)</code> last Friday; the previous session ended with an unresolved escalation. Episodic memory is sequential, append-only, and queried by recency or by event type. The storage is closer to a log than a database — a stream of facts, ordered by time, that you scan or filter.</p>
+
+        <p><strong>Semantic memory</strong> is "what's true." Atemporal facts about the user or the world: the user prefers dark mode; this customer is on the enterprise plan; the product catalog includes these SKUs. Semantic memory is a key-value or document store, queried by lookup. There is no concept of "when" — only the current state of what we believe.</p>
+
+        <p>The two require different writes. Episodic writes are append-only: a new event arrives, you append it to the log, you never modify the old ones. Semantic writes are upserts: a new fact about the user arrives and it <em>replaces</em> the old fact. "User prefers dark mode" written on Tuesday is overwritten by "user prefers light mode" written on Friday. Get this wrong — store a preference as an episodic event and you end up with a contradictory pile of "user prefers X" records, with the model having no way to know which one is current.</p>
+
+        <p>They also require different reads. Episodic reads are usually filtered: "what happened in this user's last three sessions involving refunds." Semantic reads are direct lookups: "what is this user's preferred language." Episodic memory benefits from vector embeddings and similarity search because the query is fuzzy ("anything about refunds"); semantic memory benefits from structured key-value access because the query is exact ("preferred_language"). Mixing the two access patterns into one store is how memory systems become unmaintainable.</p>
+
+        <p>A working rule. Ask, for each fact you want to remember: <em>is this an event or a setting?</em> Events go into episodic storage, queried by recency and topic. Settings go into semantic storage, queried by key and always reflecting the latest value. If you can't tell which it is, you don't yet understand the fact well enough to store it.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — Summarization and compaction
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">Summarization and compaction</h2>
+
+        <p>The most common short-term-memory failure is overflow: the message stack grows past the context window and the loop either crashes or starts silently dropping turns. Sliding windows postpone the problem; they do not solve it. The actual solution is to keep summarizing — compressing the older parts of the conversation into a shorter representation that preserves the load-bearing facts.</p>
+
+        <p>The pattern is called the <strong>rolling summary</strong>. The agent's history is partitioned into three regions, in order: a single summary message at the top, the last N verbatim turns at the bottom, and nothing in between. Each time the verbatim region grows past a threshold, the oldest few turns get summarized and merged into the summary message, then dropped from the verbatim region. The summary message itself is overwritten — it always reflects everything that has been compressed so far.</p>
+
+        <p>The summarization step is itself an LLM call, usually to a cheaper model than the one driving the main loop. The prompt is narrow: take this rolling summary plus these new turns; produce an updated summary that preserves user requests, decisions made, key facts established, and any open commitments. Discard small talk and tool-call mechanics.</p>
+
+        <div class="code">
+          <span class="code-tag">PYTHON</span>
+<pre>from anthropic import Anthropic
+
+client = Anthropic()
+MODEL = "claude-sonnet-4-6"
+KEEP_VERBATIM = 8     # last 8 turns kept as-is
+COMPACT_AT    = 14    # trigger compaction once history exceeds this
+
+def compact(summary, old_turns):
+    """Fold old turns into the rolling summary. Returns a new summary string."""
+    rendered = "\n".join(f"{t['role']}: {t['content']}" for t in old_turns)
+    prompt = f"""Existing summary:
+{summary or '(none)'}
+
+New turns to fold in:
+{rendered}
+
+Produce an updated summary. Preserve: user requests, decisions made,
+key facts, open commitments. Drop: pleasantries, redundant tool chatter."""
+    resp = client.messages.create(
+        model=MODEL, max_tokens=512,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return resp.content[0].text.strip()
+
+def step(state, user_msg):
+    """One turn of an agent loop with rolling-summary memory."""
+    state["history"].append({"role": "user", "content": user_msg})
+
+    # Compact if the verbatim region has grown too long.
+    if len(state["history"]) > COMPACT_AT:
+        cut = len(state["history"]) - KEEP_VERBATIM
+        state["summary"] = compact(state["summary"], state["history"][:cut])
+        state["history"] = state["history"][cut:]
+
+    # Build the message stack: summary as a system-level prefix, then verbatim.
+    system = state["base_system"]
+    if state["summary"]:
+        system += f"\n\nPrior conversation summary:\n{state['summary']}"
+
+    resp = client.messages.create(
+        model=MODEL, max_tokens=1024,
+        system=system, messages=state["history"],
+    )
+    reply = resp.content[0].text
+    state["history"].append({"role": "assistant", "content": reply})
+    return reply</pre>
+        </div>
+
+        <p>Three things to notice. The summary lives in the <em>system prompt</em>, not as a fake user turn — it is standing context about the session so far, not something the user said. The verbatim region is sized in turns, not tokens, because that is what the loop manages naturally; if you need a token-aware version, swap the length check for a tokenizer call. And the summary is rebuilt cumulatively from the previous summary plus the new turns, so the cost of each compaction is bounded — you are never re-summarizing the whole history from scratch.</p>
+
+        <p>The failure mode to watch for is summary drift: each pass loses a little detail, and after ten compactions the summary has quietly lost something the model now needs. The fix is structural — if certain fields must survive forever (the customer ID, the case number, the original request), extract them into a separate structured-state object that the loop carries verbatim and never summarizes. Use the rolling summary for narrative; use a small structured state for facts you cannot afford to lose.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — When memory is the wrong abstraction
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">When memory is the wrong abstraction</h2>
+
+        <p>"The agent should remember" is one of those phrases that sounds like a design and is actually a punt. Before you build memory of any kind, check whether the thing you want is really memory at all. Most of the time it isn't, and three other abstractions fit better.</p>
+
+        <p><strong>Is it a tool call?</strong> If the fact you want the agent to "remember" lives in a system of record — the customer record, the order database, the support-ticket queue — the right answer is almost never to copy it into memory. The right answer is to call the system of record. A tool call is fresh, authoritative, and audited. A memory entry is stale the moment something else updates the underlying fact. "The agent remembered the customer is on the enterprise plan" is usually a worse implementation of "the agent called <code>get_customer_plan(id)</code> when it needed to know."</p>
+
+        <p><strong>Is it a re-retrieval?</strong> If the agent needs information that exists in a document, a knowledge base, or a vector store, the right answer is to retrieve it again on the turn it is needed, not to remember it from an earlier turn. RAG (Primer 4) is the dominant pattern here. Memory of a document is a cache; retrieval is the source. Caches go stale; sources don't.</p>
+
+        <p><strong>Is it a state machine?</strong> Many things builders call "memory" are really workflow state — which step of a process the user is in, which approvals are pending, which fields of a form have been filled. That is not memory; that is application state, and it belongs in a structured object the orchestrator carries explicitly, not in the model's recall. State machines are debuggable; remembered state is not.</p>
+
+        <div class="note">
+          <span class="note-tag">DISCIPLINE</span>
+          <p class="note-head"><em>Memory is the last resort, not the first.</em></p>
+          <p>Before adding a memory store, prove the alternatives don't fit. If the fact has a source of truth, call it as a tool. If it lives in a corpus, re-retrieve it. If it represents workflow state, model it as state. Reach for memory only when none of those work — which is rarer than the design conversations suggest.</p>
+        </div>
+
+        <p>The reason this matters is not aesthetic. Every abstraction has a debugging story. Tool calls have logs and audit trails. Retrieval has scores and reranks. State machines have transitions you can trace. Memory has none of these — when an agent's memory produces a wrong fact, the only thing you can do is read the entire memory store and guess what went wrong. That is a poor debugging story for production, and it is the reason memory should carry less of the load than first instinct suggests.</p>
+
+        <p>The discipline is to keep memory thin. The smaller the memory layer, the less of the agent's behavior depends on something you cannot easily inspect. Tools, retrieval, and explicit state should carry the weight. Memory carries only the residue — the things that genuinely cannot be re-derived and genuinely matter across sessions.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — What this connects to
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">What this connects to</h2>
+
+        <p>Memory is one of the load-bearing decisions in agent design, and almost every later primer touches it. The pointers worth carrying forward:</p>
+
+        <ul>
+          <li><strong><a href="05-agent-loop.html">Primer 5 — The Agent Loop</a></strong> — back-reference. The loop is what reads and writes the message stack on every turn; this primer is the engineering discipline on top of that loop. Short-term memory is the loop's state; long-term memory is what the loop optionally reads from and writes to a durable store.</li>
+          <li><strong><a href="09-sub-agents-skills-harnesses.html">Primer 9 — Sub-agents, Skills, Harnesses</a></strong> — once a memory layer becomes complex enough to need its own logic — what to write, when to summarize, what to retrieve — it often becomes a sub-agent in its own right. A "memory manager" sub-agent that owns the rolling summary, the episodic log, and the semantic store is a clean architectural move when memory grows past a few hundred lines of orchestration code.</li>
+          <li><strong><a href="11-observability-and-traces.html">Primer 11 — Observability &amp; Traces</a></strong> — memory bugs are notoriously hard to diagnose because they manifest several turns after the bad write. Traces are the only honest debugging tool: capture every memory read and write with the turn that triggered it, and the bug becomes visible. If you cannot reconstruct, from a trace, why the agent recalled what it recalled, you do not yet have a memory system you can run in production.</li>
+        </ul>
+
+        <p>The short version of this primer fits on a single line: <em>the message stack is your default memory; everything else is an exception that must justify itself</em>. Most agents need less memory than their designers think. The ones that genuinely need more pay for it with a real storage system, a clear schema, and a debugging story — not with a vector store sprinkled in as a fix for a context-engineering problem.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE II · PRIMER 06 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+  </script>
+</body>
+</html>

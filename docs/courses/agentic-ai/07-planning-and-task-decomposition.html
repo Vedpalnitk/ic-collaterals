@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 7 — Planning & Task Decomposition · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+.layout > * { min-width: 0; }
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+/* mobile / narrow widths -------------------------------------- */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+  .sidebar { position: static; max-height: none; overflow-y: visible; padding-right: 0; padding-bottom: 16px; margin-bottom: 8px; border-right: none; border-bottom: 1px solid var(--rule); }
+  .toc { margin-bottom: 16px; }
+  .title-band { padding: 32px 20px 20px; }
+  .title { font-size: 40px; line-height: 1.05; }
+  .subtitle { font-size: 18px; }
+  .masthead { padding: 10px 20px; }
+  .cold-start { margin-left: 20px; margin-right: 20px; padding: 14px 16px; }
+  .footer { padding: 20px; margin: 32px auto 0; flex-wrap: wrap; gap: 12px; }
+  .content { max-width: 100%; }
+  .stat { font-size: 48px; }
+  .pull { font-size: 22px; padding-left: 18px; margin: 24px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .progress::before { transition: none; } }
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE II · PRIMER 07 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">Planning &amp; Task Decomposition</h1>
+    <p class="subtitle"><em>When the canonical loop isn't enough — and when it is.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">COLD START</span>
+    <p>If you haven't read Primer 5 — the canonical agent loop decides one step at a time. Planning is what you reach for when the task is too big for that, but smaller than multi-agent.</p>
+  </aside>
+
+  <div class="layout">
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">Why planning matters</a></li>
+        <li><a href="#s2" class="toc-link">Plan-then-execute</a></li>
+        <li><a href="#s3" class="toc-link">Incremental planning</a></li>
+        <li><a href="#s4" class="toc-link">Task graphs (DAGs)</a></li>
+        <li><a href="#s5" class="toc-link">Hierarchical agents</a></li>
+        <li><a href="#s6" class="toc-link">Recovering from a bad plan</a></li>
+        <li><a href="#s7" class="toc-link">What this connects to</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="06-memory-and-state.html">← Primer 6 — Memory &amp; State</a>
+        <a class="nav-link next" href="08-multi-agent-patterns.html">Primer 8 — Multi-Agent Patterns →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — Why planning matters
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">Why planning matters</h2>
+
+        <p>The canonical agent loop from Primer 5 is <em>incremental</em>. The model looks at the current context, decides on one next action, the harness runs it, the result lands back in the context, and the loop turns again. There is no plan written down. There is no commitment to a sequence. Each step is decided in the moment, with all the prior steps as input.</p>
+
+        <p>That works beautifully for a large class of agent tasks — the ones where the next step genuinely depends on what just happened. A support agent answering a question, a coding agent following a stack trace, a research agent chasing a citation. In each case, step three only makes sense after step two lands. There is no plan to write, because the plan would have to be hedged so heavily on what step one returned that you might as well let the model decide step three when it gets there.</p>
+
+        <p>Planning is the other case. <strong>Planning is when you write the whole sequence first, then execute it.</strong> The model produces an ordered list of steps before any tool fires. The harness then walks the list, executing each step, optionally checking the result before moving on.</p>
+
+        <p>The distinction is not stylistic. It changes what the model is doing and what the harness has to do. In an incremental loop, the model is a step-chooser; the harness is a thin runner. In a planned execution, the model is a planner-then-step-executor; the harness owns the plan, tracks progress against it, and decides what to do when a step deviates from expectation.</p>
+
+        <p>Reach for planning when the task is big enough that the model needs to <em>think across</em> steps, not just within them. A multi-system data migration. A research brief that has to cover five subtopics in a specific order. A code refactor that touches eight files and has to land in a sequence that keeps the build green. In each case, the cost of running step three before realising step one was wrong is high — and the shape of the work is knowable up front. That is the sweet spot for planning.</p>
+
+        <p>Reach for incremental when the task is exploratory, branchy, or short. The cost of "wasting" one step in a four-step run is small; the cost of writing a plan you immediately have to revise is large. Most agents in production are mostly incremental, with planning reserved for the harder cases.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — Plan-then-execute
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">Plan-then-execute</h2>
+
+        <p>The simplest planning pattern is a two-phase split. <strong>Phase one:</strong> ask the model to produce a numbered plan — a list of steps, each with a name, a brief description, and the tool it expects to call. No tools fire in this phase. The output is structured text. <strong>Phase two:</strong> the harness walks the plan, executing each step in turn. The model may be re-invoked per step to flesh out arguments or summarise the result, but the <em>shape</em> of the sequence is fixed before any tool runs.</p>
+
+        <p>Why bother with phase one at all? Three reasons. First, the model often writes a better plan than it executes — given a clear request and no immediate pressure to act, it considers the whole sequence rather than just the next move. Second, the plan is inspectable. You can show it to a human reviewer before running it. You can log it. You can compare it to what actually happened. Third, the harness gains structure: it knows what step four is supposed to do, so it can detect when step three's output is going to make step four impossible.</p>
+
+        <p>Used for: long-horizon tasks with known shape. A KYC case-pack assembly that always has the same six phases. A nightly data pipeline that hits the same systems in the same order. A research brief that follows a fixed outline.</p>
+
+        <p>Risk: <strong>the plan can be wrong.</strong> The model wrote it before it saw any tool outputs, working from its priors. If the first tool call returns something unexpected, the next four steps may be addressing the wrong problem. Plan-then-execute has to be paired with a step-level check or it will cheerfully run a bad plan all the way to completion.</p>
+
+        <div class="code">
+          <span class="code-tag">PYTHON</span>
+<pre>from anthropic import Anthropic
+
+client = Anthropic()
+MODEL = "claude-sonnet-4-6"
+
+def make_plan(goal: str) -> list[dict]:
+    """Phase 1: ask the model for a numbered plan as structured JSON."""
+    resp = client.messages.create(
+        model=MODEL,
+        max_tokens=1024,
+        system="You are a planner. Produce a numbered plan as a JSON list. "
+               "Each item: {step, name, description, tool}. No tools fire yet.",
+        messages=[{"role": "user", "content": f"Goal: {goal}"}],
+    )
+    return parse_plan(resp.content[0].text)
+
+def execute_step(step: dict, prior_results: list) -> dict:
+    """Phase 2: ask the model to carry out one step, given the plan and history."""
+    resp = client.messages.create(
+        model=MODEL,
+        max_tokens=1024,
+        tools=TOOL_REGISTRY,
+        system=f"Execute step {step['step']}: {step['name']}. "
+               f"Use tool: {step['tool']}.",
+        messages=[{"role": "user",
+                   "content": f"Step description: {step['description']}\n"
+                              f"Prior results: {prior_results}"}],
+    )
+    return run_tool_call(resp)
+
+def plan_then_execute(goal: str):
+    plan = make_plan(goal)
+    results = []
+    for step in plan:
+        outcome = execute_step(step, results)
+        if not step_succeeded(outcome, step):
+            return replan_or_escalate(goal, plan, results, step, outcome)
+        results.append(outcome)
+    return results</pre>
+        </div>
+
+        <p>Notice the shape. <code>make_plan</code> returns structured data, not prose. <code>execute_step</code> is a thin per-step loop with a tight system prompt. The outer <code>plan_then_execute</code> walks the plan but always has a branch for failure — <code>replan_or_escalate</code> is not optional decoration. Without it, the harness silently pushes through bad plans, which is the failure mode Section 6 is about.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — Incremental planning
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">Incremental planning</h2>
+
+        <p>The other extreme is to write no plan at all. The canonical loop from Primer 5 decides each step on the fly: the model sees the current context, picks one action, the harness runs it, the result lands back in the context, the model picks the next action. There is no commitment past the current step. The "plan," to the extent there is one, lives inside the model's reasoning for this single turn and is forgotten as soon as the next turn starts.</p>
+
+        <p>This sounds primitive next to the plan-then-execute pattern, but it has serious advantages. The model never commits to a sequence it might have to walk back. Each step is decided with the maximum available information — every prior tool result is in the context when the next step is chosen. There is no "the plan was wrong" failure mode, because there is no plan to be wrong about.</p>
+
+        <p>Used for: exploration, conditional logic, situations the model cannot anticipate before seeing some output. A debugging session where step one is "grep for the error string" — what step two should be depends entirely on what step one finds. A research task that follows citations wherever they lead. A customer-service flow where the user can change topic at any turn.</p>
+
+        <p>Incremental planning fails differently. It can wander. Without a written plan to walk against, the loop can spend ten turns chasing a thread that turned out to be a dead end, with no scaffolding to notice the drift. The harness has nothing to compare progress against. Step-level evals help — but the deeper guardrail is keeping the loop short and giving the model an explicit "stop and report" tool for when it's not making progress.</p>
+
+        <p>The choice between plan-then-execute and incremental is not binary. Most real agents are mostly incremental, with a planning step injected when the task is big enough to warrant it. A coding agent might run incrementally for small fixes, but produce an explicit plan when the user asks for a multi-file refactor. The harness decides which mode to enter based on the task; the model is asked to plan only when planning earns its keep.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — Task graphs (DAGs)
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">Task graphs (DAGs)</h2>
+
+        <p>Plan-then-execute treats the plan as a linear list. Real work often has structure the linear view loses: some steps depend on others, some are independent and could run in parallel, some are gates that must finish before anything downstream can start. The data structure that captures this honestly is a directed acyclic graph — a DAG of tasks.</p>
+
+        <p>The planner's output is no longer a numbered list but a graph: nodes are tasks, edges are dependencies. The harness performs a topological sort to determine execution order; independent branches run in parallel; the result of each node becomes available to its downstream nodes when they execute. Steps that have no dependency on each other no longer wait in line behind unrelated work.</p>
+
+        <p>This matters for two reasons. <strong>Wall-clock time:</strong> a five-step linear plan where steps two and three are independent doesn't need to take 5× the time of one step. <strong>Failure isolation:</strong> if step C fails and step D didn't depend on it, D can still run; only the descendants of C are blocked. A linear plan would have to abort the whole sequence.</p>
+
+        <div class="figure">
+          <span class="figure-tag">FIG. 01</span>
+          <svg viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A directed acyclic graph: node A fans out to B and C, which both feed into D, which feeds into E.">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#007CC3"/>
+              </marker>
+            </defs>
+            <!-- edges -->
+            <line x1="100" y1="110" x2="220" y2="55"  stroke="#007CC3" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <line x1="100" y1="110" x2="220" y2="165" stroke="#007CC3" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <line x1="320" y1="55"  x2="420" y2="100" stroke="#007CC3" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <line x1="320" y1="165" x2="420" y2="120" stroke="#007CC3" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <line x1="500" y1="110" x2="560" y2="110" stroke="#007CC3" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- nodes -->
+            <g font-family="JetBrains Mono, monospace" font-size="13" fill="#404040" text-anchor="middle">
+              <rect x="40"  y="85"  width="60" height="50" rx="6" fill="#FFFFFF" stroke="#E2E4E7" stroke-width="1.2"/>
+              <text x="70"  y="115">A · fetch</text>
+              <rect x="220" y="30"  width="100" height="50" rx="6" fill="#FFFFFF" stroke="#E2E4E7" stroke-width="1.2"/>
+              <text x="270" y="60">B · enrich</text>
+              <rect x="220" y="140" width="100" height="50" rx="6" fill="#FFFFFF" stroke="#E2E4E7" stroke-width="1.2"/>
+              <text x="270" y="170">C · screen</text>
+              <rect x="420" y="85"  width="80" height="50" rx="6" fill="#FFFFFF" stroke="#E2E4E7" stroke-width="1.2"/>
+              <text x="460" y="115">D · merge</text>
+              <rect x="560" y="85"  width="40" height="50" rx="6" fill="#FFFFFF" stroke="#E2E4E7" stroke-width="1.2"/>
+              <text x="580" y="115">E</text>
+            </g>
+          </svg>
+          <p class="figure-caption">A five-node task graph. A fans out into B and C, which run in parallel; both feed D; D feeds E. The harness executes in topological order, parallelising where the graph allows.</p>
+        </div>
+
+        <p>DAGs are not free. The planner has to produce a valid graph — no cycles, every dependency named, every output schema matched to the downstream input. The harness has to schedule, run nodes concurrently, collect their results, and reason about partial failure. For a five-node graph this is straightforward; for a fifty-node graph it starts to resemble a workflow engine, and you are better off using one than writing it yourself.</p>
+
+        <p>Reach for DAGs when the task has obvious parallelism that a linear plan would waste, or when partial failure recovery matters. Skip them when the work is genuinely sequential — a graph with one path through it is just a linear plan with extra ceremony.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — Hierarchical agents
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">Hierarchical agents</h2>
+
+        <p>The patterns so far assume one model doing both the planning and the execution. Hierarchical agents split those roles across separate model invocations, each operating at a different "altitude." A <strong>planner</strong> agent sees the whole goal and produces the structure: the steps, the dependencies, the success criteria. An <strong>executor</strong> agent sees one step at a time and carries it out, with no context on the larger plan beyond what it needs to do its piece. A <strong>reviewer</strong> agent sees the executor's output and the planner's intent and decides whether the step succeeded.</p>
+
+        <p>The benefit is specialisation by context. The planner's context is small and focused on structure; it does not get cluttered with tool outputs. The executor's context is small and focused on one task; it doesn't have to hold the whole plan in mind. The reviewer's context is the executor's output plus the success criteria. Each agent operates with less noise than a single agent would.</p>
+
+        <p>This beats one deeper agent when: the task has a clear hierarchy (a brief that breaks into chapters that break into sections), the steps are independent enough that an executor doesn't need full plan context to do its piece, or you want to introduce a review gate that is structurally separate from the work itself. The separation is the point — a reviewer that lives inside the executor's context is just self-checking, with all the blind spots that implies.</p>
+
+        <p>It loses to a single agent when the task is small enough that the coordination overhead exceeds the specialisation benefit. Three model calls to do what one call could have done is not a win. Hierarchical patterns earn their keep on long, structured work — Primer 8 picks this up under multi-agent patterns and goes deeper.</p>
+
+        <table class="cmp">
+          <thead><tr><th>Pattern</th><th>Use for</th><th>Failure mode</th></tr></thead>
+          <tbody>
+            <tr><td>Plan-then-execute</td><td>Long-horizon tasks with known shape</td><td>Bad plan runs to completion silently</td></tr>
+            <tr><td>Incremental</td><td>Exploration, branchy work, short tasks</td><td>Loop wanders without scaffolding</td></tr>
+            <tr><td>Task graph (DAG)</td><td>Parallelisable work, partial-failure recovery</td><td>Planner produces an invalid graph</td></tr>
+            <tr><td>Hierarchical</td><td>Structured work where altitudes differ</td><td>Coordination overhead exceeds the benefit</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — Recovering from a bad plan
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">Recovering from a bad plan</h2>
+
+        <p>This is the single hardest part of any planning system, and the part most builders under-invest in. A plan is a hypothesis. The hypothesis can be wrong — the model wrote it before it saw any tool outputs, working from its priors about the task. When the first real result lands and contradicts the plan, the harness has to do something about it. The default behaviour of a naive planner is to keep executing anyway, because the loop only knows about steps, not about whether the steps still make sense.</p>
+
+        <p>The discipline has three parts.</p>
+
+        <p><strong>Detect early.</strong> Run a step-level eval after every step, not just at the end. The check can be lightweight — did the tool return the shape we expected, does the result satisfy the success criterion the planner wrote for this step, does the model itself flag the result as off. The check has to be cheap enough to run every step and strict enough to actually catch drift. A check that always returns "looks fine" is worse than no check, because it creates the illusion of supervision.</p>
+
+        <p><strong>Replan when the plan is wrong, fall back to incremental when replanning fails twice.</strong> If a step fails, hand the planner the original goal, the completed steps, and the failure, and ask for a revised plan from this point. If the revised plan also fails, the task is more exploratory than the planner thought — drop back to the incremental loop from Section 3 and let the model decide the next step on the fly. There is no shame in switching modes. The shame is in pretending the original plan was still valid after step two contradicted it.</p>
+
+        <p><strong>Never silently push through.</strong> When detection fires and recovery fails, the loop must stop and report — not continue with degraded confidence, not "try the next step anyway," not produce a partial result and label it complete. The honest output is "I ran steps one to three, step four failed, here is what I have so far, and here is why I am stopping." That output is useful. A wrong answer presented as a right one is not.</p>
+
+        <div class="note">
+          <span class="note-tag">RESILIENCE</span>
+          <p class="note-head"><em>A bad plan that keeps executing is worse than no plan at all.</em></p>
+          <p>An incremental loop that wanders for ten steps wastes ten tool calls. A bad plan that runs to completion produces an authoritative-looking result that is wrong, often without anyone noticing until it lands downstream. Detection and graceful failure are the price of admission for planning. If you cannot afford them, stay incremental.</p>
+        </div>
+
+        <p>The deeper point: planning shifts where errors hide. Incremental loops fail visibly — they wander, they loop, the user sees them flailing. Planned executions fail invisibly — they march through a wrong plan and present a confident result. The first kind of failure is annoying; the second kind is dangerous. Build the detection and recovery before you build the planning, not after.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — What this connects to
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">What this connects to</h2>
+
+        <p>Planning sits between the per-step craft of the agent loop and the per-system craft of multi-agent design. The pointers worth carrying forward:</p>
+
+        <ul>
+          <li><strong><a href="05-agent-loop.html">Primer 5 — The Agent Loop</a></strong> — the incremental loop is the baseline. Planning is what you add when the task outgrows it. Every planning pattern in this primer reduces, in its degenerate case, to the canonical loop from Primer 5.</li>
+          <li><strong><a href="06-memory-and-state.html">Primer 6 — Memory &amp; State</a></strong> — a plan is itself a kind of state the harness must carry across steps. Where it lives, how it gets updated, what survives a replan — these are memory-design questions the moment you stop running purely incrementally.</li>
+          <li><strong><a href="08-multi-agent-patterns.html">Primer 8 — Multi-Agent Patterns</a></strong> — hierarchical agents from Section 5 are the next altitude up. Primer 8 takes the planner/executor/reviewer split further: into specialised agents, message buses between them, and the orchestration patterns that hold them together.</li>
+          <li><strong><a href="11-observability-and-traces.html">Primer 11 — Observability &amp; Traces</a></strong> — planning bugs are trace-bugs. The plan is a structure; the execution is a sequence; the gap between them is what your traces have to surface. A planning system without a trace view is a planning system you cannot debug.</li>
+        </ul>
+
+        <p>Planning is a tool, not a default. Most agent tasks are best served by the incremental loop. Reach for planning when the work is big enough, structured enough, and slow-failing enough that committing a sequence up front earns its keep. Then build the detection and recovery before you ship the planner.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE II · PRIMER 07 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+  </script>
+</body>
+</html>

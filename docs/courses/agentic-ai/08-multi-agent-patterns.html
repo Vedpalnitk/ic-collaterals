@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 8 — Multi-Agent Patterns · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+.layout > * { min-width: 0; }
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+/* mobile / narrow widths -------------------------------------- */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+  .sidebar { position: static; max-height: none; overflow-y: visible; padding-right: 0; padding-bottom: 16px; margin-bottom: 8px; border-right: none; border-bottom: 1px solid var(--rule); }
+  .toc { margin-bottom: 16px; }
+  .title-band { padding: 32px 20px 20px; }
+  .title { font-size: 40px; line-height: 1.05; }
+  .subtitle { font-size: 18px; }
+  .masthead { padding: 10px 20px; }
+  .cold-start { margin-left: 20px; margin-right: 20px; padding: 14px 16px; }
+  .footer { padding: 20px; margin: 32px auto 0; flex-wrap: wrap; gap: 12px; }
+  .content { max-width: 100%; }
+  .stat { font-size: 48px; }
+  .pull { font-size: 22px; padding-left: 18px; margin: 24px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .progress::before { transition: none; } }
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE II · PRIMER 08 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">Multi-Agent Patterns</h1>
+    <p class="subtitle"><em>Mostly the wrong answer — but when right, irreplaceable.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">COLD START</span>
+    <p>If you haven't read Primer 7 — planning means writing the steps first. Multi-agent means writing the workers first. Most teams reach for multi-agent before they've exhausted single-agent. Don't.</p>
+  </aside>
+
+  <div class="layout">
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">The temptation, and the trap</a></li>
+        <li><a href="#s2" class="toc-link">Orchestrator + workers</a></li>
+        <li><a href="#s3" class="toc-link">Hand-off (pipeline)</a></li>
+        <li><a href="#s4" class="toc-link">Debate</a></li>
+        <li><a href="#s5" class="toc-link">Swarms (use cautiously)</a></li>
+        <li><a href="#s6" class="toc-link">When multi-agent is the wrong answer</a></li>
+        <li><a href="#s7" class="toc-link">What this connects to</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="07-planning-and-task-decomposition.html">← Primer 7 — Planning &amp; Task Decomposition</a>
+        <a class="nav-link next" href="09-sub-agents-skills-harnesses.html">Primer 9 — Sub-Agents, Skills &amp; Harnesses →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — The temptation, and the trap
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">The temptation, and the trap</h2>
+
+        <p>The pitch is intuitive and almost always wrong. You have a single agent that struggles with a hard task — researching a market, drafting a long document, reviewing code across many files. The instinct is to split the work: one agent researches, another writes, a third reviews. Each can be smaller, more focused, easier to prompt. Add a coordinator, and you've turned a hard single-agent problem into a clean little org chart. Surely this is more capacity.</p>
+
+        <p>It almost never is. What you have actually added is coordination cost — and unlike a human team, where coordination cost is dwarfed by the time it takes humans to do the underlying work, with agents the coordination IS most of the work. Every hand-off is a context serialization. Every dispatch is a new system prompt, new tool definitions, new turns burned getting an agent oriented before it produces its first useful token. The conductor has to read each worker's output and decide what to do next, often using more tokens than the workers used to produce their parts.</p>
+
+        <p>The economics are unforgiving. A single agent loop with twelve tool calls might run 40,000 tokens end to end. The same task split across an orchestrator and three workers, each with its own loop, will routinely run 200,000 tokens — five times the cost for a result that is, in most cases, no better and sometimes meaningfully worse. The orchestrator drops context the workers had. The workers each rediscover facts the others already established. The seams between agents leak information and pile on tokens.</p>
+
+        <blockquote class="pull">If you can do it with one agent, do it with one agent.</blockquote>
+
+        <p>This is the default, and it should be a strong one. Reach for a single agent first. Give it the tools, give it the context budget, give it the planning capacity from Primer 7. If it cannot do the work, ask why specifically before reaching for multi-agent. Is it because the task genuinely has parallelism the model cannot exploit alone? Is it because the model's reasoning fails at a particular sub-step and you need a specialist? Or is it because the prompt is bad, the tools are wrong, or the context isn't being managed? Most of the time the answer is the third one. Fix that first.</p>
+
+        <p>Multi-agent is real and it has its place. The rest of this primer maps the patterns that work and names the failure modes. But the test before adopting any of them is the same: would a tighter single-agent solution get you there? If yes, do that instead.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — Orchestrator + workers
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">Orchestrator + workers</h2>
+
+        <p>The orchestrator-and-workers pattern is the most defensible multi-agent shape, and the one most production deployments converge on when they need multi-agent at all. One conductor agent decomposes the task, dispatches sub-tasks to specialist workers, integrates their outputs, and decides what to do next. The workers do not talk to each other. They talk only to the orchestrator.</p>
+
+        <p>This pattern earns its cost when the work shards cleanly. "Research five competitors" is the canonical example: the orchestrator splits the list, dispatches one worker per competitor with the same research prompt, and the workers run in parallel. There is no shared state to coordinate, no order dependency, and the synthesis step at the end is cheap because each worker returns a structured summary. The wall-clock speedup is real, the token cost overhead is bounded, and the result quality is comparable to a single agent doing the same work serially — sometimes better, because each worker had a tighter context.</p>
+
+        <div class="figure">
+          <span class="figure-tag">FIG. 01</span>
+          <svg viewBox="0 0 600 260" role="img" aria-label="Orchestrator at top with bidirectional arrows to four worker nodes below">
+            <defs>
+              <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#007CC3"/>
+              </marker>
+            </defs>
+            <!-- Orchestrator -->
+            <rect x="230" y="20" width="140" height="44" fill="#FFFFFF" stroke="#007CC3" stroke-width="2"/>
+            <text x="300" y="47" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#404040" letter-spacing="1.2">ORCHESTRATOR</text>
+            <!-- Workers -->
+            <rect x="40" y="190" width="110" height="40" fill="#FFFFFF" stroke="#3699DA" stroke-width="1.5"/>
+            <text x="95" y="215" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#404040" letter-spacing="1">RESEARCHER</text>
+
+            <rect x="175" y="190" width="110" height="40" fill="#FFFFFF" stroke="#3699DA" stroke-width="1.5"/>
+            <text x="230" y="215" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#404040" letter-spacing="1">WRITER</text>
+
+            <rect x="310" y="190" width="110" height="40" fill="#FFFFFF" stroke="#3699DA" stroke-width="1.5"/>
+            <text x="365" y="215" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#404040" letter-spacing="1">REVIEWER</text>
+
+            <rect x="445" y="190" width="110" height="40" fill="#FFFFFF" stroke="#3699DA" stroke-width="1.5"/>
+            <text x="500" y="215" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#404040" letter-spacing="1">CRITIC</text>
+
+            <!-- Arrows: bidirectional -->
+            <line x1="270" y1="68" x2="100" y2="186" stroke="#007CC3" stroke-width="1.5" marker-start="url(#ah)" marker-end="url(#ah)"/>
+            <line x1="285" y1="68" x2="225" y2="186" stroke="#007CC3" stroke-width="1.5" marker-start="url(#ah)" marker-end="url(#ah)"/>
+            <line x1="315" y1="68" x2="365" y2="186" stroke="#007CC3" stroke-width="1.5" marker-start="url(#ah)" marker-end="url(#ah)"/>
+            <line x1="330" y1="68" x2="495" y2="186" stroke="#007CC3" stroke-width="1.5" marker-start="url(#ah)" marker-end="url(#ah)"/>
+          </svg>
+          <p class="figure-caption">One conductor; many specialists. Workers do not talk to each other — only to the orchestrator. Hand-offs in both directions: dispatch down, results up.</p>
+        </div>
+
+        <p>Where it fails: when the sub-tasks are not independent. The moment one worker needs another's output to do its job, you are no longer running parallel workers — you are running a pipeline, badly, with a hub in the middle that has to broker every dependency. The orchestrator's context balloons. The serial path through the dependency graph dominates wall-clock time. You would have been better off with hand-off (next section) or a single agent.</p>
+
+        <p>The orchestrator itself is the highest-risk part of the pattern. It needs enough context to make good dispatch decisions, which means it tends to accumulate state across the whole job — every worker's output, every retry, every revision. If you are not careful, the orchestrator's context is the union of every worker's context plus the synthesis overhead. Token budgets here can run away. The discipline is to keep the orchestrator's prompt and state lean: decompose, dispatch, integrate, decide — not narrate, repeat, or re-explain.</p>
+
+        <p>A useful rule: if the orchestrator's context is larger than what a single agent would have needed for the whole task, you have not split the work, you have copied it.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — Hand-off (pipeline)
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">Hand-off (pipeline)</h2>
+
+        <p>Hand-off is the linear-chain pattern. Agent A produces an output; that output becomes Agent B's input; B's output becomes C's input. There is no central conductor — each agent's job description includes "when you are done, pass to the next stage." Research, then draft, then review. Triage, then route, then resolve. Transcribe, then translate, then summarize.</p>
+
+        <p>This pattern earns its cost when each stage has a genuinely different specialty — different tools, different reasoning style, different success criteria. A research agent is good at searching and grounding claims; it is mediocre at long-form writing. A drafting agent does the inverse. A review agent's job is to find what the first two missed. Each stage can have a tighter system prompt, a smaller tool set, and a clearer success criterion than a single agent trying to be all three.</p>
+
+        <p>The defining advantage over orchestrator-and-workers is that the hand-off pattern has no synthesis problem. Each agent's output is the next agent's input — no integration step, no risk of the orchestrator misreading three parallel results, no token tax on a hub that has to hold everything. The cost is that you lose parallelism. Hand-off is fundamentally serial: the second agent cannot start until the first finishes.</p>
+
+        <p>Where it fails: when the boundaries between stages are blurry. If the research agent needed to consult the reviewer mid-flight ("is this source acceptable?"), or if the writer wants to send a question back to research ("what was that figure again?"), you have a feedback loop, not a pipeline. Hand-off does not handle feedback loops well — each backward step is an expensive retry through stages you already paid for. If your workflow has real back-edges, either flatten them into a single agent that can revisit its own work, or move to orchestrator-and-workers where the hub can broker the feedback.</p>
+
+        <p>The other failure mode is context loss across the seams. Agent A had rich context — search results, intermediate notes, dead ends it ruled out. Agent B receives only A's final output. The reasoning behind that output is gone. If B's downstream decision depends on something only A would have known, B will get it wrong. The fix is to include structured rationale in the hand-off payload — not just the answer but the supporting evidence the next stage might need to interrogate. This costs tokens on the hand-off but saves errors downstream.</p>
+
+        <p>Hand-off works best for workflows that are already pipeline-shaped in the business — a content production line, a triage-then-resolve service desk, a transcribe-then-translate stack. It works badly for tasks that are pipeline-shaped only in your head because you wanted them to be.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — Debate
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">Debate</h2>
+
+        <p>Debate is the pattern where two or more agents argue opposing or differing positions on the same question, and a judge agent synthesizes a final answer. The structure exploits a real weakness in single-agent reasoning: a confident model tends to commit to its first hypothesis and rationalize forward, missing the cases where it was wrong. Forcing the model to argue against itself — or against a sibling agent — surfaces the errors the original answer hid.</p>
+
+        <p>The technique is most useful for high-stakes calls where being confidently wrong is much worse than being correctly uncertain. A model that says "the contract is enforceable" with one paragraph of reasoning, when the right answer is "probably enforceable but with three named risks," is a danger in production. A debate harness routinely catches that kind of error: one agent argues enforceable, another argues unenforceable, the judge synthesizes the conditions and risks. The output is longer, slower, more expensive — and meaningfully more reliable on the cases that matter.</p>
+
+        <div class="code">
+          <span class="code-tag">PYTHON</span>
+<pre>from anthropic import Anthropic
+
+client = Anthropic()
+MODEL = "claude-sonnet-4-6"
+
+def argue(side: str, question: str, prior: str) -> str:
+    system = (
+        f"You are arguing the {side} position. "
+        "Be specific. Cite the strongest reasoning. "
+        "Identify the weakness in the opposing argument."
+    )
+    user = f"Question: {question}\n\nOpposing argument so far:\n{prior}"
+    return client.messages.create(
+        model=MODEL, max_tokens=512, system=system,
+        messages=[{"role": "user", "content": user}],
+    ).content[0].text
+
+def judge(question: str, pro: str, con: str) -> str:
+    system = (
+        "You are the judge. Read both arguments. "
+        "Produce a synthesis: the answer, the conditions, "
+        "and any remaining uncertainty. Do not pick a side mechanically."
+    )
+    user = f"Q: {question}\n\nPRO:\n{pro}\n\nCON:\n{con}"
+    return client.messages.create(
+        model=MODEL, max_tokens=1024, system=system,
+        messages=[{"role": "user", "content": user}],
+    ).content[0].text
+
+def debate(question: str, rounds: int = 2) -> str:
+    pro, con = "", ""
+    for _ in range(rounds):
+        pro = argue("PRO",  question, con)
+        con = argue("CON",  question, pro)
+    return judge(question, pro, con)</pre>
+        </div>
+
+        <p>Two warnings. First, debate is expensive — roughly four to six times a single-agent answer for the same question, depending on round count. Use it for the calls where you would pay a senior reviewer to check a junior's work, not for routine queries. Second, debate can fail by converging on a plausible-but-wrong synthesis when both arguers share a blind spot. The judge is not a ground-truth oracle. If the two agents are the same model with different system prompts, they share the same training distribution and the same systematic errors. For the highest-stakes cases, vary the model, vary the system prompt, or include a retrieval step that grounds at least one side in external evidence.</p>
+
+        <p>Debate is a sharp tool. It is not the default. It is the pattern you reach for after you have identified specific failure modes — overconfidence, omitted risks, missed counter-arguments — that single-agent reasoning will not catch, and after you have decided the cost is worth the lift.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — Swarms (use cautiously)
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">Swarms (use cautiously)</h2>
+
+        <p>The swarm pattern runs N independent agents on similar or identical tasks and aggregates their results — by majority vote, by weighted score, by taking the union, by picking the best on a rubric. It is the agentic version of ensemble methods in classical ML: more samples, less variance, hopefully a better answer than any single agent would have produced.</p>
+
+        <p>Swarms work for a narrow band of problems where (a) the task has high variance across runs, (b) there is a cheap way to score or merge outputs, and (c) the aggregation step adds real signal rather than just averaging noise. Classification with self-consistency, generating multiple candidate solutions for a code task and picking the one that passes the tests, sampling multiple search queries and merging the retrieved set — these are the cases where swarms help.</p>
+
+        <p>The trap is that swarms look like parallelism, and parallelism looks free. It isn't. Running ten agents on the same task is ten times the token cost. The wall-clock time may be the same as a single agent if you can run them in parallel, but the bill is real and the carbon footprint is real. Worse, if the aggregation step is sloppy — a naive majority vote on a generative task, for instance — you can spend ten times the tokens to get an answer no better than one.</p>
+
+        <p>Most "swarm" architectures in the wild fail this test. They run multiple agents because it sounds impressive, not because the variance-reduction argument holds for the task. Before you build one, ask whether you have a real scoring function — a unit test, a rubric, a structured evaluator — that can pick the best output. If you do not, you are paying N times the cost to roll the dice N times.</p>
+
+        <table class="cmp">
+          <thead><tr><th>Pattern</th><th>Best for</th><th>Failure mode</th></tr></thead>
+          <tbody>
+            <tr><td>Orchestrator + workers</td><td>Sub-tasks that shard cleanly and run in parallel</td><td>Hub-context bloat when sub-tasks have dependencies</td></tr>
+            <tr><td>Hand-off (pipeline)</td><td>Linear flow, each stage a distinct specialty</td><td>Context loss at seams; bad at feedback loops</td></tr>
+            <tr><td>Debate</td><td>High-stakes calls where confident-but-wrong is costly</td><td>Shared blind spots; expensive; judge isn't ground truth</td></tr>
+            <tr><td>Swarm</td><td>Tasks with high variance + a real scoring function</td><td>N× cost for noise reduction you didn't actually need</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — When multi-agent is the wrong answer
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">When multi-agent is the wrong answer</h2>
+
+        <p>The default position is that multi-agent is the wrong answer. This is not a contrarian pose — it is what the cost and reliability numbers say. Before you build a multi-agent system, walk through the cheaper alternatives and convince yourself each one is genuinely inadequate.</p>
+
+        <p><strong>A deeper single-agent loop.</strong> Give the agent more turns. Raise the planning depth from Primer 7. Add a verification step at the end where the same agent checks its own work against a rubric. Most "we need multiple agents" arguments collapse when you allow the single agent twenty turns instead of eight. The loop is doing the work; you were not letting it iterate enough.</p>
+
+        <p><strong>Better tools.</strong> Many multi-agent designs are compensating for tool gaps. The "researcher agent" exists because the main agent's search tool returns garbage. The "writer agent" exists because the main agent has no structured-output tool. Build better tools — a real retrieval pipeline, a structured-output schema, a domain-specific calculator — and the rationale for splitting agents often evaporates. The work moves into the tool layer where it belongs.</p>
+
+        <p><strong>RAG.</strong> A surprising number of multi-agent designs are reinventing retrieval. The "domain expert agent" is a poor approximation of a vector index over the domain documents. The "policy enforcement agent" is a worse version of including the policy document in the retrieved context. Use retrieval. It is cheaper, faster, and easier to debug than a sub-agent that exists only to fetch knowledge.</p>
+
+        <p><strong>Prompt and context discipline.</strong> Many failures blamed on "the single agent can't handle it" are actually context-engineering failures from Primer 2. The agent's context is bloated with stale tool results, irrelevant history, and over-broad system prompt. It is not under-powered. It is buried. Clean the context first.</p>
+
+        <div class="note">
+          <span class="note-tag">DISCIPLINE</span>
+          <p class="note-head"><em>Multi-agent is the answer when the problem really is multi-agent shaped.</em></p>
+          <p>If the work has genuine parallelism that a single sequential loop cannot exploit, or distinct specialties that need different tools and different prompts, or a structured debate-like reliability requirement — then multi-agent earns its keep. Otherwise it is overhead dressed as architecture. Build the single agent first, push it hard, and let the move to multi-agent be the reluctant choice it should be.</p>
+        </div>
+
+        <p>One practical heuristic: if you cannot explain, in one sentence, why a single agent cannot do this job, you do not yet have the case for multi-agent. The sentence needs to name a specific constraint — parallelism, specialty, reliability — that a single loop cannot satisfy. "It would be cleaner" is not such a sentence. "It feels more scalable" is not such a sentence. Multi-agent is your last move, not your first.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — What this connects to
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">What this connects to</h2>
+
+        <p>Multi-agent patterns sit downstream of the loop and the planning primitives, and upstream of the implementation primitives. The pointers worth carrying forward:</p>
+
+        <ul>
+          <li><strong><a href="05-agent-loop.html">Primer 5 — The Agent Loop</a></strong> — every "agent" in a multi-agent system is a loop. Multi-agent does not transcend the loop; it composes loops together. Most multi-agent failures are loop failures multiplied by the number of agents.</li>
+          <li><strong><a href="07-planning-and-task-decomposition.html">Primer 7 — Planning &amp; Task Decomposition</a></strong> — orchestrator-and-workers is planning made concrete: the orchestrator is doing the decomposition, the workers are executing the steps. If you can do the decomposition inside a single agent's planning step, you usually should.</li>
+          <li><strong><a href="09-sub-agents-skills-harnesses.html">Primer 9 — Sub-Agents, Skills &amp; Harnesses</a></strong> — sub-agents are the implementation primitive for the patterns in this primer. A "worker" in an orchestrator-and-workers system is, in practice, a sub-agent invocation. Primer 9 covers how harnesses give you sub-agents, skills, and the supporting machinery without the bespoke wiring most teams build the first time.</li>
+        </ul>
+
+        <p>The throughline is restraint. Multi-agent is a real architectural option, but it is one you should approach skeptically. The right question is not "how do I split this across agents?" It is "have I exhausted what one agent can do?" When the answer is genuinely yes, pick the pattern that matches the work, expect the coordination cost, and move on. When the answer is no, go back and use the cheaper tool.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE II · PRIMER 08 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+  </script>
+</body>
+</html>

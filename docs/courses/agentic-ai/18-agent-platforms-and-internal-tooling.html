@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 18 — Agent Platforms & Internal Tooling · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+.layout > * { min-width: 0; }
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+/* mobile / narrow widths -------------------------------------- */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+  .sidebar { position: static; max-height: none; overflow-y: visible; padding-right: 0; padding-bottom: 16px; margin-bottom: 8px; border-right: none; border-bottom: 1px solid var(--rule); }
+  .toc { margin-bottom: 16px; }
+  .title-band { padding: 32px 20px 20px; }
+  .title { font-size: 40px; line-height: 1.05; }
+  .subtitle { font-size: 18px; }
+  .masthead { padding: 10px 20px; }
+  .cold-start { margin-left: 20px; margin-right: 20px; padding: 14px 16px; }
+  .footer { padding: 20px; margin: 32px auto 0; flex-wrap: wrap; gap: 12px; }
+  .content { max-width: 100%; }
+  .stat { font-size: 48px; }
+  .pull { font-size: 22px; padding-left: 18px; margin: 24px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .progress::before { transition: none; } }
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE IV · PRIMER 18 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">Agent Platforms &amp; Internal Tooling</h1>
+    <p class="subtitle"><em>The five things every app team will re-implement badly. Centralize them well.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">COLD START</span>
+    <p>If you haven't read Primer 17 — the operating model says humans concentrate at the seams. This primer is about the platform team that builds the rails the agents and seams run on.</p>
+  </aside>
+
+  <div class="layout">
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">Why a platform team</a></li>
+        <li><a href="#s2" class="toc-link">The five platform responsibilities</a></li>
+        <li><a href="#s3" class="toc-link">Model gateway: the single integration point</a></li>
+        <li><a href="#s4" class="toc-link">Eval infra</a></li>
+        <li><a href="#s5" class="toc-link">Prompt and skill registry</a></li>
+        <li><a href="#s6" class="toc-link">Build vs buy</a></li>
+        <li><a href="#s7" class="toc-link">What this connects to</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="17-agentic-operating-model.html">← Primer 17 — The Agentic Operating Model</a>
+        <a class="nav-link next" href="19-workforce-roles-skills-transition.html">Primer 19 — Workforce, Roles &amp; Skills Transition →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — Why a platform team
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">Why a platform team</h2>
+
+        <p>By month six of "AI is a strategic priority," every product team in the bank has wired up its own loop. The KYC team has its own Anthropic key, its own retry logic, its own ad-hoc eval notebook a senior engineer maintains on Friday afternoons. The trade-surveillance team has a different Anthropic key, a different retry policy that quietly swallows certain errors, and a Google Sheet where the team lead pastes prompts and her assessment of whether they got better. The collections team is on a third provider entirely, behind a wrapper a contractor wrote and left.</p>
+
+        <p>None of these teams are wrong. Each of them shipped. But the bank now owns five integrations to the same model vendor, five different retry behaviors, five conventions for prompt versioning, and zero ability to answer a CFO question about total monthly LLM spend without a week of forensic accounting. The cost of agents has stopped being model tokens and become integration debt.</p>
+
+        <p>This is the moment a platform team earns its keep. The platform team's argument is narrow and concrete: <strong>there are five things every app team will re-implement, all of them are load-bearing, and all of them are done badly the first three times. Centralize them, and every team gets a higher floor without losing the freedom to build above it.</strong></p>
+
+        <p>A platform team is not a governance committee. It is not a centre of excellence. It is an engineering team that ships a product whose customers are other engineering teams inside the firm. Its KPI is adoption — measured by the number of agent applications running on its rails — and its constraint is that the rails have to be better than what a smart team would build for themselves in a sprint. If they're not, teams route around it.</p>
+
+        <p>The rest of this primer is about what those rails are, why each one matters, and which pieces to build versus buy.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — The five platform responsibilities
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">The five platform responsibilities</h2>
+
+        <p>Five capabilities. Every agent application needs all of them. If the platform team doesn't ship them, each app team will — five times, badly, and incompatibly.</p>
+
+        <ol>
+          <li><strong>Model gateway.</strong> One internal endpoint that fronts every model provider. Handles routing by request type, attribution of spend back to the calling team, vendor-side fallbacks, key management, and a uniform request/response shape. App teams stop integrating SDKs; they call one URL.</li>
+          <li><strong>Shared harness.</strong> The agent loop, tool dispatch, retry and back-off policy, schema validation, structured logging, and trace export — packaged as a library the app teams import. They write the system prompt and the tools; they do not write the loop.</li>
+          <li><strong>Eval infrastructure.</strong> A place to store eval suites, run them on demand and in CI, host the judge models, surface pass/fail dashboards, and warehouse the traces that failed so a human can look. It is what makes Primer 10's discipline executable at firm scale.</li>
+          <li><strong>Prompt and skill registry.</strong> A versioned store for prompts and skill descriptors with the eval results that gate promotion. Every prompt that hits production has a version, an eval score, an owner, and a rollback. None of these are negotiable, and none of them happen by accident.</li>
+          <li><strong>Deployment gates.</strong> The pipeline that takes a prompt or harness change from a developer's branch to production: required eval thresholds, canary rollout against a sample of live traffic, automated rollback on guardrail violations, and a kill switch a human can pull at 3am.</li>
+        </ol>
+
+        <p>The mental picture matters. App teams sit on top of the platform; they do not sit beside it. The platform is the layer between every application and the model providers, the loop, the evals, the registry, and the deployment pipeline. Everything that should look the same across teams lives in the platform. Everything that <em>should</em> differ — the system prompt, the tools, the business logic — lives in the app.</p>
+
+        <div class="figure">
+          <span class="figure-tag">FIG. 01</span>
+          <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="App teams sit on top of a platform layer that owns five shared capabilities">
+            <!-- App teams row -->
+            <g font-family="JetBrains Mono, monospace" font-size="11" fill="#404040">
+              <rect x="40"  y="20" width="130" height="50" fill="#E6F2FA" stroke="#3699DA" stroke-width="1.5" rx="2"/>
+              <text x="105" y="42" text-anchor="middle">KYC AGENT</text>
+              <text x="105" y="58" text-anchor="middle" fill="#6D6E71" font-size="10">app team</text>
+
+              <rect x="190" y="20" width="130" height="50" fill="#E6F2FA" stroke="#3699DA" stroke-width="1.5" rx="2"/>
+              <text x="255" y="42" text-anchor="middle">SURVEILLANCE</text>
+              <text x="255" y="58" text-anchor="middle" fill="#6D6E71" font-size="10">app team</text>
+
+              <rect x="340" y="20" width="130" height="50" fill="#E6F2FA" stroke="#3699DA" stroke-width="1.5" rx="2"/>
+              <text x="405" y="42" text-anchor="middle">COLLECTIONS</text>
+              <text x="405" y="58" text-anchor="middle" fill="#6D6E71" font-size="10">app team</text>
+
+              <rect x="490" y="20" width="130" height="50" fill="#E6F2FA" stroke="#3699DA" stroke-width="1.5" rx="2"/>
+              <text x="555" y="42" text-anchor="middle">CLIENT MEMO</text>
+              <text x="555" y="58" text-anchor="middle" fill="#6D6E71" font-size="10">app team</text>
+            </g>
+
+            <!-- Arrows down from apps to platform -->
+            <g stroke="#007CC3" stroke-width="1.5" fill="none">
+              <path d="M105 70 L105 100" marker-end="url(#arr)"/>
+              <path d="M255 70 L255 100" marker-end="url(#arr)"/>
+              <path d="M405 70 L405 100" marker-end="url(#arr)"/>
+              <path d="M555 70 L555 100" marker-end="url(#arr)"/>
+            </g>
+            <defs>
+              <marker id="arr" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M0,0 L8,4 L0,8 z" fill="#007CC3"/>
+              </marker>
+            </defs>
+
+            <!-- Platform band -->
+            <rect x="20" y="110" width="660" height="150" fill="#FFFFFF" stroke="#007CC3" stroke-width="2" rx="3"/>
+            <text x="40" y="132" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="1.5" fill="#007CC3">PLATFORM</text>
+
+            <!-- Five platform boxes -->
+            <g font-family="JetBrains Mono, monospace" font-size="10" fill="#404040">
+              <rect x="40"  y="150" width="120" height="90" fill="#FFFFFF" stroke="#007CC3" stroke-width="1.5" rx="2"/>
+              <text x="100" y="180" text-anchor="middle" font-weight="600">MODEL</text>
+              <text x="100" y="195" text-anchor="middle" font-weight="600">GATEWAY</text>
+              <text x="100" y="215" text-anchor="middle" fill="#6D6E71" font-size="9">routing</text>
+              <text x="100" y="228" text-anchor="middle" fill="#6D6E71" font-size="9">billing · fallback</text>
+
+              <rect x="170" y="150" width="120" height="90" fill="#FFFFFF" stroke="#007CC3" stroke-width="1.5" rx="2"/>
+              <text x="230" y="180" text-anchor="middle" font-weight="600">SHARED</text>
+              <text x="230" y="195" text-anchor="middle" font-weight="600">HARNESS</text>
+              <text x="230" y="215" text-anchor="middle" fill="#6D6E71" font-size="9">loop · tools</text>
+              <text x="230" y="228" text-anchor="middle" fill="#6D6E71" font-size="9">retries · traces</text>
+
+              <rect x="300" y="150" width="120" height="90" fill="#FFFFFF" stroke="#007CC3" stroke-width="1.5" rx="2"/>
+              <text x="360" y="180" text-anchor="middle" font-weight="600">EVAL</text>
+              <text x="360" y="195" text-anchor="middle" font-weight="600">INFRA</text>
+              <text x="360" y="215" text-anchor="middle" fill="#6D6E71" font-size="9">suites · judges</text>
+              <text x="360" y="228" text-anchor="middle" fill="#6D6E71" font-size="9">CI · dashboards</text>
+
+              <rect x="430" y="150" width="120" height="90" fill="#FFFFFF" stroke="#007CC3" stroke-width="1.5" rx="2"/>
+              <text x="490" y="180" text-anchor="middle" font-weight="600">PROMPT</text>
+              <text x="490" y="195" text-anchor="middle" font-weight="600">REGISTRY</text>
+              <text x="490" y="215" text-anchor="middle" fill="#6D6E71" font-size="9">versioned</text>
+              <text x="490" y="228" text-anchor="middle" fill="#6D6E71" font-size="9">evaluated · owned</text>
+
+              <rect x="560" y="150" width="120" height="90" fill="#FFFFFF" stroke="#007CC3" stroke-width="1.5" rx="2"/>
+              <text x="620" y="180" text-anchor="middle" font-weight="600">DEPLOY</text>
+              <text x="620" y="195" text-anchor="middle" font-weight="600">GATES</text>
+              <text x="620" y="215" text-anchor="middle" fill="#6D6E71" font-size="9">canary</text>
+              <text x="620" y="228" text-anchor="middle" fill="#6D6E71" font-size="9">rollback · kill</text>
+            </g>
+          </svg>
+          <p class="figure-caption">App teams ride on top of the platform. The five capabilities below are what every team needs and none should build twice.</p>
+        </div>
+
+        <p>The hardest part of running this team is resisting the urge to centralize one layer up. The platform owns the loop, but not the system prompt. It owns the eval runner, but not the eval rubrics. It owns the registry, but not the skill content. Cross that line and you become a bottleneck instead of a foundation; the app teams will quietly start building their own platform inside their own service.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — Model gateway: the single integration point
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">Model gateway: the single integration point</h2>
+
+        <p>The model gateway is the most obvious piece, which is why it is the most commonly under-built. Every team sees the need; few teams see how much sits behind a clean version of it.</p>
+
+        <p>At minimum, the gateway is one internal endpoint that accepts a uniform request shape and forwards it to whichever model provider the request is for. App teams point their SDK at <code>https://gateway.internal/v1/messages</code> with an internal API key tied to their team. They never see an Anthropic key, an OpenAI key, or any other provider credential. They never write provider-specific retry code. The gateway carries it.</p>
+
+        <p>That alone earns four properties the firm did not have before.</p>
+
+        <p><strong>Spend attribution.</strong> Every call carries a team identifier. Spend rolls up by team, by application, by environment. The CFO question stops being a forensic exercise and becomes a dashboard. More importantly, runaway costs surface in hours instead of weeks — an agent stuck in a tool-call loop that would have quietly burned $40,000 of tokens over a weekend hits a soft threshold on Saturday morning and pages the owning team.</p>
+
+        <p><strong>Routing by request type.</strong> Not every call needs the biggest model. The gateway can route the cheap classification step on the input to a small model and the substantive reasoning step to a frontier model — by reading a header the app team sets, or, more robustly, by reading the system prompt's declared task class. The app team thinks it called "the model"; the gateway delivered the right model for that work.</p>
+
+        <p><strong>Vendor fallbacks.</strong> When a provider has a partial outage — and they will — the gateway can fail an in-flight request over to a comparable model at another vendor, with the same prompt and tool definitions, and the application keeps running. App teams that integrate directly do not get this; their agent goes down with the provider. Fallbacks are not free — you need eval coverage on the fallback model to know it doesn't quietly behave worse — but the eval infra is sitting right next door, which is the whole point of having one platform.</p>
+
+        <p><strong>One place to enforce policy.</strong> If the firm decides that no agent may send customer PII to a particular provider, the gateway is the chokepoint that enforces it. The same is true of region pinning, of audit logging, of redaction. Trying to enforce any of these without a gateway means asking five app teams to each implement them correctly and never regress, which is the same as not enforcing them.</p>
+
+        <p>Without a gateway, every team integrates separately. With one, the firm gets a single integration surface, a single bill, a single policy-enforcement point, and a single place to upgrade model versions across all applications. The build cost is real — a small team can ship a v1 in two months — but it is paid once.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — Eval infra
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">Eval infra</h2>
+
+        <p>Eval infrastructure is the harder pillar. The gateway has a clean interface — a request, a response, a bill — and the satisfaction of replacing five integrations with one. Eval infra has none of that. It is glue, dashboards, judge prompts that need their own evals, and a thousand small decisions about how to store traces. Most platform teams under-staff it because it looks unsexy, and then their gateway success becomes a liability: every app team is now shipping faster against a substrate no one is regression-testing.</p>
+
+        <p>What good eval infra does is take Primer 10's discipline — a fixed eval set, scored outputs, pass/fail thresholds, a record of regressions — and make it executable at firm scale. That means four concrete capabilities.</p>
+
+        <p>First, <strong>eval suites are first-class artifacts</strong> in the platform. Each suite has an owner, a version, a description of what it covers, and a stable identifier. App teams register their suites with the platform; the platform runs them. Suites are not notebooks on someone's laptop.</p>
+
+        <p>Second, <strong>evals run in CI</strong> as a gate on prompt and harness changes. A pull request that changes a production prompt cannot land until the relevant suite has been re-run on the changed prompt and meets the threshold the suite's owner set. This is the lever that stops the slow drift Primer 10 warned about — a prompt that quietly got worse over six weeks of small "improvements," none of which were re-evaluated.</p>
+
+        <div class="code">
+          <span class="code-tag">PYTHON</span>
+<pre># platform-side runner invoked by CI on every prompt-change PR
+from platform.evals import run_suite, post_status
+
+def gate(pr):
+    suite_ids = pr.changed_prompts.linked_suites()  # registry knows which evals cover which prompts
+    if not suite_ids:
+        post_status(pr, "fail", "No eval suite linked to this prompt.")
+        return 1
+
+    overall_pass = True
+    for sid in suite_ids:
+        result = run_suite(
+            suite_id=sid,
+            prompt_version=pr.head_sha,         # evaluate the PR's version, not main
+            judge="claude-sonnet-4-6",
+            shadow_sample_size=200,
+        )
+        post_status(pr, result.status, result.summary, dashboard=result.url)
+        if result.score &lt; result.threshold:
+            overall_pass = False
+
+    return 0 if overall_pass else 1</pre>
+        </div>
+
+        <p>Third, <strong>shadow evaluation against live traffic</strong>. The platform samples a slice of production requests, runs the candidate prompt against them in parallel with the live one, and scores the divergence. This catches the failure mode the offline suite cannot: cases that exist in real traffic but no one wrote into the eval set. Shadow sets are how regressions get detected before they reach a customer, not after.</p>
+
+        <p>Fourth, <strong>failure samples are warehoused</strong>. Every failed eval case — input, expected output, actual output, judge rationale — lands in a queryable store. App teams use this to write new eval cases from the failures. Without warehousing, every team's failure history vanishes into Slack threads, and the same regression ships three times.</p>
+
+        <p>None of this is exotic. It is software engineering applied to a domain where most teams have not yet noticed it is software engineering. The platform team's job is to make it the path of least resistance — easier to register a suite and let CI run it than to maintain a private notebook.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — Prompt and skill registry
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">Prompt and skill registry</h2>
+
+        <p>Prompts are code. Every team learns this eventually, usually after a production prompt edit in a chat window quietly degrades a downstream metric for two weeks. The registry is the platform's answer: <strong>no prompt reaches production except through it, every version is identifiable, every version is tied to an eval result, and every version has a rollback target one click away.</strong></p>
+
+        <p>The same applies to skills — the sub-agent and tool-bundle descriptors from Primer 9. A skill is a piece of model-facing behavior with a name, a description the orchestrator reads, and an implementation. Skills get reused across applications; the second app team that adopts a skill should not be reading the source code to figure out what it does. The registry holds the canonical descriptor.</p>
+
+        <p>What makes the registry load-bearing is the link between a prompt version and its eval result. You cannot promote a prompt without knowing which suite was run, on which version, and what the score was. You cannot roll back without knowing what the previous good version produced. The registry is the join key between the eval infra and the deployment pipeline; without it, both halves work but the system as a whole is unaccountable.</p>
+
+        <p>The risk in registries is the same as in any internal platform: scope creep. The registry should hold the artifact, its metadata, its version history, and the eval link. It should not hold the eval results themselves (eval infra does), the deployment state (the pipeline does), or the application's business logic (the app does). A clean line between what the platform centralizes and what it leaves to teams is the difference between a useful registry and a wiki no one updates.</p>
+
+        <table class="cmp">
+          <thead><tr><th>Centralize in the platform</th><th>Leave to app teams</th></tr></thead>
+          <tbody>
+            <tr><td>Prompt and skill versioning, identifiers, ownership</td><td>The content of the prompts and skills themselves</td></tr>
+            <tr><td>The eval runner, judge hosting, shadow sampling</td><td>The eval suites and rubrics for each application</td></tr>
+            <tr><td>Loop, retries, tool dispatch, trace export</td><td>The tools each agent calls and what they do</td></tr>
+            <tr><td>Model gateway, routing, fallback, spend attribution</td><td>Which model class to request for which workflow</td></tr>
+            <tr><td>Canary infrastructure, rollback mechanics, kill switch</td><td>Thresholds and SLOs that trigger them for this app</td></tr>
+            <tr><td>PII redaction, audit logging, region pinning</td><td>What counts as PII in this regulatory context</td></tr>
+          </tbody>
+        </table>
+
+        <p>The left column is "what should look the same across the firm." The right column is "what should differ because the work differs." Centralize the wrong column and you take freedom away from teams that need it; centralize neither and the firm pays for the integration debt at the start of this primer.</p>
+
+        <blockquote class="pull">A prompt without a version, an owner, and an eval link is not a prompt. It is a bet.</blockquote>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — Build vs buy
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">Build vs buy</h2>
+
+        <p>The vendor market for each of these pillars now contains real products, and the choice of what to build versus what to buy is the single biggest decision the platform team makes in its first year. The right answer is different for each pillar, and the wrong answer in either direction wastes engineering capacity for a year.</p>
+
+        <p><strong>Model gateway: usually buy or open-source.</strong> The gateway is a thin layer over well-defined provider APIs. The interesting work is in policy enforcement, spend attribution, and routing logic — but the underlying request-forwarding plumbing has been built thousands of times. Mature open-source projects (LiteLLM, Portkey, vendor-neutral routers from the cloud providers) cover 80% of the surface. Build the policy layer on top; do not build the SDK adapters.</p>
+
+        <p><strong>Shared harness: build.</strong> This is the one most teams get backwards. The harness — your loop, your retry policy, your tool dispatch, your trace shape — is where your operational shape lives. It is what makes your agents predictable in your incident-response patterns, in your observability stack, in the way your engineers reason about failure. Vendor harnesses optimize for a generic agent; yours has to optimize for the bank you run. The build cost is two engineers for a quarter. The wrong-vendor cost is rebuilding the harness while supporting fifty agents that depend on it.</p>
+
+        <p><strong>Eval infra: build, mostly.</strong> No vendor knows your tasks. The runner, the judge orchestration, the shadow sampler, the dashboards — these have generic shapes and an open-source eval framework can give you a head start. The suites themselves, the rubrics, the warehoused failure samples, the integration into your CI — these are domain-specific and stay in-house. The mistake is buying a "complete eval product" and discovering it has strong opinions about how your suites should be shaped that disagree with how your domain works.</p>
+
+        <p><strong>Prompt and skill registry: borderline.</strong> A registry is, mechanically, a small service with versioned artifacts and metadata. You could build it in a sprint. You could also use one of the prompt-management products that has emerged in the last year. The decision turns on integration: if the product integrates cleanly with your eval infra and your deployment pipeline, buy; if it forces you to wedge your evals into its model, build. This one is borderline because the product category is young, and what looks like a fit today may not be in eighteen months.</p>
+
+        <p><strong>Deployment gates: build on top of what you have.</strong> You already run a CI/CD pipeline. The agent-specific gates — eval thresholds, canary rules, automated rollback — are policy on top of that pipeline. Build the policy layer; do not bring in a separate ML deployment system that lives parallel to your engineering one. The platform team's credibility with the rest of engineering depends on its rails feeling like part of the same engineering substrate, not a sidecar.</p>
+
+        <div class="note">
+          <span class="note-tag">DECISION</span>
+          <p class="note-head"><em>Build what reflects your work. Buy what doesn't.</em></p>
+          <p>The harness, the eval rubrics, the registry-to-deploy linkage, the policy layer over the gateway — these encode how this firm operates. Build them. The SDK adapters, the open-source runner, the generic dashboards — these encode how everyone operates. Buy them, or take them off the shelf. The error to avoid is the opposite: buying a vendor's opinion of your harness and building your own version of LiteLLM.</p>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — What this connects to
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">What this connects to</h2>
+
+        <p>The platform team is the engineering centre of gravity of the agentic operating model. Almost every other primer in this module either feeds into the platform or runs on it.</p>
+
+        <ul>
+          <li><strong><a href="09-sub-agents-skills-orchestration.html">Primer 9 — Sub-Agents, Skills &amp; Orchestration</a></strong> — the skills the orchestrator dispatches to live in the registry. The platform is what makes a skill reusable across applications instead of re-implemented per team. Without a registry, "skill" is a slide concept; with one, it is a deployable asset.</li>
+          <li><strong><a href="10-evals-and-quality-loops.html">Primer 10 — Evals &amp; Quality Loops</a></strong> — the discipline of Primer 10 is what eval infra industrializes. One team can keep an eval suite alive on willpower; fifty cannot. The platform is how the discipline survives scale.</li>
+          <li><strong><a href="17-agentic-operating-model.html">Primer 17 — The Agentic Operating Model</a></strong> — the operating model named the platform team as one of its three pillars. This primer is what that pillar actually ships. The other two — the seam roles and the governance layer — depend on the platform existing.</li>
+          <li><strong><a href="19-workforce-roles-skills-transition.html">Primer 19 — Workforce, Roles &amp; Skills Transition</a></strong> — the platform team is itself a new role profile in the firm. Half its hires are platform engineers who have built developer-facing products before; the other half are AI engineers who have shipped agents in anger. The mix is rare in the current labour market, and it is what the next primer is about.</li>
+          <li><strong><a href="20-governance-risk-adoption.html">Primer 20 — Governance, Risk &amp; Adoption</a></strong> — the gateway, the registry, and the deployment gates are the technical surfaces governance attaches to. A model risk policy without a chokepoint to enforce it is a memo; with the platform underneath, it becomes a control.</li>
+        </ul>
+
+        <p>The pattern across all five connections is the same. The platform does not replace the discipline of the app teams. It makes the discipline cheap enough to actually keep doing, at fifty applications instead of two.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE IV · PRIMER 18 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+  </script>
+</body>
+</html>

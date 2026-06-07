@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 19 — Workforce, Roles &amp; Skills Transition · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+.layout > * { min-width: 0; }
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+/* mobile / narrow widths -------------------------------------- */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+  .sidebar { position: static; max-height: none; overflow-y: visible; padding-right: 0; padding-bottom: 16px; margin-bottom: 8px; border-right: none; border-bottom: 1px solid var(--rule); }
+  .toc { margin-bottom: 16px; }
+  .title-band { padding: 32px 20px 20px; }
+  .title { font-size: 40px; line-height: 1.05; }
+  .subtitle { font-size: 18px; }
+  .masthead { padding: 10px 20px; }
+  .cold-start { margin-left: 20px; margin-right: 20px; padding: 14px 16px; }
+  .footer { padding: 20px; margin: 32px auto 0; flex-wrap: wrap; gap: 12px; }
+  .content { max-width: 100%; }
+  .stat { font-size: 48px; }
+  .pull { font-size: 22px; padding-left: 18px; margin: 24px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .progress::before { transition: none; } }
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE IV · PRIMER 19 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">Workforce, Roles &amp; Skills Transition</h1>
+    <p class="subtitle"><em>Roles atomize and re-bundle. Build paths for the people they used to belong to.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">COLD START</span>
+    <p>If you haven't read Primer 17 — humans concentrate at the seams between agents. This primer is about the careers of the people at those seams.</p>
+  </aside>
+
+  <div class="layout">
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">The work changes shape</a></li>
+        <li><a href="#s2" class="toc-link">The four new roles</a></li>
+        <li><a href="#s3" class="toc-link">What shrinks</a></li>
+        <li><a href="#s4" class="toc-link">What grows</a></li>
+        <li><a href="#s5" class="toc-link">Upskilling paths</a></li>
+        <li><a href="#s6" class="toc-link">Change management patterns</a></li>
+        <li><a href="#s7" class="toc-link">What this connects to</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="18-agent-platforms-and-internal-tooling.html">← Primer 18 — Agent Platforms &amp; Internal Tooling</a>
+        <a class="nav-link next" href="20-governance-risk-adoption.html">Primer 20 — Governance, Risk &amp; Adoption →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — The work changes shape
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">The work changes shape</h2>
+
+        <p>The headline most workforce conversations open with — "AI will replace X percent of jobs by Y" — is the wrong abstraction. Jobs don't get replaced in one motion. They get <strong>decomposed</strong> into the tasks they were actually made of, and then those tasks get redistributed across humans and agents. Some tasks disappear. Some become cheaper. Some become more important than they were. The job title stays on the org chart for a while, but what the person under that title spends their day doing has quietly changed.</p>
+
+        <p>An analyst's job is not one thing. It is roughly: pulling data from four systems, reconciling it, drafting a narrative, sending it for review, fielding follow-up questions, and rerunning it next quarter. The first two and the fourth are work an agent does well. The narrative is mostly generated and lightly edited. What's left for the human is the judgment call inside the reconciliation, the credibility of the final document, and the conversation with the stakeholder about what to do next. Same person, same title, different work.</p>
+
+        <p>This is the pattern across every function we've watched go through the transition. The role doesn't vanish; it <strong>atomizes</strong> into its component tasks. Some atoms move to agents. The remaining atoms re-bundle around a different center of gravity. The center of gravity is almost always the same: the place where judgment, exception handling, and accountability for the output sit. The bottleneck moves from "doing the work" to "owning the seam" — the boundary between what the agent produced and what the business can sign for.</p>
+
+        <blockquote class="pull">You don't fire the analyst. You reshape what the analyst does.</blockquote>
+
+        <p>Saying it this way matters because the alternative framing — replacement — is both wrong and operationally toxic. It is wrong because the tasks that remain are the ones that were always the hardest to do well, and you need experienced people to do them. It is operationally toxic because the moment a workforce hears "replacement," the cooperation you need to actually deploy the agent collapses. The people who know how the work really gets done stop volunteering it. The transition stalls. We have seen this happen.</p>
+
+        <p>The honest version is harder to sell but easier to deliver. Some tasks go to agents. The job re-forms around the residual. New roles appear next to it. People move into them, and a smaller number of people do the residual analyst work at a higher standard than before. That is the actual shape of the workforce transition, and the rest of this primer is about navigating it on purpose rather than by accident.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — The four new roles
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">The four new roles</h2>
+
+        <p>Across the agentic deployments we've worked on, four roles have crystallized as load-bearing. They are not optional add-ons. If any of them is missing, the agent function degrades — either it fails to ship, or it ships and silently drifts. Naming them clearly is the first step in being able to hire, develop, and retain people into them.</p>
+
+        <p><strong>Agent engineer.</strong> Builds and maintains the loop. Designs the system prompt, defines the tools, wires the model to the surrounding systems, picks the planning and memory patterns. Owns the agent's behavior end-to-end: when the agent misbehaves, this person reproduces it, diagnoses it, and pushes the fix. The skill mix is software engineering plus a real working model of how LLMs respond to context. This is the role most often filled badly because organizations either treat it as a prompt-writing job (too shallow) or a research job (too removed from production).</p>
+
+        <p><strong>Eval engineer.</strong> Owns the eval suite. Defines what "good" looks like across the cases the agent will see, builds the datasets that express that definition, writes the rubrics, runs the suite on every change, and reports the regressions. This person tells the business whether the agent is ready, and engineering trusts them when they say "ship." The discipline is closer to QA and measurement than to model work — but it's a senior, well-paid version, because the cost of a missed regression in production is high and the cost of a false alarm that blocks a release is also high.</p>
+
+        <p><strong>Agent ops.</strong> Runs the agent in production as a function of the business. Monitors traces, watches the dashboards, fields the tickets when something goes wrong, decides when to roll back, owns the runbooks, and serves as the liaison between the business function and the engineering team. This is a role that didn't exist before because the agent didn't exist before — and it is the role that the most senior operations people in your existing function are best positioned to grow into.</p>
+
+        <p><strong>Prompt librarian.</strong> Versions and evaluates the prompts and skills that live across the agent estate. As soon as you have more than two agents and more than one team building them, prompts and skill definitions start duplicating, drifting, and rotting. The librarian owns the catalog: which prompt is canonical, which is deprecated, what changed between versions, what each one was tested against. Sounds clerical; isn't. It is how the organization avoids paying the same prompt-engineering bill three times.</p>
+
+        <table class="cmp">
+          <thead><tr><th>Role</th><th>What they own</th><th>Typical previous role</th></tr></thead>
+          <tbody>
+            <tr><td>Agent engineer</td><td>The loop — system prompt, tools, behavior, fixes</td><td>Backend engineer, ML engineer, senior application developer</td></tr>
+            <tr><td>Eval engineer</td><td>The eval suite — datasets, rubrics, regression reports</td><td>QA lead, data analyst, domain SME with measurement instincts</td></tr>
+            <tr><td>Agent ops</td><td>Production behavior — traces, incidents, runbooks, rollbacks</td><td>SRE, business-operations lead, function-area ops manager</td></tr>
+            <tr><td>Prompt librarian</td><td>The catalog — prompt versions, skill registry, change log</td><td>Technical writer, knowledge manager, senior BA</td></tr>
+          </tbody>
+        </table>
+
+        <p>None of these require a new academic discipline. All of them are new in the sense that the combination of skills, the artefacts they own, and the cadence they work to don't match cleanly onto any pre-existing job description. Treat them as new roles for the purpose of hiring and career pathing. Don't bolt the work onto an existing job description and hope the person figures it out — the failure mode is that they do everything except the new responsibility, because it doesn't show up in their performance review.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — What shrinks
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">What shrinks</h2>
+
+        <p>It helps to be specific about which work actually contracts, because the abstract version ("AI does the routine stuff") is both unhelpful and slightly wrong. The work that shrinks falls into four recognizable buckets, and naming them lets the workforce see what they're being asked to give up — usually with relief, sometimes with anxiety.</p>
+
+        <p><strong>Hand-aggregation.</strong> Pulling fields from System A, joining them against System B, pivoting in Excel, pasting the result into a slide. This is the single largest category of work an agent absorbs in the first six months of a deployment. It was always low-leverage; it was done by hand because the integration cost of doing it any other way was too high. Agents lower that integration cost dramatically. Almost no one mourns this work — it was the part of the job people described, with feeling, as "soul-destroying."</p>
+
+        <p><strong>Routine routing.</strong> Looking at an inbound — a ticket, a case, a request — and deciding which queue or which person it belongs to. Triage by rule, when the rules are knowable. Agents do this with steady accuracy at a fraction of the cost, and the humans who used to do it free up for the cases the rules don't cover. The hard ones get more attention, not less.</p>
+
+        <p><strong>Narrative drafting.</strong> Writing the first draft of a memo, a case summary, a status update, a regulatory response. Not the final version — the first draft, the part that turns inputs into prose. Agents write a serviceable first draft in seconds. Humans edit, correct, and own the final. The time the human used to spend on a blank page becomes time spent on the parts of the draft that need judgment.</p>
+
+        <p><strong>Status reporting.</strong> Assembling the weekly update, the project dashboard, the management report. Information that was already in the systems gets pulled, summarized, and formatted by an agent. The human who used to do it now spends that hour reading the report and acting on it instead of producing it. Across an organization of any size, this is hours of work per week per manager, recovered.</p>
+
+        <p>Two things to note about this list. First, it is the work that people are most willing — sometimes eager — to give up. The pushback in workforce transitions almost never comes from the people doing this work. It comes from elsewhere, and usually for reasons that are not really about the work shrinking. Second, the volume of this work in most large organizations is enormous. The capacity recovered when it goes away is the single biggest source of funding for the new roles in section 2. The math, in our experience, works out: the headcount cost of an agent function is paid for by the capacity recovered from these four buckets, usually with margin to spare.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — What grows
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">What grows</h2>
+
+        <p>If the previous section described the work people are happy to hand over, this section is the inverse: the work that becomes more important, more visible, and — in well-run transitions — better paid. Four categories grow as the agent function matures.</p>
+
+        <p><strong>Judgment.</strong> When the routine work is absorbed, what's left for the human is the cases the agent should not, or cannot, decide on alone. The genuinely ambiguous KYC file. The trade that's outside any rule but not obviously wrong. The customer complaint where the policy and the equity of the situation point in different directions. These were always the hard cases; what changes is that they become the bulk of the human's day, rather than the slice that got squeezed in between the routine work. The standard rises, because the cases are harder on average, and the time available to think about each one is longer.</p>
+
+        <p><strong>Exception handling.</strong> The agent does the ninety per cent that's in distribution. The human handles the long tail — the cases that don't fit the patterns the agent was tuned for, the cases where a tool returned something unexpected, the cases where the customer's situation has changed in a way the model wasn't trained on. This is skilled work, and it requires people who understand the function deeply enough to spot when the agent has wandered. It is also the work that produces the next set of training examples for the eval suite, which is why exception handlers and eval engineers end up working closely together.</p>
+
+        <p><strong>Evals and QA.</strong> Discussed in section 2 as a role, but worth naming as a category of work. Defining what "good" looks like, capturing it in datasets, running the agent against those datasets on every change, investigating regressions, escalating when the agent's behavior is drifting in ways the dashboards don't catch yet. This work didn't really exist before, and it now sits adjacent to every agent in production. The people who do it well combine domain knowledge with measurement instincts — and they are, across our deployments, the hardest of the four new roles to hire externally.</p>
+
+        <p><strong>Change management.</strong> Helping the rest of the function move through the transition. Re-designing processes around what the agent now does. Re-writing the SOPs, the training materials, the handoffs to adjacent functions. Negotiating with risk and compliance about what the agent is and isn't allowed to decide. Telling the story to the workforce in a way that builds confidence rather than fear. This work is permanent — it doesn't end when the first agent ships — and it has no natural home in most organizations' existing structure.</p>
+
+        <p>All four of these categories share a property: they pay better, are harder to automate, and require people who already understand the business deeply. That is not an accident. It is the shape of the work that's left when the routine layer is taken out. The strategic move for the workforce is to get into one of those four categories early, not to compete with the agent on the work it does well.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — Upskilling paths
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">Upskilling paths</h2>
+
+        <p>Generic "upskill the workforce in AI" programs do not work for this transition. They produce certificates and not much else. What works is specific, named paths from existing roles into the new ones — paths where the person can see the destination, the steps in between, and the part of their existing experience that gives them an advantage. Three paths have produced reliable transitions in the deployments we've supported.</p>
+
+        <p><strong>Analyst to eval engineer.</strong> The analyst already knows what "good" looks like — they have spent years looking at cases and forming judgments. That judgment, expressed as a dataset and a rubric, is exactly what an eval suite needs. The technical lift is real but bounded: enough Python or notebook fluency to assemble datasets, familiarity with the eval framework the team uses, comfort with statistics to read the regression reports without being misled. The path is typically six to nine months of part-time embedding into an agent team, paired with a senior eval engineer. The graduate has more leverage than they had as an analyst, and the agent has a measurement function staffed by someone who understands the domain.</p>
+
+        <p><strong>Developer to agent engineer.</strong> The developer already knows how to build, test, and ship software. What's new is the model — its quirks, the way context shapes its behavior, the discipline of treating prompts as code, the patterns from Primers 5–9. The path here is a deliberate apprenticeship: shadow an experienced agent engineer through a full delivery cycle, build a non-trivial agent against an internal use case, learn the eval discipline by getting a feature regression-tested before it ships. Three to six months for a strong developer; longer for one who has never worked on systems that don't return deterministic outputs. The failure mode is the developer who tries to debug the agent the way they'd debug a service, and gets frustrated. Pair them with someone who has been through that frustration already.</p>
+
+        <p><strong>Ops to agent ops.</strong> The function-area operations lead already knows the business process, the SLAs, the escalation patterns, the politics of which incidents get whose attention. What they need is enough technical familiarity with the agent stack to be useful in an incident — reading traces, understanding what a tool call is, knowing when to call the agent engineer and when to handle it directly. This is the shortest of the three paths, often three months, and it is the one with the highest hit rate because the existing skill is so close to the destination. It is also the path that retains the most senior operations talent through the transition, which matters because that talent is what makes the agent function trusted by the rest of the business.</p>
+
+        <div class="note">
+          <span class="note-tag">REALITY</span>
+          <p class="note-head"><em>Career paths are how attrition stays low through the transition.</em></p>
+          <p>If the workforce sees the agent as something happening to them, they leave — or worse, they stay and quietly disengage. If they see a named path to a role that is better paid and uses what they already know, attrition stays close to baseline. Across our deployments, the difference between functions that built these paths early and functions that didn't is the difference between a two-year transition and a four-year one.</p>
+        </div>
+
+        <p>A note on cohorts. These paths work better in cohorts than as one-offs. Five analysts moving into eval engineering together, supporting each other through the technical lift, sharing what they learn — that is a multiplier on the individual program. Cohorts also produce internal teachers for the next cohort, which is how the function scales without permanently outsourcing the training.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — Change management patterns
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">Change management patterns</h2>
+
+        <p>The transition needs to be managed deliberately, and most of the lessons here are not specific to AI — they are general patterns from organizations that have absorbed a major operating-model shift. Four are worth naming because they recur in every successful deployment, and their absence recurs in every stalled one.</p>
+
+        <p><strong>Pilots first, in a real corner of the business.</strong> Not a sandbox, not a demo, not a hackathon — a real piece of the function, run end-to-end with the agent for a defined period, with a clear measurement plan and a decision gate at the end. The pilot is how the organization learns whether the agent works in its specific operating context, with its specific data, against its specific users. It is also how the workforce sees a real example of what the new shape of work looks like, on people they know, not on a slide. Organizations that try to roll out across the function on the strength of a successful proof-of-concept tend to discover the operating-context problems at scale, in front of customers.</p>
+
+        <p><strong>Visible metrics.</strong> Publish what the agent is being measured on — accuracy, throughput, cost, escalation rate, time-to-resolution — and update it where the workforce can see it. The opacity of an internal black-box deployment is what breeds the rumours. A transparent measurement surface does the opposite: it lets people see when the agent is doing well, when it isn't, and what's being done about it. The novel thing is doing it for the agent, where the temptation is to keep the metrics inside the engineering team.</p>
+
+        <p><strong>Train on roles, not just tools.</strong> A two-day "intro to LLMs" course teaches people what an agent is. It does not teach them how to be an eval engineer. The training that moves the workforce through the transition is role-shaped: the curriculum is defined by the destination role, the content is delivered by people doing that role today, and the assessment is a piece of real work in that role. More expensive than a generic online course, and the only kind that actually changes what people can do on Monday morning.</p>
+
+        <p><strong>Make the new function attractive.</strong> The new roles need to be visibly better than the roles they replace — better paid, better titled, more central to the strategy. If the new function is positioned as a back-office cost centre, the strongest people in the existing function will not move into it. They will leave for someone else's agent function instead. The signal sent by where the new roles report, what budget they hold, and who their executive sponsor is, is the signal the workforce reads. Make sure it says what you mean.</p>
+
+        <p>One more pattern, which is less a tactic than a warning: <strong>the dip is real, and you should budget for it.</strong> Productivity in the transitioning function goes down before it goes up. The people who used to do the routine work are learning the new work. The processes are being re-cut around an agent. The hand-offs are awkward for a while. Plan for six to twelve months of dip, communicate it as part of the plan, and don't panic when the early metrics show it. Functions that try to deny the dip end up cutting the program at the trough, just before the curve turns. That is the worst possible time to cut.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — What this connects to
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">What this connects to</h2>
+
+        <p>The workforce question is structural, not standalone. It links back to the operating model that produced the new shape of work, sideways to the platform that holds many of the new roles, and forward to the governance that will hold the new function accountable.</p>
+
+        <ul>
+          <li><strong><a href="17-agentic-operating-model.html">Primer 17 — Agentic Operating Model</a></strong> — the structural frame this primer assumes. Roles atomize because the operating model now has agents in it, and humans concentrate at the seams. The four new roles in section 2 are the named populations of those seams; the upskilling paths in section 5 are how today's workforce gets to them.</li>
+          <li><strong><a href="18-agent-platforms-and-internal-tooling.html">Primer 18 — Agent Platforms &amp; Internal Tooling</a></strong> — agent engineers, eval engineers, and prompt librarians do most of their work on the platform. The platform's quality is the upper bound on how productive those roles can be, and the platform team is usually where the first cohort of agent engineers gets concentrated before being seeded out to product teams.</li>
+          <li><strong><a href="20-governance-risk-adoption.html">Primer 20 — Governance, Risk &amp; Adoption</a></strong> — the new function has to be held to account, and the accountability model is what the next primer is about. The eval engineer is the technical voice in that conversation; agent ops is the operational voice; both report up into the governance structure Primer 20 will describe.</li>
+        </ul>
+
+        <p>The workforce transition is not a one-off project that finishes when the first agent ships. It is the continuous adjustment that runs alongside the deployment — for years. The organizations that do it well treat it as a permanent capability, staffed by people whose job is to keep the workforce moving as the agent estate grows. The organizations that don't, get stuck somewhere between pilot and production, and stay there.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE IV · PRIMER 19 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+  </script>
+</body>
+</html>

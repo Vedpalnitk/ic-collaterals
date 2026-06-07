@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primer 14 — Fine-Tuning & Adaptation · Building Agentic AI Systems · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --sidebar-w: 280px;
+  --content-max: 760px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 1000; pointer-events: none; }
+.progress::before { content: ''; display: block; height: 100%; width: var(--p, 0%); background: var(--blue); transition: width 80ms linear; }
+
+.masthead { background: var(--deep); color: var(--white); padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; }
+.mono-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); }
+
+.title-band { padding: 48px 32px 32px; max-width: 1080px; margin: 0 auto; }
+.title { font-family: var(--display); font-weight: 500; font-size: 56px; line-height: 1.1; color: var(--pavement); margin: 0 0 12px; }
+.subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--blue); margin: 0; }
+
+.cold-start { max-width: 1080px; margin: 0 auto 24px; padding: 16px 20px; background: var(--tint-blue); border-left: 2px solid var(--blue); }
+.cold-tag { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+.cold-start p { margin: 0; font-size: 15px; color: var(--pavement); }
+
+.layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px; }
+.layout > * { min-width: 0; }
+.sidebar { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; padding-right: 16px; border-right: 1px solid var(--rule); }
+.sidebar-eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.sidebar-eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+.toc { list-style: none; padding: 0; margin: 0 0 32px; }
+.toc li { margin: 8px 0; font-size: 14px; }
+.toc-link { color: var(--slate); }
+.toc-link.active { color: var(--blue); font-weight: 500; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.nav-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+.content { max-width: var(--content-max); }
+.section-head { font-family: var(--display); font-weight: 500; font-size: 36px; line-height: 1.2; color: var(--pavement); margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.content > section:first-child .section-head { border-top: none; padding-top: 0; margin-top: 0; }
+.content h3 { font-family: var(--display); font-weight: 500; font-size: 20px; color: var(--pavement); margin: 24px 0 8px; }
+.content ul, .content ol { padding-left: 20px; margin: 0 0 18px; }
+.content li { margin-bottom: 6px; }
+.content strong { color: var(--pavement); font-weight: 600; }
+.content em { font-style: italic; }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone); padding: 1px 5px; border-radius: 2px; color: var(--pavement); }
+
+/* note / callout */
+.note { background: var(--tint-blue); border-left: 2px solid var(--blue); padding: 16px 20px; margin: 20px 0; }
+.note-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue); text-transform: uppercase; }
+.note-head { font-family: var(--display); font-style: italic; font-size: 18px; color: var(--pavement); margin: 4px 0 8px; }
+.note p:last-child { margin-bottom: 0; }
+
+/* code block */
+.code { background: var(--tint-stone); border-left: 3px solid var(--blue); padding: 16px 20px 16px 24px; margin: 20px 0; font-family: var(--mono); font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; }
+.code-tag { position: absolute; top: 8px; right: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; }
+.code pre { margin: 0; }
+
+/* figure */
+.figure { border: 1px solid var(--rule); padding: 24px 24px 20px; margin: 24px 0; background: var(--white); position: relative; }
+.figure-tag { position: absolute; top: 8px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--blue); }
+.figure-caption { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--slate); margin-top: 12px; }
+.figure svg { display: block; margin: 12px auto 0; max-width: 100%; height: auto; }
+
+/* pull quote */
+.pull { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 32px 0; }
+
+/* stat callout */
+.stat-block { margin: 24px 0; }
+.stat { font-family: var(--display); font-size: 64px; font-weight: 400; color: var(--blue); line-height: 1; }
+.stat small { font-family: var(--display); font-size: 18px; color: var(--pavement); margin-left: 4px; }
+.stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--slate); text-transform: uppercase; margin-top: 4px; }
+
+/* comparison table */
+.cmp { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 14px; }
+.cmp th, .cmp td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--rule); }
+.cmp thead th { border-bottom: 2px solid var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--pavement); text-transform: uppercase; }
+.cmp tbody tr:nth-child(even) { background: var(--tint-stone); }
+
+/* two-column */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+.col-head { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--blue); margin: 0 0 8px; }
+@media (max-width: 700px) { .twocol { grid-template-columns: 1fr; } }
+
+/* footer */
+.footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-top: 1px solid var(--rule); max-width: 1080px; margin: 64px auto 0; }
+.footer-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--blue); }
+
+/* mobile / narrow widths -------------------------------------- */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+  .sidebar { position: static; max-height: none; overflow-y: visible; padding-right: 0; padding-bottom: 16px; margin-bottom: 8px; border-right: none; border-bottom: 1px solid var(--rule); }
+  .toc { margin-bottom: 16px; }
+  .title-band { padding: 32px 20px 20px; }
+  .title { font-size: 40px; line-height: 1.05; }
+  .subtitle { font-size: 18px; }
+  .masthead { padding: 10px 20px; }
+  .cold-start { margin-left: 20px; margin-right: 20px; padding: 14px 16px; }
+  .footer { padding: 20px; margin: 32px auto 0; flex-wrap: wrap; gap: 12px; }
+  .content { max-width: 100%; }
+  .stat { font-size: 48px; }
+  .pull { font-size: 22px; padding-left: 18px; margin: 24px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .progress::before { transition: none; } }
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE III · PRIMER 14 / 20</span>
+  </header>
+
+  <section class="title-band">
+    <h1 class="title">Fine-Tuning &amp; Adaptation</h1>
+    <p class="subtitle"><em>Almost never the right answer. When it is, do it like a real deploy.</em></p>
+  </section>
+
+  <aside class="cold-start" aria-label="Cold-start summary">
+    <span class="cold-tag">COLD START</span>
+    <p>If you haven't read Primers 2, 4, and 10 — prompting, RAG, and evals are the cheaper, faster, more reversible levers. This primer is the discipline of choosing the expensive lever only when the cheap ones can't get there.</p>
+  </aside>
+
+  <div class="layout">
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
+      <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
+      <ol class="toc">
+        <li><a href="#s1" class="toc-link">Fine-tuning is rarely the answer</a></li>
+        <li><a href="#s2" class="toc-link">The four techniques</a></li>
+        <li><a href="#s3" class="toc-link">When to fine-tune (rarely)</a></li>
+        <li><a href="#s4" class="toc-link">When NOT to fine-tune (mostly)</a></li>
+        <li><a href="#s5" class="toc-link">The cost of fine-tuning</a></li>
+        <li><a href="#s6" class="toc-link">If you do fine-tune</a></li>
+        <li><a href="#s7" class="toc-link">What this connects to</a></li>
+      </ol>
+      <div class="sidebar-nav">
+        <a class="nav-link prev" href="13-cost-latency-caching.html">← Primer 13 — Cost, Latency &amp; Caching</a>
+        <a class="nav-link next" href="17-agentic-operating-model.html">Primer 17 — The Agentic Operating Model →</a>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ============================================================
+           Section 1 — Fine-tuning is rarely the answer
+           ============================================================ -->
+      <section id="s1">
+        <h2 class="section-head">Fine-tuning is rarely the answer</h2>
+
+        <p>"We need to fine-tune the model." It is one of the most common sentences in early agentic AI projects, and one of the most expensive things a team can say out loud before anyone has done the cheaper work. The instinct is almost always a misdiagnosis. Nine times out of ten, what the team actually needs is a tighter system prompt, a better retrieval index, a tool that returns the field they're trying to coax out of the model, or — most often of all — an eval set that would have told them which of those three to do.</p>
+
+        <p>The reflex has a history. For the first decade of modern deep learning, fine-tuning <em>was</em> the answer. You took a pre-trained backbone, you added a task head, you trained it on your labeled data, and you shipped. The whole field operated on the assumption that adaptation happens through gradients. Then instruction-tuned LLMs arrived, and adaptation started happening through tokens at inference time. Prompting got good. RAG got good. Tool use got good. The pre-trained model became something you composed against, not something you bent. Most builders still carry the old reflex into the new regime.</p>
+
+        <p>The cost asymmetry is the thing to internalize. A prompt change is a pull request you can revert in thirty seconds. A retrieval-index change is a re-index job you can roll back. A tool change is a function you can edit. A fine-tune is a model artifact you now own, must evaluate against the base on every upstream release, must rehost or pay to host, must monitor for regression, and cannot easily un-do. The cheap levers fail fast. The expensive lever fails slow, and you keep paying for the failure.</p>
+
+        <blockquote class="pull">If you reach for fine-tuning before you've reached for evals, you're going to fine-tune the wrong thing.</blockquote>
+
+        <p>The honest version of the conversation goes like this. "What is the model getting wrong?" "It hallucinates the policy number." "Have you looked at the cases?" "Not all of them." "Is the policy number in the context?" "Sometimes." That is not a fine-tuning problem. That is a retrieval problem dressed up as a model problem, and the team that fine-tunes its way out of it will spend six weeks and a license fee to arrive somewhere a one-day RAG fix would have taken them. The rest of this primer is about how to tell the two apart, and what to do when the answer really is fine-tuning.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 2 — The four techniques
+           ============================================================ -->
+      <section id="s2">
+        <h2 class="section-head">The four techniques</h2>
+
+        <p>"Fine-tuning" gets used as a single word for at least four distinct techniques. They change different things, cost different amounts, and answer different questions. Conflating them is how teams end up running SFT when they meant DPO, or paying for full fine-tuning when LoRA would have been fine.</p>
+
+        <p><strong>SFT — Supervised Fine-Tuning.</strong> Also called instruction tuning. You collect input/output pairs that demonstrate the behavior you want, and you train the model to imitate them on a next-token objective. This is the workhorse: it teaches a model a format, a voice, a tool-calling style, a domain vocabulary. It is also the technique most often reached for too early, because the data ("just give us a few hundred examples") sounds cheap right up until you try to produce a few hundred clean, consistent, non-conflicting examples.</p>
+
+        <p><strong>DPO — Direct Preference Optimization.</strong> You don't show the model what's right; you show it pairs where one response is preferred to another. Training nudges the model toward the preferred responses and away from the rejected ones. DPO is how you teach taste — tone, refusal behavior, when to ask a clarifying question — when "the right answer" is hard to write down but "this answer is better than that one" is easy to label. It is the modern, simpler successor to RLHF.</p>
+
+        <p><strong>Distillation.</strong> You use a large, expensive model to generate training data, then train a smaller model to imitate it. The smaller model never matches the larger on hard cases, but on the narrow distribution of <em>your</em> traffic, it can come close at a fraction of the cost and latency. Distillation is the technique to reach for when prompting works but production economics don't.</p>
+
+        <p><strong>LoRA — Low-Rank Adaptation.</strong> Strictly, a parameter-efficient way to do any of the above. Instead of updating all the model's weights, you train a small set of low-rank "adapter" matrices that get added to the original weights. The base model stays frozen, the adapter is tiny, and you can swap adapters in and out per task. LoRA is not a different goal — it's the same SFT or DPO objective, made cheap enough to actually run.</p>
+
+        <table class="cmp">
+          <thead><tr><th>Technique</th><th>What it changes</th><th>Typical cost</th></tr></thead>
+          <tbody>
+            <tr><td>SFT</td><td>Teaches a format, voice, or tool-calling style from input/output pairs</td><td>Mid — data labeling dominates; training is the easy part</td></tr>
+            <tr><td>DPO</td><td>Nudges taste and tone using preferred-vs-rejected response pairs</td><td>Mid — preference labels easier than gold answers, still need many</td></tr>
+            <tr><td>Distillation</td><td>Compresses a big model into a small one over your traffic distribution</td><td>High up-front, low at inference — pays back only at sustained volume</td></tr>
+            <tr><td>LoRA</td><td>Same objectives as SFT/DPO, parameter-efficient adapters on a frozen base</td><td>Low training cost; per-task adapters are small and swappable</td></tr>
+          </tbody>
+        </table>
+
+        <p>The choice between them is rarely the hard part. The hard part is whether to do any of them at all.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 3 — When to fine-tune (rarely)
+           ============================================================ -->
+      <section id="s3">
+        <h2 class="section-head">When to fine-tune (rarely)</h2>
+
+        <p>There are legitimate cases. They are narrower than people want them to be, and they tend to share a property: prompting has been tried hard and has hit a real ceiling, not an imagined one. Three patterns recur.</p>
+
+        <p><strong>A very specific output format or voice that prompting genuinely cannot pin down.</strong> Not "we'd like the model to sound more like our brand." Brand voice is a prompting problem and a style-guide problem. The real case is something like an internal log-line format with twelve fields, deterministic punctuation, and a domain vocabulary that the base model keeps half-translating into general English. You've written the spec. You've shown five-shot examples. The model still drifts on the long tail. SFT with a few hundred clean examples is the right tool here, because the thing you're trying to install is a <em>habit</em>, not a piece of knowledge.</p>
+
+        <p><strong>Cost-driven distillation.</strong> You have a flagship-model prompt that works. Evals pass. Customers are happy. Your bill is too large because the workload is high-volume and the per-call cost is on a flagship model. Distilling a smaller model on your actual traffic distribution can land you at 30–50% of the cost with eval scores within a tolerable margin. This is one of the cleanest cases for fine-tuning because the success criterion is unambiguous and measurable on the same eval set you already have.</p>
+
+        <p><strong>On-device or air-gapped deployment.</strong> The agent has to run somewhere a frontier API cannot reach — a regulated environment, an edge device, an offline workflow on a customer's hardware. The base model that fits the deployment constraint is too small to do the job zero-shot. Fine-tuning on the specific task distribution is how you make a small model competent at one thing, even when it cannot be competent at many things. This is the case where the deployment constraint, not the quality target, forces the technique.</p>
+
+        <p>Notice what all three share. The decision to fine-tune is made after prompting and RAG have been honestly attempted and have left a specific, measurable gap. The fine-tune is then aimed at that gap, not at a vague hope of "making the model better." When the case is unclear, the case is not yet ready.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 4 — When NOT to fine-tune (mostly)
+           ============================================================ -->
+      <section id="s4">
+        <h2 class="section-head">When NOT to fine-tune (mostly)</h2>
+
+        <p>Most of the production "we need to fine-tune" requests fail one of four tests. Each one has a cheaper, more reversible answer, and the cheaper answer is almost always also the better one.</p>
+
+        <p><strong>"We need it to know our products."</strong> No — you need RAG. Fine-tuning packs facts into weights, badly and unreliably; the model will get most of them right and quietly hallucinate the rest, with no way to point at which is which. A retrieval index makes the facts explicit, citable, and updatable when the product catalog changes next week. If the answer is "knowledge the model needs to look up," it is not a fine-tuning problem.</p>
+
+        <p><strong>"It's getting this one case wrong."</strong> No — you need an eval, then probably a prompt fix. One failing case is data, not signal. Build the eval set around the failure pattern, run it, see whether the failure is one case or twenty, and only then choose a tool. Most of the time the answer is "the system prompt was silent on this scenario, here's a one-line constraint." Fine-tuning against a single failure mode is the textbook way to ship a model that wins on that case and silently regresses on three others.</p>
+
+        <p><strong>"It needs to use this new tool."</strong> No — you need a tool definition. The model can learn to use a tool from its name, description, and schema in the prompt. Fine-tuning a model to use a specific tool freezes the tool's shape into the weights, and the next time the tool's signature changes, you re-train. Treat tool use as a prompting and SDK problem, not a model problem.</p>
+
+        <p><strong>"It's hallucinating."</strong> Sometimes — but rarely the model's fault in isolation. Hallucinations almost always trace back to context that was missing, ambiguous, or under-specified, plus an eval set that didn't catch the pattern. Fix the context and the evals first. If hallucinations persist after the context is grounded and the prompt is explicit about what to do when information is missing, then you may have a behavior to train against. Until then, the model is doing its job — generating plausible text — over an input you did not constrain.</p>
+
+        <div class="note">
+          <span class="note-tag">DEFAULT</span>
+          <p class="note-head"><em>Default to prompting, RAG, and tools. Fine-tune last.</em></p>
+          <p>Before opening a fine-tuning ticket, check the list. Have you tightened the system prompt? Built an eval set that reproduces the failure? Looked at whether RAG has the right context to retrieve? Added or refined a tool? If any of those is "no," do that first. Fine-tuning is the last lever, not the first one. It is also the one you cannot easily put back.</p>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           Section 5 — The cost of fine-tuning
+           ============================================================ -->
+      <section id="s5">
+        <h2 class="section-head">The cost of fine-tuning</h2>
+
+        <p>The compute bill is the part everyone budgets for, and it's also the smallest line item. The real costs of a fine-tune are the ones that show up after the training job succeeds, and they don't stop showing up.</p>
+
+        <p><strong>Data is the actual training cost.</strong> A few hundred clean, consistent, non-contradictory examples is harder to produce than it sounds. Two analysts will disagree on the right answer for a third of the cases. The disagreement is signal — it's pointing at ambiguity in the spec — and you have to resolve it before training, not after. Most fine-tunes that fail were trained on a dataset that someone underestimated by an order of magnitude.</p>
+
+        <p><strong>The eval-regression burden never goes away.</strong> Every time the base model updates — and frontier models update — you have to re-run your evals against the new base and decide whether to re-tune. Skip it, and your fine-tune slowly falls behind the base model your competitors are using. Run it, and you have just added a recurring engineering task to your roadmap, in perpetuity.</p>
+
+        <p><strong>Deployment complexity multiplies.</strong> A prompt change is a config push. A fine-tuned model is an artifact: it has a version, a host, a quota, a cold-start latency, a security review, a sign-off from whichever team owns model deployment. Your inference path now has a custom endpoint your platform team has to operate. Multiply by the number of fine-tunes you ship and you have built a small model-hosting business inside your product team.</p>
+
+        <p><strong>On-call ownership is permanent.</strong> When the fine-tuned model behaves oddly in production, the question "is this the model or the prompt?" is now ambiguous in a way it wasn't before. You own the answer. The base-model team has no visibility into your fine-tune; the prompt-engineering team can no longer reason cleanly about a frozen base. Debugging gets slower because the surface area got larger.</p>
+
+        <p>The summary fits on one line: <strong>the moment you ship a fine-tune, the model becomes yours, and you keep it forever.</strong> Forever is a long time to own a thing whose only job was to fix a problem you could have fixed in the prompt.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 6 — If you do fine-tune
+           ============================================================ -->
+      <section id="s6">
+        <h2 class="section-head">If you do fine-tune</h2>
+
+        <p>If you've done the work in the previous sections, and the answer is still fine-tuning, the discipline is to treat it like a serious deploy. Not a science experiment. Not a one-off. A model artifact going into production is a service, and every habit your platform team has for services applies — locked evals, shadow runs, rollback plans, written lineage.</p>
+
+        <p><strong>Lock the eval suite before you start training.</strong> Not "we'll write some evals along the way." The whole point of the fine-tune is to beat the base model on a specific, measurable set of cases. If the eval set is fluid, the model can win on whatever you happen to add late, and you'll never know whether the gain is real. Freeze the eval set, version it like code, and check the hash into the training config.</p>
+
+        <p><strong>Shadow against the base model.</strong> Run both models on the same production traffic, log both outputs, and only show users the fine-tuned one once the deltas are understood. Shadow mode is how you catch the regressions evals miss — the cases your eval set didn't cover, the user inputs that drift from your labeled distribution. A week of shadow traffic is cheaper than a quarter of debugging.</p>
+
+        <p><strong>Plan the rollback before the rollout.</strong> The base model that the fine-tune was derived from has to stay reachable. Routing is a config flip. Operations should know how to switch traffic back in under a minute, and someone should have done it at least once in staging before the launch. If there is no rollback plan, there is no launch — there is a one-way commit.</p>
+
+        <p><strong>Document the lineage.</strong> Which base model, which version, which dataset, which hyperparameters, which eval set, which person signed off. Six months later, when the base model has been deprecated by the provider and the analyst who labeled the data has changed teams, the lineage doc is the only thing standing between you and starting over from scratch.</p>
+
+        <div class="code">
+          <span class="code-tag">PYTHON</span>
+<pre># Eval-gate the fine-tune. Training "succeeds" only if the new
+# model beats the base on the locked eval set by a threshold.
+# Illustrative — wire this into your training orchestrator.
+
+MIN_DELTA = 0.05  # require ≥5% absolute improvement over base
+
+def gate_fine_tune(base_model, candidate_model, eval_suite):
+    base_score = eval_suite.run(base_model)
+    cand_score = eval_suite.run(candidate_model)
+    delta = cand_score - base_score
+
+    if delta &lt; MIN_DELTA:
+        raise RuntimeError(
+            f"fine-tune did not clear gate: "
+            f"base={base_score:.3f} cand={cand_score:.3f} delta={delta:+.3f}"
+        )
+
+    # Also check no per-category regression beyond a tolerance.
+    for category, base_cat in eval_suite.by_category(base_model).items():
+        cand_cat = eval_suite.by_category(candidate_model)[category]
+        if cand_cat &lt; base_cat - 0.02:
+            raise RuntimeError(
+                f"regression in '{category}': "
+                f"base={base_cat:.3f} cand={cand_cat:.3f}"
+            )
+
+    return {"promote": True, "delta": delta, "eval_hash": eval_suite.hash}</pre>
+        </div>
+
+        <p>The shape of the gate matters more than the numbers. A fine-tune that ships only when it beats the base by a threshold, with no per-category regression, is one you can defend in a postmortem. A fine-tune that ships because someone eyeballed a few examples and liked them is one you will quietly retire in six months without anyone learning anything.</p>
+      </section>
+
+      <!-- ============================================================
+           Section 7 — What this connects to
+           ============================================================ -->
+      <section id="s7">
+        <h2 class="section-head">What this connects to</h2>
+
+        <p>Fine-tuning sits late in the toolkit because most of the work that motivates it should have been done earlier. The pointers worth carrying forward:</p>
+
+        <ul>
+          <li><strong><a href="02-prompting-and-context-engineering.html">Primer 2 — Prompting &amp; Context Engineering</a></strong> — the first lever, and the one that gets reached for last when it should have been reached for first. If the system prompt has not been pruned, restructured, and tested against a varied input set, you have not yet exhausted prompting.</li>
+          <li><strong><a href="04-retrieval-augmented-generation.html">Primer 4 — Retrieval-Augmented Generation</a></strong> — the right answer to "the model needs to know X." Facts go in the index, not the weights. If the failure is about knowledge the model should look up, the fix lives here.</li>
+          <li><strong><a href="10-evals-and-quality-gates.html">Primer 10 — Evals &amp; Quality Gates</a></strong> — the prerequisite. Without a locked eval set, a fine-tune cannot be measured, gated, or defended. Evals are what turn "we trained a model" into "we shipped an improvement."</li>
+          <li><strong><a href="18-agent-platforms-and-internal-tooling.html">Primer 18 — Agent Platforms &amp; Internal Tooling</a></strong> — where this all becomes operable. The model gateway, the eval-gate CI, the shadow-routing infrastructure, the rollback switches: these are platform capabilities, not per-team plumbing. If your organization expects to ship more than one fine-tune, the platform layer is where the discipline actually lives.</li>
+        </ul>
+
+        <p>The honest version of this primer fits in one sentence: prompting is reversible, RAG is updatable, tools are explicit, and fine-tuning is forever. Pick the smallest lever that closes the gap. Save the expensive one for the cases that actually need it — and when you do reach for it, ship it like a service, not a science project.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI · MODULE III · PRIMER 14 / 20</span>
+    <a class="footer-link" href="index.html">← Course syllabus</a>
+  </footer>
+
+  <script>
+  (function () {
+    const sections = document.querySelectorAll('main.content section[id]');
+    const links = document.querySelectorAll('.toc-link');
+    const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
+
+    function update() {
+      const h = document.documentElement;
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
+      progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
+
+      let current = sections[0]?.id;
+      sections.forEach(s => {
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
+      });
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  })();
+  </script>
+</body>
+</html>
