@@ -130,7 +130,7 @@ Each phase ends with a landing-page update and a commit.
 
 ## 9. Hard constraints (from CLAUDE.md)
 
-- No burnt orange. No pure black (use PAVEMENT). DEEP_BLUE only in title bands + chapter slabs + cover masthead/colophon — never on headers, cards, charts, badges.
+- No pure black (use PAVEMENT). DEEP_BLUE only in title bands + chapter slabs + cover masthead/colophon — never on headers, cards, charts, badges.
 - BLUE is the working accent. LT_BLUE for secondary accents.
 - TECHNICAL family throughout. Code blocks JetBrains Mono.
 - All colors driven by token names from `tokens.js`.
