@@ -120,13 +120,10 @@ code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone
 <body>
   <div class="progress" aria-hidden="true"></div>
 
+  <!-- PER-PRIMER REPLACE: masthead-right "MODULE N · PRIMER NN / 20" -->
   <header class="masthead">
-    <div class="masthead-left">
-      <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
-    </div>
-    <div class="masthead-right">
-      <span class="mono-tag">MODULE I · PRIMER 01 / 20</span>
-    </div>
+    <span class="mono-tag">INFOSYS CONSULTING · BUILDING AGENTIC AI</span>
+    <span class="mono-tag">MODULE I · PRIMER 01 / 20</span>
   </header>
 
   <section class="title-band">
@@ -140,7 +137,8 @@ code { font-family: var(--mono); font-size: 0.92em; background: var(--tint-stone
   </aside>
 
   <div class="layout">
-    <nav class="sidebar" aria-label="Table of contents">
+    <!-- PER-PRIMER REPLACE: TOC entries + prev/next nav hrefs -->
+    <nav class="sidebar" aria-label="Table of contents" tabindex="0">
       <div class="sidebar-eyebrow"><span class="bar"></span><span>ON THIS PAGE</span></div>
       <ol class="toc">
         <li><a href="#s1" class="toc-link">The model as a sampler</a></li>
@@ -305,7 +303,7 @@ client.messages.count_tokens(
         <p>This is where <strong>prompt caching</strong> earns its keep. Both Anthropic and most major providers let you mark a prefix of the prompt as cacheable. The next request that shares that prefix reads the cached tokens at a steep discount instead of re-processing them. The exact mechanics vary, but the shape is consistent: cached input is much cheaper than fresh input, and the savings compound across turns.</p>
 
         <div class="note">
-          <span class="note-tag">TAG · CACHING</span>
+          <span class="note-tag">CACHING</span>
           <p class="note-head"><em>Cache the parts that don't change.</em></p>
           <p>System prompts, tool definitions, retrieved docs that repeat across turns — all of these should be cache-marked. With Anthropic's prompt caching, cached tokens cost ~10% of normal at read time, with a 5-minute TTL. For agents that loop, this is a 5–10× cost reduction.</p>
         </div>
@@ -434,20 +432,27 @@ client.messages.count_tokens(
     const sections = document.querySelectorAll('main.content section[id]');
     const links = document.querySelectorAll('.toc-link');
     const progress = document.querySelector('.progress');
+    const ACTIVE_OFFSET = 120;
+    let ticking = false;
 
-    function onScroll() {
+    function update() {
       const h = document.documentElement;
-      const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
+      const denom = h.scrollHeight - h.clientHeight;
+      const scrolled = denom > 0 ? h.scrollTop / denom : 0;
       progress.style.setProperty('--p', (scrolled * 100).toFixed(1) + '%');
 
       let current = sections[0]?.id;
       sections.forEach(s => {
-        if (s.getBoundingClientRect().top < 120) current = s.id;
+        if (s.getBoundingClientRect().top < ACTIVE_OFFSET) current = s.id;
       });
       links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
     }
     window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+    update();
   })();
   </script>
 </body>
