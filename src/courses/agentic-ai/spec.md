@@ -35,8 +35,8 @@ Each module advances the thesis: foundations get you to a working call; the agen
 | I · Foundations | 1–4 | The substrate agents run on: model behavior, prompting, tools, retrieval. |
 | II · The Agent | 5–9 | Loops, memory, planning, coordination, sub-agents. |
 | III · Production | 10–14 | Evals, traces, safety, cost, adaptation — the demo-to-deploy gap. |
-| IV · Applied Banking | 15–16 | Two concrete patterns (KYC/surveillance, code modernization) leaning on existing IC banking primers. |
-| V · Agentic Organisation | 17–20 | Operating model, platform team, workforce, governance — the IC consulting tier. |
+| IV · Agentic Organisation | 17–20 | Operating model, platform team, workforce, governance — the IC consulting tier. |
+| V · Applied Banking | 15–16 | Two concrete patterns (KYC/surveillance, code modernization) leaning on existing IC banking primers. |
 
 ## 4. Primer-by-primer outline
 
@@ -65,17 +65,17 @@ Each title below is the *argument of the primer*, not its topic.
 13. **Cost, Latency & Caching.** Prompt caching, batch API, model routing, streaming, token math worked examples, cost regressions.
 14. **Fine-Tuning & Adaptation.** SFT, DPO, distillation, LoRA. When *not* to fine-tune — prompting, RAG, and tools usually win. Cost/benefit framework.
 
-### Module IV — Applied Banking
-
-15. **Agentic KYC & Surveillance.** Case packs, evidence chains, audit trails, the human-checkpoint pattern. Builds on existing [cdd-kyc-primer.html](../../../docs/primers/cdd-kyc-primer.html) and [trade-surveillance-primer.html](../../../docs/primers/trade-surveillance-primer.html).
-16. **Code-Modernization Agents.** COBOL/SAS → Java/Python with verification, test generation, the human-at-the-seam pattern. Working example with traces.
-
-### Module V — Agentic Organisation
+### Module IV — Agentic Organisation
 
 17. **The Agentic Operating Model.** Humans-at-the-seam thesis; work redesign; where agents *own* vs *assist* vs *escalate*; the seam as a control point. *Animated: org-flow diagram with seam highlights.*
 18. **Agent Platforms & Internal Tooling.** Central platform team responsibilities: model gateway, shared harnesses, eval infra, prompt registry, deployment gates. Build-vs-buy decisions.
 19. **Workforce, Roles & Skills Transition.** New roles (agent engineer, eval engineer, agent ops, prompt librarian); upskilling paths; what shrinks; change-management patterns.
 20. **Governance, Risk & Adoption.** AI/agent policy stack; risk tiering; model cards; audit trails; KPIs for agent ROI; the deploy-and-measure loop.
+
+### Module V — Applied Banking
+
+15. **Agentic KYC & Surveillance.** Case packs, evidence chains, audit trails, the human-checkpoint pattern. Builds on existing [cdd-kyc-primer.html](../../../docs/primers/cdd-kyc-primer.html) and [trade-surveillance-primer.html](../../../docs/primers/trade-surveillance-primer.html).
+16. **Code-Modernization Agents.** COBOL/SAS → Java/Python with verification, test generation, the human-at-the-seam pattern. Working example with traces.
 
 ## 5. Course wrapper page
 
@@ -108,9 +108,9 @@ Animations (HTML + CSS, no framework) on 4 designated primers: 4 (chunk-overlap)
 
 ## 7. Integration with existing artifacts
 
-- **Existing executive primer** `docs/primers/agentic-ai-banking-primer.html` stays as the client-tier POV. Cross-linked from course wrapper and Module IV. Not duplicated.
+- **Existing executive primer** `docs/primers/agentic-ai-banking-primer.html` stays as the client-tier POV. Cross-linked from course wrapper and Module V. Not duplicated.
 - **Existing engineering notes** `claude-agent-sdk-ic.html` and `agentic-harness-evals-traces.html` are referenced from Modules 9 + 10 respectively. New course primers in those modules *extend* (cross-SDK patterns, eval-driven dev framework) rather than replace.
-- **Existing financial-crime primers** (screening, TM, surveillance, CDD/KYC) are domain prerequisites for Module IV. Linked, not duplicated.
+- **Existing financial-crime primers** (screening, TM, surveillance, CDD/KYC) are domain prerequisites for Module V. Linked, not duplicated.
 - **Landing page** `docs/index.html` gets a new section card for the course (sits alongside primers / engineering notes / decks).
 
 ## 8. Build order — vertical slice first
@@ -123,8 +123,8 @@ The "vertical slice" approach: build one primer per module + the course wrapper 
 | **Fill Module I** | Primers 2, 3, 4 | Module I complete. |
 | **Fill Module II** | Primers 6, 7, 8, 9 | Module II complete. |
 | **Fill Module III** | Primers 11, 12, 13, 14 | Module III complete. |
-| **Fill Module IV** | Primer 16 | Module IV complete. |
-| **Fill Module V** | Primers 18, 19, 20 | Module V complete. Course done. |
+| **Fill Module IV** | Primers 18, 19, 20 | Module IV complete. |
+| **Fill Module V** | Primer 16 | Module V complete. Course done. |
 
 Each phase ends with a landing-page update and a commit.
 
