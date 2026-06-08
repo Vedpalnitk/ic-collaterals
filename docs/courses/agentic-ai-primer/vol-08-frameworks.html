@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Frameworks & Platforms — Infosys Consulting Primer Vol. 08</title>
+<style>
+  /* ============================================================
+     INFOSYS CONSULTING — DESIGN SYSTEM TOKENS
+     Arial only · IC palette only · Deep Blue for cover only
+     ============================================================ */
+  :root{
+    --deep-blue:#182534;
+    --pavement:#404040;
+    --blue:#007CC3;
+    --lt-blue:#3699DA;
+    --stone:#A7A9AC;
+    --slate:#6D6E71;
+    --tint-blue:#E6F2FA;
+    --tint-stone:#F0F0F1;
+    --rule:#D6DCEA;
+    --white:#ffffff;
+    /* status — semantic only */
+    --high:#C0392B;
+    --med:#E67E22;
+    --low:#27AE60;
+    --sidebar-w:300px;
+    --maxread:840px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    color:var(--pavement);
+    background:var(--white);
+    line-height:1.62;
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--blue);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+
+  /* ===================== COVER ===================== */
+  .cover{
+    min-height:100vh;
+    background:var(--deep-blue);
+    color:var(--white);
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:64px 72px 40px;
+    position:relative;
+    overflow:hidden;
+  }
+  .cover::after{
+    content:"";
+    position:absolute;
+    right:-180px;top:-180px;
+    width:620px;height:620px;
+    border:1px solid rgba(54,153,218,.22);
+    border-radius:50%;
+  }
+  .cover::before{
+    content:"";
+    position:absolute;
+    right:-60px;bottom:-260px;
+    width:520px;height:520px;
+    border:1px solid rgba(54,153,218,.14);
+    border-radius:50%;
+  }
+  .cover-top{
+    font-size:12px;letter-spacing:4px;text-transform:uppercase;
+    color:var(--lt-blue);font-weight:bold;
+    display:flex;align-items:center;gap:14px;
+    z-index:2;
+  }
+  .cover-top .bar{width:42px;height:2px;background:var(--lt-blue);display:inline-block;}
+  .cover-main{z-index:2;}
+  .cover-vol{
+    font-size:140px;font-weight:bold;line-height:.9;color:var(--lt-blue);
+    letter-spacing:-4px;margin:0 0 8px;
+  }
+  .cover-vol span{font-size:30px;letter-spacing:2px;color:var(--stone);font-weight:bold;vertical-align:top;margin-left:8px;}
+  h1.cover-title{
+    font-size:62px;font-weight:bold;line-height:1.04;margin:6px 0 4px;letter-spacing:-1px;
+  }
+  h1.cover-title em{color:var(--lt-blue);font-style:italic;}
+  .cover-sub{font-size:21px;color:var(--white);font-weight:bold;margin:18px 0 12px;max-width:760px;}
+  .cover-lead{font-size:15px;color:var(--stone);max-width:720px;line-height:1.7;}
+  .cover-meta{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:0;
+    border-top:1px solid rgba(255,255,255,.16);
+    margin-top:38px;padding-top:22px;z-index:2;max-width:920px;
+  }
+  .cover-meta .m-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);margin-bottom:6px;}
+  .cover-meta .m-val{font-size:15px;color:var(--white);font-weight:bold;line-height:1.35;}
+  .cover-foot{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    font-size:11px;letter-spacing:1px;color:var(--stone);z-index:2;
+  }
+  .cover-foot .scroll{color:var(--lt-blue);font-weight:bold;letter-spacing:2px;text-transform:uppercase;}
+
+  /* ===================== READING LAYOUT ===================== */
+  .layout{display:flex;align-items:flex-start;max-width:1320px;margin:0 auto;}
+  .toc{
+    width:var(--sidebar-w);flex:0 0 var(--sidebar-w);
+    position:sticky;top:0;align-self:flex-start;
+    height:100vh;overflow-y:auto;
+    background:var(--deep-blue);color:var(--white);
+    padding:30px 26px 40px;
+  }
+  .toc-brand{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--lt-blue);font-weight:bold;margin-bottom:4px;}
+  .toc-vol{font-size:12px;color:var(--stone);margin-bottom:24px;}
+  .toc-part{
+    font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--lt-blue);
+    font-weight:bold;margin:22px 0 8px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);
+  }
+  .toc-part:first-of-type{border-top:none;padding-top:0;}
+  .toc a{
+    display:block;color:rgba(255,255,255,.78);font-size:13px;
+    padding:5px 0 5px 22px;position:relative;line-height:1.35;
+  }
+  .toc a:hover{color:var(--white);text-decoration:none;}
+  .toc a .num{position:absolute;left:0;color:var(--slate);font-size:11px;font-weight:bold;}
+  .toc a.special{color:var(--stone);padding-left:0;}
+
+  main{flex:1 1 auto;min-width:0;padding:64px 72px 120px;}
+  .read{max-width:var(--maxread);}
+
+  /* ===================== SECTIONS ===================== */
+  section{padding-top:30px;margin-bottom:36px;scroll-margin-top:20px;}
+  .eyebrow{
+    font-size:11px;letter-spacing:3px;text-transform:uppercase;
+    color:var(--blue);font-weight:bold;margin-bottom:6px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow .e-num{
+    background:var(--blue);color:#fff;border-radius:3px;
+    padding:2px 8px;font-size:11px;letter-spacing:1px;
+  }
+  h2.sec{font-size:30px;font-weight:bold;color:var(--pavement);margin:0 0 14px;line-height:1.15;letter-spacing:-.4px;}
+  h3{font-size:18px;font-weight:bold;color:var(--pavement);margin:30px 0 8px;}
+  h4{font-size:14px;font-weight:bold;color:var(--blue);text-transform:uppercase;letter-spacing:1px;margin:22px 0 6px;}
+  p{margin:0 0 14px;}
+  .lead-p{font-size:18px;color:var(--slate);line-height:1.6;margin-bottom:18px;}
+  strong{color:var(--pavement);}
+  ul,ol{margin:0 0 16px;padding-left:22px;}
+  li{margin-bottom:7px;}
+  .part-divider{
+    border-top:2px solid var(--rule);margin:54px 0 0;padding-top:8px;
+    font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:bold;
+  }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout{
+    border-left:4px solid var(--blue);
+    background:var(--tint-blue);
+    padding:16px 20px;margin:20px 0;border-radius:0 4px 4px 0;
+  }
+  .callout .c-tag{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;color:var(--blue);margin-bottom:4px;}
+  .callout p:last-child{margin-bottom:0;}
+  .callout.def{border-color:var(--blue);background:var(--tint-blue);}
+  .callout.def .c-tag{color:var(--blue);}
+  .callout.watch{border-color:var(--med);background:#FDF3E8;}
+  .callout.watch .c-tag{color:var(--med);}
+  .callout.take{border-color:var(--low);background:#EAF6EE;}
+  .callout.take .c-tag{color:var(--low);}
+
+  /* ===================== SCENARIO / CONCEPT CARDS ===================== */
+  .cards{display:grid;gap:14px;margin:20px 0;}
+  .cards.c2{grid-template-columns:1fr 1fr;}
+  .cards.c3{grid-template-columns:repeat(3,1fr);}
+  .card{
+    border:1px solid var(--rule);border-radius:6px;background:#fff;
+    padding:18px 18px 16px;position:relative;overflow:hidden;
+  }
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--lt-blue);}
+  .card.bar-blue::before{background:var(--blue);}
+  .card.bar-slate::before{background:var(--slate);}
+  .card.bar-high::before{background:var(--high);}
+  .card.bar-med::before{background:var(--med);}
+  .card.bar-low::before{background:var(--low);}
+  .card h5{font-size:15px;font-weight:bold;color:var(--pavement);margin:0 0 6px;}
+  .card .k{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--slate);font-weight:bold;}
+  .card p{font-size:13.5px;color:var(--slate);margin:6px 0 0;line-height:1.55;}
+  .pill{display:inline-block;font-size:10px;letter-spacing:1px;font-weight:bold;text-transform:uppercase;
+    padding:2px 8px;border-radius:10px;background:var(--tint-blue);color:var(--blue);margin-bottom:8px;}
+
+  /* ===================== TRACE / WORKED EXAMPLE ===================== */
+  .trace{
+    background:var(--deep-blue);color:#E8EDF2;border-radius:8px;
+    padding:22px 24px;margin:22px 0;font-size:13.5px;line-height:1.6;
+  }
+  .trace .t-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--lt-blue);font-weight:bold;margin-bottom:14px;}
+  .trace .step{display:grid;grid-template-columns:88px 1fr;gap:14px;padding:9px 0;border-top:1px solid rgba(255,255,255,.1);}
+  .trace .step:first-of-type{border-top:none;}
+  .trace .s-lbl{font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:bold;color:var(--lt-blue);padding-top:2px;}
+  .trace .s-body{color:#D6DEE6;}
+  .trace .s-body code{color:#9FD3F2;background:rgba(255,255,255,.06);padding:1px 5px;border-radius:3px;font-family:Consolas,Monaco,monospace;font-size:12.5px;}
+  .trace .think{color:var(--stone);font-style:italic;}
+
+  /* ===================== TABLES ===================== */
+  table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;}
+  thead th{
+    background:var(--pavement);color:#fff;text-align:left;
+    padding:9px 12px;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:bold;
+  }
+  tbody td{padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--slate);}
+  tbody tr:nth-child(even){background:var(--tint-stone);}
+  tbody td strong{color:var(--pavement);}
+
+  /* ===================== DIAGRAM FRAME ===================== */
+  .figure{margin:26px 0;border:1px solid var(--rule);border-radius:8px;padding:24px;background:#fff;}
+  .figure svg{display:block;width:100%;height:auto;}
+  .figure .cap{font-size:12px;color:var(--slate);margin-top:14px;text-align:center;font-style:italic;}
+
+  /* ===================== GLOSSARY ===================== */
+  .gloss dt{font-weight:bold;color:var(--pavement);margin-top:14px;font-size:14.5px;}
+  .gloss dd{margin:2px 0 0;color:var(--slate);font-size:13.5px;}
+
+  /* ===================== REFERENCES ===================== */
+  .refs{counter-reset:r;list-style:none;padding:0;}
+  .refs li{counter-increment:r;padding:10px 0 10px 40px;position:relative;border-bottom:1px solid var(--rule);font-size:13.5px;color:var(--slate);}
+  .refs li::before{content:counter(r);position:absolute;left:0;top:10px;background:var(--blue);color:#fff;
+    width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;}
+  .refs .r-src{color:var(--pavement);font-weight:bold;}
+  .prov{font-size:12.5px;color:var(--slate);background:var(--tint-stone);border:1px dashed var(--stone);border-radius:6px;padding:14px 18px;margin:18px 0;}
+
+  /* ===================== RESPONSIVE ===================== */
+  @media(max-width:1080px){
+    .toc{display:none;}
+    main{padding:48px 36px 90px;}
+    .cover{padding:48px 36px 32px;}
+    .cover-vol{font-size:96px;}
+    h1.cover-title{font-size:44px;}
+    .cards.c2,.cards.c3{grid-template-columns:1fr;}
+    .cover-meta{grid-template-columns:repeat(2,1fr);gap:18px;}
+  }
+  @media print{
+    .toc{display:none;}
+    .cover{page-break-after:always;}
+    .trace{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <div class="cover-top"><span class="bar"></span>Infosys Consulting&nbsp;·&nbsp;Agentic AI Series</div>
+  <div class="cover-main">
+    <div class="cover-vol">08<span>/ 15</span></div>
+    <h1 class="cover-title">Frameworks &amp; <em>Platforms</em></h1>
+    <div class="cover-sub">The build-or-buy landscape: what agent frameworks give you, and what to standardise on.</div>
+    <p class="cover-lead">Capability is one thing; shipping it is another. This volume maps the framework landscape by shape rather than brand, weighs build-versus-buy, lays out the supporting stack an agent needs in production, and frames the selection decision for a regulated enterprise.</p>
+  </div>
+  <div class="cover-meta">
+    <div><div class="m-lbl">Volume</div><div class="m-val">08 of 15<br>Architecting Agents</div></div>
+    <div><div class="m-lbl">Domain</div><div class="m-val">AI &amp; Automation</div></div>
+    <div><div class="m-lbl">Audience</div><div class="m-val">Practitioners &amp; Leaders</div></div>
+    <div><div class="m-lbl">Version</div><div class="m-val">1.0 · 2026</div></div>
+    <div><div class="m-lbl">Reading Time</div><div class="m-val">~45 minutes</div></div>
+  </div>
+  <div class="cover-foot">
+    <div>Infosys Consulting&nbsp;·&nbsp;AI &amp; Automation Practice&nbsp;·&nbsp;Internal Learning Asset</div>
+    <div class="scroll">Scroll to begin ↓</div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <div class="toc-brand">Agentic AI Series</div>
+    <div class="toc-vol">Vol. 08 — Frameworks</div>
+    <div class="toc-part">Part A · The landscape</div>
+    <a href="#s1"><span class="num">01</span>What a framework gives you</a>
+    <a href="#s2"><span class="num">02</span>The framework landscape</a>
+    <a href="#s3"><span class="num">03</span>High-level vs. low-level</a>
+    <div class="toc-part">Part B · Decisions</div>
+    <a href="#s4"><span class="num">04</span>Build vs. buy</a>
+    <a href="#s5"><span class="num">05</span>The supporting stack</a>
+    <a href="#s6"><span class="num">06</span>Deployment &amp; operations</a>
+    <div class="toc-part">Part C · Selecting</div>
+    <a href="#s7"><span class="num">07</span>Choosing for the enterprise</a>
+    <a href="#s8"><span class="num">08</span>Frameworks in regulated FS</a>
+
+    <div class="toc-part">Reference</div>
+    <a href="#glossary" class="special">Glossary</a>
+    <a href="#refs" class="special">References &amp; reading order</a>
+  </nav>
+  <main>
+  <div class="read">
+  <section id="s1"><div class="eyebrow"><span class="e-num">01</span>Part A · The landscape</div>
+  <h2 class="sec">What a framework gives you</h2>
+  <p class="lead-p">You can build an agent with nothing but a model API and your own code — the loop of Vol. 01 is only a few lines. So what do agent <strong>frameworks</strong> actually buy you? Mostly: the parts that are tedious, error-prone, and the same every time.</p>
+  <p>A framework provides the scaffolding around the model: the loop runner, tool-calling plumbing, state and memory management, multi-agent orchestration, retries and error handling, and increasingly hooks for tracing and evaluation. It lets you describe <em>what</em> the agent should do and handles much of <em>how</em> the loop executes. The value is leverage and consistency; the cost is a layer of abstraction between you and the model, which can obscure behaviour and complicate debugging.</p>
+  <div class="callout def"><div class="c-tag">Framing</div><p>A framework is not capability — the model is. A framework is <em>productivity and structure</em>. The right question is never "which framework is most powerful?" but "which removes the most undifferentiated work for my use case without hiding what I need to control?"</p></div></section>
+
+  <section id="s2"><div class="eyebrow"><span class="e-num">02</span>Part A · The landscape</div>
+  <h2 class="sec">The framework landscape</h2>
+  <p class="lead-p">The ecosystem is crowded and moves monthly, so memorising tools is futile. Understand it by <em>shape</em> instead — the categories endure even as specific names rise and fall.</p>
+  <table><thead><tr><th style="width:220px">Category</th><th>What it is &amp; examples</th></tr></thead><tbody>
+  <tr><td><strong>Graph / workflow orchestration</strong></td><td>Express the agent as a controllable graph of steps and state — maximum control over flow. <em>(e.g. LangGraph.)</em></td></tr>
+  <tr><td><strong>Role / crew abstractions</strong></td><td>Define agents by role and let them collaborate at a higher level — fast to start, less low-level control. <em>(e.g. CrewAI, AutoGen.)</em></td></tr>
+  <tr><td><strong>Provider SDKs</strong></td><td>First-party agent toolkits from the model providers, tightly integrated with their models and tool/MCP support. <em>(e.g. OpenAI Agents SDK, Anthropic's tooling.)</em></td></tr>
+  <tr><td><strong>Supporting infrastructure</strong></td><td>Not frameworks but the stack around them — vector DBs, evaluation/observability platforms, model gateways (§5).</td></tr></tbody></table>
+  <div class="callout watch"><div class="c-tag">Watch out</div><p>Specific tools, versions, and capabilities change far faster than this primer's cycle. Treat any named framework as illustrative of its <em>category</em>, not a current recommendation — and re-check the landscape at decision time. Architect so the framework is replaceable.</p></div></section>
+
+  <section id="s3"><div class="eyebrow"><span class="e-num">03</span>Part A · The landscape</div>
+  <h2 class="sec">High-level vs. low-level</h2>
+  <p class="lead-p">The deepest distinction among frameworks is how much they abstract away — and it is a genuine trade-off, not a quality ranking.</p>
+  <div class="cards c2">
+  <div class="card bar-blue"><div class="k">High-level</div><h5>Describe agents, get behaviour</h5><p>Define roles and goals; the framework handles the loop, delegation, and coordination. Fast to prototype, great for standard patterns. Less visibility and control when behaviour must be precise — a liability in regulated work.</p></div>
+  <div class="card"><div class="k">Low-level</div><h5>Control the flow explicitly</h5><p>You define the graph, the state, and the transitions. More code and more to own, but full control and transparency — which is what auditability and reliability demand.</p></div></div>
+  <p>The pattern many teams settle on: prototype quickly with a high-level abstraction to validate the use case, then move to a lower-level, more controllable foundation for anything going to production in a regulated environment — where "I'm not sure why it did that" is not an acceptable answer.</p></section>
+
+  <div class="part-divider">Part B · Decisions</div>
+
+  <section id="s4"><div class="eyebrow"><span class="e-num">04</span>Part B · Decisions</div>
+  <h2 class="sec">Build vs. buy</h2>
+  <p class="lead-p">Beyond which framework lies a bigger question: how much to build versus buy at all. The answer differs by layer, and the right strategy is usually a mix.</p>
+  <table><thead><tr><th style="width:34%">Layer</th><th style="width:33%">Lean buy</th><th>Lean build</th></tr></thead><tbody>
+  <tr><td><strong>The model</strong></td><td>Almost always buy (use a provider).</td><td>Self-host open-weight only for strong data-residency or cost reasons.</td></tr>
+  <tr><td><strong>Framework / orchestration</strong></td><td>Use an established one to start.</td><td>Build/own the critical path where control and audit matter.</td></tr>
+  <tr><td><strong>Tools &amp; integrations</strong></td><td>Reuse MCP servers where trusted.</td><td>Build your own for proprietary systems and sensitive data.</td></tr>
+  <tr><td><strong>The use-case agent</strong></td><td>—</td><td>Build — this is your differentiation and domain knowledge.</td></tr></tbody></table>
+  <div class="callout take"><div class="c-tag">The principle</div><p>Buy the commodity, build the differentiator. The model and generic plumbing are commodities to buy or adopt; your domain logic, your data integrations, and your control and governance layer are where you build, because that is where your advantage and your accountability live.</p></div></section>
+
+  <section id="s5"><div class="eyebrow"><span class="e-num">05</span>Part B · Decisions</div>
+  <h2 class="sec">The supporting stack</h2>
+  <p class="lead-p">A production agent needs more than a framework. Several supporting components, drawn from earlier volumes, together form the real stack — and underinvesting in them is the most common reason pilots fail to reach production.</p>
+  <div class="cards c2">
+  <div class="card"><div class="k">Knowledge</div><h5>Vector DB &amp; retrieval</h5><p>The memory and RAG layer (Vol. 05) — where grounding and currency come from.</p></div>
+  <div class="card"><div class="k">Quality</div><h5>Evaluation &amp; observability</h5><p>Eval suites, tracing, and monitoring (Vol. 09) — how you know it works and keep knowing.</p></div>
+  <div class="card"><div class="k">Access</div><h5>Model gateway</h5><p>A layer that routes to models, enforces limits and policy, and lets you swap models as a config change (Vol. 02 §9).</p></div>
+  <div class="card bar-blue"><div class="k">Control</div><h5>Guardrails &amp; security</h5><p>Permission enforcement, approval gates, input/output validation (Vols. 04, 10) — the control plane that makes it deployable.</p></div></div>
+  <p>None of this is the "agent" itself, yet collectively it is most of the engineering. A framework that gives you the loop but leaves you to assemble knowledge, evaluation, access, and control has solved the easy 20%.</p></section>
+
+  <section id="s6"><div class="eyebrow"><span class="e-num">06</span>Part B · Decisions</div>
+  <h2 class="sec">Deployment &amp; operations</h2>
+  <p class="lead-p">An agent in production is a long-running, stateful, externally-acting service — operationally unlike a stateless web app, and that difference shapes how you run it.</p>
+  <p>Several properties demand attention. <em>Cost and latency</em> are variable and can spike with a single runaway loop, so budgets, rate limits, and timeouts are operational necessities, not nice-to-haves. <em>State</em> must persist reliably across an agent's many steps and survive restarts. <em>Non-determinism</em> (Vol. 02 §8) means the same input can behave differently, so monitoring and replay matter more than in conventional software. And because agents <em>act</em>, a deployment needs a tested way to pause, intervene, and stop them — a real kill switch, not a hope.</p>
+  <div class="callout watch"><div class="c-tag">Watch out</div><p>The leap from a working prototype to a reliable production service is larger for agents than for ordinary software, precisely because of cost variability, statefulness, non-determinism, and real-world side effects. Plan for this gap; it is where most agent initiatives stall.</p></div></section>
+
+  <div class="part-divider">Part C · Selecting</div>
+
+  <section id="s7"><div class="eyebrow"><span class="e-num">07</span>Part C · Selecting</div>
+  <h2 class="sec">Choosing for the enterprise</h2>
+  <p class="lead-p">Enterprise selection criteria differ sharply from a hackathon's. Speed-to-first-demo matters far less than control, transparency, security, and the ability to evolve.</p>
+  <div class="cards c3">
+  <div class="card"><div class="k">Criterion</div><h5>Control &amp; transparency</h5><p>Can you see and govern exactly what the agent does? Opaque magic fails audit.</p></div>
+  <div class="card"><div class="k">Criterion</div><h5>Security &amp; data handling</h5><p>Does it support least privilege, on-prem/private deployment, and your data-residency needs?</p></div>
+  <div class="card"><div class="k">Criterion</div><h5>Observability &amp; eval</h5><p>Does it integrate with tracing and evaluation, or leave you blind?</p></div>
+  <div class="card"><div class="k">Criterion</div><h5>Maturity &amp; support</h5><p>Production track record, stability, and a path for support — not a fast-moving experiment.</p></div>
+  <div class="card"><div class="k">Criterion</div><h5>Lock-in &amp; portability</h5><p>How hard to swap the model or framework later? Favour replaceable parts.</p></div>
+  <div class="card bar-blue"><div class="k">Criterion</div><h5>Standards support</h5><p>MCP and open interfaces, so tools and agents compose rather than entangle.</p></div></div>
+  <div class="callout take"><div class="c-tag">The strategy</div><p>Standardise the platform centrally — shared framework, model gateway, eval/observability, guardrails — and let teams build use-case agents on top. This is the "centralised platform, federated use" operating model (Vol. 11), realised as a technology stack.</p></div></section>
+
+  <section id="s8"><div class="eyebrow"><span class="e-num">08</span>Part C · Selecting</div>
+  <h2 class="sec">Frameworks in regulated FS</h2>
+  <p class="lead-p">In financial services, the framework and stack are part of the control environment, and three requirements dominate the choice — all of which push toward control over convenience.</p>
+  <p><strong>Auditability:</strong> the stack must record what every agent did — decisions, tool calls, handoffs, the context shown — in a form a regulator or internal audit can reconstruct (Vols. 09, 12). <strong>Data control:</strong> confidentiality and residency rules often force private or self-hosted deployment and strict data handling (Vol. 02 §10), constraining which platforms are even viable. <strong>Model risk:</strong> the whole system is governed infrastructure subject to validation and monitoring (Vol. 12), so transparency and evaluability are non-negotiable. Together these explain why regulated institutions tend toward more controllable, lower-level foundations they can fully see and own.</p>
+  <div class="callout take"><div class="c-tag">Where this goes next</div><p>You can now build and deploy agents on a real stack. <strong>Vol. 09 — Evaluation, Testing &amp; Observability</strong> is how you prove they work and keep them working; then security (Vol. 10), governance and regulation (Vols. 11–12), and the domain applications (Vols. 13–15).</p></div>
+  <div class="prov"><strong>Provenance note.</strong> Framework capabilities and market positions change rapidly; treat any named tool as illustrative and re-verify at decision time. FS adoption figures are directional 2025–26 estimates — sourced detail in Vols. 13–14.</div></section>
+
+  <section id="glossary"><div class="eyebrow"><span class="e-num">★</span>Reference</div><h2 class="sec">Glossary</h2>
+  <dl class="gloss">
+  <dt>Agent framework</dt><dd>Software providing the scaffolding around a model — loop, tool plumbing, state, orchestration — so you describe behaviour rather than build it from scratch.</dd>
+  <dt>Build vs. buy</dt><dd>The decision, taken per layer, between adopting existing components and building your own.</dd>
+  <dt>Graph orchestration</dt><dd>Expressing an agent as a controllable graph of steps and state for maximum flow control.</dd>
+  <dt>High-level vs. low-level</dt><dd>Whether a framework abstracts the loop away (fast, less control) or exposes it (more code, full control).</dd>
+  <dt>Model gateway</dt><dd>A layer routing requests to models while enforcing limits and policy and enabling model swaps.</dd>
+  <dt>Provider SDK</dt><dd>A first-party agent toolkit from a model provider, tightly integrated with its models.</dd>
+  <dt>Supporting stack</dt><dd>The components around the framework — vector DB, eval/observability, gateway, guardrails — that production needs.</dd></dl></section>
+
+  <section id="refs"><div class="eyebrow"><span class="e-num">★</span>Reference</div><h2 class="sec">References &amp; reading order</h2>
+  <p class="lead-p">Suggested order: the landscape (1–3), decisions (4–6), then selection (7–8).</p>
+  <ol class="refs">
+  <li><span class="r-src">LangGraph — documentation (graph orchestration).</span> <em>(§2–§3.)</em></li>
+  <li><span class="r-src">OpenAI — Agents SDK documentation.</span> <em>(§2.)</em></li>
+  <li><span class="r-src">CrewAI / Microsoft AutoGen — documentation (role/crew abstractions).</span> <em>(§2.)</em></li>
+  <li><span class="r-src">Anthropic — "Building Effective Agents" (build simple, add complexity only as needed).</span> <em>(§1, §4.)</em></li>
+  <li><span class="r-src">Anthropic — Model Context Protocol (standards &amp; portability).</span> <em>(§5, §7.)</em></li>
+  <li><span class="r-src">NIST — AI Risk Management Framework (AI RMF).</span> Enterprise selection criteria. <em>(§7–§8.)</em></li></ol>
+  <div class="prov"><strong>Provenance reminder.</strong> Tool capabilities change rapidly and FS figures are directional; verify before reuse. Sourced detail in Vols. 13–14.</div></section>
+
+  </div></main></div>
+  <footer style="background:#182534;color:#A7A9AC;padding:26px 40px;font-size:12px;letter-spacing:1px;text-align:center;">Infosys Consulting&nbsp;·&nbsp;Agentic AI Series&nbsp;·&nbsp;Vol. 08 of 15 — Frameworks &amp; Platforms&nbsp;·&nbsp;Internal Learning Asset · v1.0 (2026)</footer>
+  </body></html>

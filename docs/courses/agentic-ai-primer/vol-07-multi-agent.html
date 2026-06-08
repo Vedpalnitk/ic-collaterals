@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Multi-Agent Systems & Orchestration — Infosys Consulting Primer Vol. 07</title>
+<style>
+  /* ============================================================
+     INFOSYS CONSULTING — DESIGN SYSTEM TOKENS
+     Arial only · IC palette only · Deep Blue for cover only
+     ============================================================ */
+  :root{
+    --deep-blue:#182534;
+    --pavement:#404040;
+    --blue:#007CC3;
+    --lt-blue:#3699DA;
+    --stone:#A7A9AC;
+    --slate:#6D6E71;
+    --tint-blue:#E6F2FA;
+    --tint-stone:#F0F0F1;
+    --rule:#D6DCEA;
+    --white:#ffffff;
+    /* status — semantic only */
+    --high:#C0392B;
+    --med:#E67E22;
+    --low:#27AE60;
+    --sidebar-w:300px;
+    --maxread:840px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    color:var(--pavement);
+    background:var(--white);
+    line-height:1.62;
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--blue);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+
+  /* ===================== COVER ===================== */
+  .cover{
+    min-height:100vh;
+    background:var(--deep-blue);
+    color:var(--white);
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:64px 72px 40px;
+    position:relative;
+    overflow:hidden;
+  }
+  .cover::after{
+    content:"";
+    position:absolute;
+    right:-180px;top:-180px;
+    width:620px;height:620px;
+    border:1px solid rgba(54,153,218,.22);
+    border-radius:50%;
+  }
+  .cover::before{
+    content:"";
+    position:absolute;
+    right:-60px;bottom:-260px;
+    width:520px;height:520px;
+    border:1px solid rgba(54,153,218,.14);
+    border-radius:50%;
+  }
+  .cover-top{
+    font-size:12px;letter-spacing:4px;text-transform:uppercase;
+    color:var(--lt-blue);font-weight:bold;
+    display:flex;align-items:center;gap:14px;
+    z-index:2;
+  }
+  .cover-top .bar{width:42px;height:2px;background:var(--lt-blue);display:inline-block;}
+  .cover-main{z-index:2;}
+  .cover-vol{
+    font-size:140px;font-weight:bold;line-height:.9;color:var(--lt-blue);
+    letter-spacing:-4px;margin:0 0 8px;
+  }
+  .cover-vol span{font-size:30px;letter-spacing:2px;color:var(--stone);font-weight:bold;vertical-align:top;margin-left:8px;}
+  h1.cover-title{
+    font-size:62px;font-weight:bold;line-height:1.04;margin:6px 0 4px;letter-spacing:-1px;
+  }
+  h1.cover-title em{color:var(--lt-blue);font-style:italic;}
+  .cover-sub{font-size:21px;color:var(--white);font-weight:bold;margin:18px 0 12px;max-width:760px;}
+  .cover-lead{font-size:15px;color:var(--stone);max-width:720px;line-height:1.7;}
+  .cover-meta{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:0;
+    border-top:1px solid rgba(255,255,255,.16);
+    margin-top:38px;padding-top:22px;z-index:2;max-width:920px;
+  }
+  .cover-meta .m-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);margin-bottom:6px;}
+  .cover-meta .m-val{font-size:15px;color:var(--white);font-weight:bold;line-height:1.35;}
+  .cover-foot{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    font-size:11px;letter-spacing:1px;color:var(--stone);z-index:2;
+  }
+  .cover-foot .scroll{color:var(--lt-blue);font-weight:bold;letter-spacing:2px;text-transform:uppercase;}
+
+  /* ===================== READING LAYOUT ===================== */
+  .layout{display:flex;align-items:flex-start;max-width:1320px;margin:0 auto;}
+  .toc{
+    width:var(--sidebar-w);flex:0 0 var(--sidebar-w);
+    position:sticky;top:0;align-self:flex-start;
+    height:100vh;overflow-y:auto;
+    background:var(--deep-blue);color:var(--white);
+    padding:30px 26px 40px;
+  }
+  .toc-brand{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--lt-blue);font-weight:bold;margin-bottom:4px;}
+  .toc-vol{font-size:12px;color:var(--stone);margin-bottom:24px;}
+  .toc-part{
+    font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--lt-blue);
+    font-weight:bold;margin:22px 0 8px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);
+  }
+  .toc-part:first-of-type{border-top:none;padding-top:0;}
+  .toc a{
+    display:block;color:rgba(255,255,255,.78);font-size:13px;
+    padding:5px 0 5px 22px;position:relative;line-height:1.35;
+  }
+  .toc a:hover{color:var(--white);text-decoration:none;}
+  .toc a .num{position:absolute;left:0;color:var(--slate);font-size:11px;font-weight:bold;}
+  .toc a.special{color:var(--stone);padding-left:0;}
+
+  main{flex:1 1 auto;min-width:0;padding:64px 72px 120px;}
+  .read{max-width:var(--maxread);}
+
+  /* ===================== SECTIONS ===================== */
+  section{padding-top:30px;margin-bottom:36px;scroll-margin-top:20px;}
+  .eyebrow{
+    font-size:11px;letter-spacing:3px;text-transform:uppercase;
+    color:var(--blue);font-weight:bold;margin-bottom:6px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow .e-num{
+    background:var(--blue);color:#fff;border-radius:3px;
+    padding:2px 8px;font-size:11px;letter-spacing:1px;
+  }
+  h2.sec{font-size:30px;font-weight:bold;color:var(--pavement);margin:0 0 14px;line-height:1.15;letter-spacing:-.4px;}
+  h3{font-size:18px;font-weight:bold;color:var(--pavement);margin:30px 0 8px;}
+  h4{font-size:14px;font-weight:bold;color:var(--blue);text-transform:uppercase;letter-spacing:1px;margin:22px 0 6px;}
+  p{margin:0 0 14px;}
+  .lead-p{font-size:18px;color:var(--slate);line-height:1.6;margin-bottom:18px;}
+  strong{color:var(--pavement);}
+  ul,ol{margin:0 0 16px;padding-left:22px;}
+  li{margin-bottom:7px;}
+  .part-divider{
+    border-top:2px solid var(--rule);margin:54px 0 0;padding-top:8px;
+    font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:bold;
+  }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout{
+    border-left:4px solid var(--blue);
+    background:var(--tint-blue);
+    padding:16px 20px;margin:20px 0;border-radius:0 4px 4px 0;
+  }
+  .callout .c-tag{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;color:var(--blue);margin-bottom:4px;}
+  .callout p:last-child{margin-bottom:0;}
+  .callout.def{border-color:var(--blue);background:var(--tint-blue);}
+  .callout.def .c-tag{color:var(--blue);}
+  .callout.watch{border-color:var(--med);background:#FDF3E8;}
+  .callout.watch .c-tag{color:var(--med);}
+  .callout.take{border-color:var(--low);background:#EAF6EE;}
+  .callout.take .c-tag{color:var(--low);}
+
+  /* ===================== SCENARIO / CONCEPT CARDS ===================== */
+  .cards{display:grid;gap:14px;margin:20px 0;}
+  .cards.c2{grid-template-columns:1fr 1fr;}
+  .cards.c3{grid-template-columns:repeat(3,1fr);}
+  .card{
+    border:1px solid var(--rule);border-radius:6px;background:#fff;
+    padding:18px 18px 16px;position:relative;overflow:hidden;
+  }
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--lt-blue);}
+  .card.bar-blue::before{background:var(--blue);}
+  .card.bar-slate::before{background:var(--slate);}
+  .card.bar-high::before{background:var(--high);}
+  .card.bar-med::before{background:var(--med);}
+  .card.bar-low::before{background:var(--low);}
+  .card h5{font-size:15px;font-weight:bold;color:var(--pavement);margin:0 0 6px;}
+  .card .k{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--slate);font-weight:bold;}
+  .card p{font-size:13.5px;color:var(--slate);margin:6px 0 0;line-height:1.55;}
+  .pill{display:inline-block;font-size:10px;letter-spacing:1px;font-weight:bold;text-transform:uppercase;
+    padding:2px 8px;border-radius:10px;background:var(--tint-blue);color:var(--blue);margin-bottom:8px;}
+
+  /* ===================== TRACE / WORKED EXAMPLE ===================== */
+  .trace{
+    background:var(--deep-blue);color:#E8EDF2;border-radius:8px;
+    padding:22px 24px;margin:22px 0;font-size:13.5px;line-height:1.6;
+  }
+  .trace .t-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--lt-blue);font-weight:bold;margin-bottom:14px;}
+  .trace .step{display:grid;grid-template-columns:88px 1fr;gap:14px;padding:9px 0;border-top:1px solid rgba(255,255,255,.1);}
+  .trace .step:first-of-type{border-top:none;}
+  .trace .s-lbl{font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:bold;color:var(--lt-blue);padding-top:2px;}
+  .trace .s-body{color:#D6DEE6;}
+  .trace .s-body code{color:#9FD3F2;background:rgba(255,255,255,.06);padding:1px 5px;border-radius:3px;font-family:Consolas,Monaco,monospace;font-size:12.5px;}
+  .trace .think{color:var(--stone);font-style:italic;}
+
+  /* ===================== TABLES ===================== */
+  table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;}
+  thead th{
+    background:var(--pavement);color:#fff;text-align:left;
+    padding:9px 12px;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:bold;
+  }
+  tbody td{padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--slate);}
+  tbody tr:nth-child(even){background:var(--tint-stone);}
+  tbody td strong{color:var(--pavement);}
+
+  /* ===================== DIAGRAM FRAME ===================== */
+  .figure{margin:26px 0;border:1px solid var(--rule);border-radius:8px;padding:24px;background:#fff;}
+  .figure svg{display:block;width:100%;height:auto;}
+  .figure .cap{font-size:12px;color:var(--slate);margin-top:14px;text-align:center;font-style:italic;}
+
+  /* ===================== GLOSSARY ===================== */
+  .gloss dt{font-weight:bold;color:var(--pavement);margin-top:14px;font-size:14.5px;}
+  .gloss dd{margin:2px 0 0;color:var(--slate);font-size:13.5px;}
+
+  /* ===================== REFERENCES ===================== */
+  .refs{counter-reset:r;list-style:none;padding:0;}
+  .refs li{counter-increment:r;padding:10px 0 10px 40px;position:relative;border-bottom:1px solid var(--rule);font-size:13.5px;color:var(--slate);}
+  .refs li::before{content:counter(r);position:absolute;left:0;top:10px;background:var(--blue);color:#fff;
+    width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;}
+  .refs .r-src{color:var(--pavement);font-weight:bold;}
+  .prov{font-size:12.5px;color:var(--slate);background:var(--tint-stone);border:1px dashed var(--stone);border-radius:6px;padding:14px 18px;margin:18px 0;}
+
+  /* ===================== RESPONSIVE ===================== */
+  @media(max-width:1080px){
+    .toc{display:none;}
+    main{padding:48px 36px 90px;}
+    .cover{padding:48px 36px 32px;}
+    .cover-vol{font-size:96px;}
+    h1.cover-title{font-size:44px;}
+    .cards.c2,.cards.c3{grid-template-columns:1fr;}
+    .cover-meta{grid-template-columns:repeat(2,1fr);gap:18px;}
+  }
+  @media print{
+    .toc{display:none;}
+    .cover{page-break-after:always;}
+    .trace{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <div class="cover-top"><span class="bar"></span>Infosys Consulting&nbsp;·&nbsp;Agentic AI Series</div>
+  <div class="cover-main">
+    <div class="cover-vol">07<span>/ 15</span></div>
+    <h1 class="cover-title">Multi-Agent Systems &amp; <em>Orchestration</em></h1>
+    <div class="cover-sub">When one agent isn't enough: coordinating many specialists without losing control.</div>
+    <p class="cover-lead">Vol. 01 sketched the orchestration patterns. This volume builds them out: when several agents beat one, the supervisor / pipeline / parallel patterns, the control plane that coordinates them, agent-to-agent communication, and the sprawl and failure risks that multi-agent systems quietly accumulate.</p>
+  </div>
+  <div class="cover-meta">
+    <div><div class="m-lbl">Volume</div><div class="m-val">07 of 15<br>Architecting Agents</div></div>
+    <div><div class="m-lbl">Domain</div><div class="m-val">AI &amp; Automation</div></div>
+    <div><div class="m-lbl">Audience</div><div class="m-val">Practitioners &amp; Leaders</div></div>
+    <div><div class="m-lbl">Version</div><div class="m-val">1.0 · 2026</div></div>
+    <div><div class="m-lbl">Reading Time</div><div class="m-val">~45 minutes</div></div>
+  </div>
+  <div class="cover-foot">
+    <div>Infosys Consulting&nbsp;·&nbsp;AI &amp; Automation Practice&nbsp;·&nbsp;Internal Learning Asset</div>
+    <div class="scroll">Scroll to begin ↓</div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <div class="toc-brand">Agentic AI Series</div>
+    <div class="toc-vol">Vol. 07 — Multi-Agent</div>
+    <div class="toc-part">Part A · When &amp; why</div>
+    <a href="#s1"><span class="num">01</span>One agent or many?</a>
+    <a href="#s2"><span class="num">02</span>The orchestration patterns</a>
+    <div class="toc-part">Part B · Coordination</div>
+    <a href="#s3"><span class="num">03</span>The control plane &amp; state</a>
+    <a href="#s4"><span class="num">04</span>Handoffs &amp; communication</a>
+    <a href="#s5"><span class="num">05</span>Agent-to-agent protocols</a>
+    <div class="toc-part">Part C · Risks</div>
+    <a href="#s6"><span class="num">06</span>Agent sprawl &amp; cost</a>
+    <a href="#s7"><span class="num">07</span>Failure &amp; debugging</a>
+    <a href="#s8"><span class="num">08</span>Multi-agent in financial crime</a>
+
+    <div class="toc-part">Reference</div>
+    <a href="#glossary" class="special">Glossary</a>
+    <a href="#refs" class="special">References &amp; reading order</a>
+  </nav>
+  <main>
+  <div class="read">
+  <section id="s1"><div class="eyebrow"><span class="e-num">01</span>Part A · When &amp; why</div>
+  <h2 class="sec">One agent or many?</h2>
+  <p class="lead-p">The instinct, on seeing a complex problem, is to throw more agents at it. Resist it. The first and most important decision in multi-agent design is whether you need multiple agents at all — and the honest answer is usually "not yet."</p>
+  <p>A single agent with a good set of tools (Vol. 04) and the right reasoning pattern (Vol. 06) handles a remarkable range of tasks. Multiple agents add real costs: more model calls, more latency, coordination overhead, and more places for failure or prompt injection to enter. They earn their keep only when a problem has genuinely <em>distinct</em> sub-skills, benefits from <em>parallelism</em>, or grows too large for one agent's context and focus.</p>
+  <div class="callout take"><div class="c-tag">The test</div><p>Reach for multiple agents when you can name the specialists and why each needs to be separate — "a screening agent, a transaction-analysis agent, a narrative-drafting agent, because each needs different tools and a different focus." If the answer is "it feels complex," a single well-equipped agent is almost always the better, cheaper, more debuggable choice.</p></div></section>
+
+  <section id="s2"><div class="eyebrow"><span class="e-num">02</span>Part A · When &amp; why</div>
+  <h2 class="sec">The orchestration patterns</h2>
+  <p class="lead-p">When you do go multi-agent, a handful of patterns cover almost every case. Vol. 01 sketched three; here is the fuller set, with the trade-offs that decide between them.</p>
+  <div class="cards c2">
+  <div class="card bar-blue"><div class="k">Most common</div><h5>Supervisor (orchestrator–worker)</h5><p>A lead agent decomposes the goal, delegates to specialist workers, and synthesises their results. Flexible and powerful; the lead is a single point of coordination and failure.</p></div>
+  <div class="card"><div class="k">Predictable</div><h5>Sequential pipeline</h5><p>Agents run in a fixed order, each refining the last's output. Easy to govern and reason about; inflexible when the task needs branching.</p></div>
+  <div class="card"><div class="k">Fast</div><h5>Parallel + merge</h5><p>Several agents work simultaneously on parts; a merger combines them. Good for breadth and speed; needs careful handling of conflicting outputs.</p></div>
+  <div class="card"><div class="k">Layered</div><h5>Hierarchical</h5><p>Supervisors of supervisors for large problems. Scales scope but multiplies coordination cost and latency — use sparingly.</p></div></div>
+  <p>Real systems combine these: a supervisor whose workers are pipelines, a pipeline with a parallel stage in the middle. The patterns are building blocks, not rival architectures — start with the simplest that fits and compose upward only as needed.</p></section>
+
+  <div class="part-divider">Part B · Coordination</div>
+
+  <section id="s3"><div class="eyebrow"><span class="e-num">03</span>Part B · Coordination</div>
+  <h2 class="sec">The control plane &amp; state</h2>
+  <p class="lead-p">Whatever the pattern, something must manage the agents: route work, hold shared state, sequence steps, and keep a coherent record. That coordination layer is the <strong>control plane</strong>, and it is where the determinism and the auditability of a multi-agent system live.</p>
+  <p>The control plane answers the questions the agents themselves can't be trusted to: which agent runs next, what each is allowed to do, what state is shared versus private, how conflicts are resolved, and when the whole thing stops. Crucially, it is also where you record what the <em>system</em> did — not just each agent in isolation — which is essential for both debugging and the audit trail a regulated deployment requires.</p>
+  <div class="callout def"><div class="c-tag">Why it matters</div><p>Agents are probabilistic; the control plane is where you put the guarantees. Order, permissions, limits, and logging belong in this deterministic layer, not in the agents' prompts. A multi-agent system without a real control plane is a collection of agents hoping to cooperate.</p></div></section>
+
+  <section id="s4"><div class="eyebrow"><span class="e-num">04</span>Part B · Coordination</div>
+  <h2 class="sec">Handoffs &amp; communication</h2>
+  <p class="lead-p">The hard part of multi-agent systems is rarely the individual agents — it is the seams between them. A <strong>handoff</strong> is one agent passing control and context to another, and how you design these seams decides whether the system is coherent or chaotic.</p>
+  <p>Two recurring problems. <em>Context loss</em>: the receiving agent needs enough of what came before to act sensibly, but not the whole bloated history (Vol. 03 §8) — so handoffs require deliberate summarisation of what matters. <em>Telephone-game drift</em>: each handoff is a chance to distort or lose information, and errors compound across a chain just as they do across steps (Vol. 01 §9). Clear, structured handoff contracts — exactly what each agent receives and returns — contain both.</p>
+  <div class="callout watch"><div class="c-tag">Watch out</div><p>Free-form agent-to-agent chatter is expensive and lossy. Structured handoffs (defined inputs and outputs, like the structured output of Vol. 03 §5) beat open conversation: cheaper, more reliable, and far easier to debug and audit when something goes wrong.</p></div></section>
+
+  <section id="s5"><div class="eyebrow"><span class="e-num">05</span>Part B · Coordination</div>
+  <h2 class="sec">Agent-to-agent protocols</h2>
+  <p class="lead-p">Just as MCP standardised the agent-to-tool boundary (Vol. 04 §4), emerging <strong>agent-to-agent (A2A)</strong> protocols aim to standardise how agents discover and communicate with each other — including agents built by different teams or vendors.</p>
+  <p>The vision is interoperability: an agent advertises its capabilities, and other agents can delegate to it over a common protocol without bespoke integration. This is early and evolving through 2025–26, but the direction is clear and mirrors how software moved from point-to-point integrations to standard interfaces. For an enterprise, the value is the same as MCP's: standard boundaries are where shared controls — identity, permissions, logging — can be placed once.</p>
+  <div class="callout watch"><div class="c-tag">Watch out</div><p>Every agent another agent can call is a new trust boundary and a new attack surface. Cross-organisation agent communication amplifies the prompt-injection and excessive-agency risks of Vol. 04 §7 — an agent you delegate to can be compromised, or can be the compromise. Treat A2A links as supply-chain decisions (Vol. 10 §6).</p></div></section>
+
+  <div class="part-divider">Part C · Risks</div>
+
+  <section id="s6"><div class="eyebrow"><span class="e-num">06</span>Part C · Risks</div>
+  <h2 class="sec">Agent sprawl &amp; cost</h2>
+  <p class="lead-p">The defining failure mode of multi-agent enthusiasm is <strong>sprawl</strong>: more and more agents, each plausible on its own, collectively producing a system no one fully understands, costs too much, and runs too slowly.</p>
+  <p>The economics are unforgiving. Each agent is model calls; a supervisor coordinating five workers, each looping several times, can be dozens of calls — and dozens of times the cost and latency of a single agent — for a task that one good agent might have handled. Beyond cost, sprawl erodes comprehensibility: ownership blurs, failures become hard to localise, and the audit story gets murky. Capability does not scale with agent count; past a point it declines as coordination overhead dominates.</p>
+  <div class="callout take"><div class="c-tag">Discipline</div><p>Treat each agent as a cost and a liability that must justify itself, not a free capability. Periodically ask whether two agents should be one, whether a "specialist" is really just a tool, and whether the parallelism is worth the coordination. The best multi-agent system is the smallest one that does the job.</p></div></section>
+
+  <section id="s7"><div class="eyebrow"><span class="e-num">07</span>Part C · Risks</div>
+  <h2 class="sec">Failure &amp; debugging</h2>
+  <p class="lead-p">When a multi-agent system goes wrong, the question "which agent caused this?" is often genuinely hard to answer — and that difficulty is itself the central operational risk.</p>
+  <p>Failures take multi-agent-specific forms: an error in an early agent propagating silently through handoffs; two agents working at cross purposes or undoing each other; a coordination deadlock where each waits on the other; cost or latency blowups from runaway delegation. Diagnosing them requires <strong>system-level observability</strong> (Vol. 09): a trace that spans all agents and the control plane, showing every handoff, decision, and tool call in order — not just per-agent logs that miss the interactions where the failure actually lives.</p>
+  <div class="callout watch"><div class="c-tag">Watch out</div><p>You cannot debug, govern, or trust a multi-agent system you can't fully trace. If adding agents outpaces your ability to observe them end-to-end, you have built something you can demo but not safely run — the gap Vol. 01 §13 warned against, multiplied.</p></div></section>
+
+  <section id="s8"><div class="eyebrow"><span class="e-num">08</span>Part C · Risks</div>
+  <h2 class="sec">Multi-agent in financial crime</h2>
+  <p class="lead-p">Financial-crime workflows are a natural fit for the supervisor pattern, because the work genuinely decomposes into distinct specialisms — which is exactly the test from §1.</p>
+  <p>A realistic configuration (expanded in Vols. 13–14): a lead investigation agent coordinates a <em>screening</em> specialist (sanctions, PEP, adverse media), a <em>transaction-analysis</em> specialist (patterns, typologies, network links), and a <em>narrative</em> specialist (drafting the disposition or SAR from the assembled evidence) — each with its own tools and focus, the lead synthesising and routing the consequential decision to a human. The separation also helps governance: distinct agents with distinct data access make least privilege (Vol. 04 §8) cleaner to enforce and the audit trail clearer.</p>
+  <div class="callout watch"><div class="c-tag">Watch out</div><p>In a regulated setting the multi-agent system's complexity is itself a model-risk and auditability concern (Vol. 11–12). Every handoff and decision must be reconstructable, accountability for the outcome stays with a named human, and the system's behaviour must be evaluable as a whole — not just agent by agent. Complexity you can't explain is complexity you can't deploy.</p></div>
+  <div class="callout take"><div class="c-tag">Where this goes next</div><p>You can now compose agents. <strong>Vol. 08 — Frameworks &amp; Platforms</strong> is what you build all this on; then evaluation (Vol. 09), the consolidated security model (Vol. 10), governance and regulation (Vols. 11–12), and the domain applications (Vols. 13–15).</p></div>
+  <div class="prov"><strong>Provenance note.</strong> Figures for multi-agent adoption in financial services are directional 2025–26 secondary-source estimates; verify against primaries before client use. Sourced detail in Vols. 13–14.</div></section>
+
+  <section id="glossary"><div class="eyebrow"><span class="e-num">★</span>Reference</div><h2 class="sec">Glossary</h2>
+  <dl class="gloss">
+  <dt>Agent-to-agent (A2A) protocol</dt><dd>An emerging standard for agents to discover and communicate with each other.</dd>
+  <dt>Control plane</dt><dd>The coordination layer managing routing, shared state, sequencing, limits, and logging across agents.</dd>
+  <dt>Handoff</dt><dd>One agent passing control and relevant context to another.</dd>
+  <dt>Hierarchical pattern</dt><dd>Supervisors coordinating other supervisors, for large multi-stage problems.</dd>
+  <dt>Parallel + merge</dt><dd>Agents working simultaneously on parts of a task whose results are then combined.</dd>
+  <dt>Sequential pipeline</dt><dd>Agents running in fixed order, each refining the previous output.</dd>
+  <dt>Sprawl</dt><dd>The proliferation of agents beyond what the task needs, raising cost and eroding comprehensibility.</dd>
+  <dt>Supervisor (orchestrator–worker)</dt><dd>A lead agent that decomposes a goal, delegates to specialists, and synthesises results.</dd>
+  <dt>System-level observability</dt><dd>Tracing that spans all agents and the control plane, capturing their interactions.</dd></dl></section>
+
+  <section id="refs"><div class="eyebrow"><span class="e-num">★</span>Reference</div><h2 class="sec">References &amp; reading order</h2>
+  <p class="lead-p">Suggested order: when &amp; why (1–2), coordination (3–5), then risks (6–8).</p>
+  <ol class="refs">
+  <li><span class="r-src">Anthropic — "Building Effective Agents" &amp; multi-agent research write-ups.</span> When multiple agents help. <em>(§1–§2.)</em></li>
+  <li><span class="r-src">LangGraph — multi-agent &amp; supervisor documentation.</span> Control-plane and orchestration patterns. <em>(§2–§3.)</em></li>
+  <li><span class="r-src">Wu et al. — "AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation."</span> <em>(§4.)</em></li>
+  <li><span class="r-src">Google — Agent-to-Agent (A2A) protocol announcement &amp; spec.</span> <em>(§5.)</em></li>
+  <li><span class="r-src">OWASP — Top 10 for LLM Applications (Excessive Agency).</span> Multi-agent risk. <em>(§5, §7.)</em></li>
+  <li><span class="r-src">NIST — AI Risk Management Framework (AI RMF).</span> Governing complex systems. <em>(§8.)</em></li></ol>
+  <div class="prov"><strong>Provenance reminder.</strong> FS figures are directional secondary-source estimates, deliberately not stated precisely; verify before reuse. Sourced detail in Vols. 13–14.</div></section>
+
+  </div></main></div>
+  <footer style="background:#182534;color:#A7A9AC;padding:26px 40px;font-size:12px;letter-spacing:1px;text-align:center;">Infosys Consulting&nbsp;·&nbsp;Agentic AI Series&nbsp;·&nbsp;Vol. 07 of 15 — Multi-Agent Systems &amp; Orchestration&nbsp;·&nbsp;Internal Learning Asset · v1.0 (2026)</footer>
+  </body></html>

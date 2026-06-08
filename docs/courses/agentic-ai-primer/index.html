@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Agentic AI Primer · 15 volumes · Infosys Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --white:      #FFFFFF;
+  --deep:       #182534;
+  --pavement:   #404040;
+  --blue:       #007CC3;
+  --lt-blue:    #3699DA;
+  --slate:      #6D6E71;
+  --stone:      #A7A9AC;
+  --tint-blue:  #E6F2FA;
+  --tint-stone: #F2F2F3;
+  --rule:       #E2E4E7;
+
+  --display: 'Fraunces', 'Times New Roman', serif;
+  --body:    'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono:    'JetBrains Mono', 'SF Mono', Consolas, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--pavement); background: var(--white); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--deep); color: var(--white); }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+p { margin: 0 0 18px; }
+
+/* --- Cover ----------------------------------------------------- */
+.cover { background: var(--deep); color: var(--white); padding: 48px 48px 40px; }
+.cover-masthead { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--stone); margin-bottom: 36px; }
+.cover-title { font-family: var(--display); font-weight: 400; font-size: 60px; line-height: 1.02; margin: 0 0 12px; max-width: 900px; }
+.cover-title em { color: var(--lt-blue); font-style: italic; }
+.cover-subtitle { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--lt-blue); margin: 0 0 32px; max-width: 700px; }
+.cover-byline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-top: 28px; max-width: 1000px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.12); }
+.byline-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--stone); text-transform: uppercase; margin-bottom: 4px; }
+.byline-value { font-family: var(--display); font-style: italic; font-size: 15px; color: var(--white); }
+
+/* --- Thesis ---------------------------------------------------- */
+.thesis { max-width: 800px; margin: 44px auto 36px; padding: 0 32px; }
+.thesis-pull { font-family: var(--display); font-style: italic; font-size: 24px; line-height: 1.3; color: var(--pavement); border-left: 2px solid var(--blue); padding-left: 24px; margin: 0 0 16px; }
+.thesis p { font-size: 16px; line-height: 1.55; margin: 0; color: var(--slate); }
+
+/* --- How to read ---------------------------------------------- */
+.how-to-read { max-width: 800px; margin: 0 auto 40px; padding: 0 32px; }
+.how-to-read p { font-size: 14px; line-height: 1.55; margin: 0; color: var(--slate); }
+.eyebrow { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--blue); text-transform: uppercase; margin-bottom: 10px; }
+.eyebrow .bar { display: inline-block; width: 28px; height: 3px; background: var(--blue); }
+
+/* --- Chapter slabs (compact section dividers) ------------------ */
+.chapter-slab { background: var(--deep); color: var(--white); padding: 18px 32px; margin: 24px 0 0; display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; }
+.chapter-num { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; color: var(--lt-blue); text-transform: uppercase; flex: 0 0 auto; }
+.chapter-title { font-family: var(--display); font-weight: 400; font-size: 24px; line-height: 1.15; margin: 0; flex: 0 0 auto; }
+.chapter-title em { color: var(--lt-blue); font-style: italic; }
+.chapter-deck { font-family: var(--display); font-style: italic; font-size: 14px; color: var(--stone); margin: 0; flex: 1 1 auto; }
+
+/* --- Vol list (tight TOC rows) ----------------------------- */
+.vol-list { max-width: 1000px; margin: 0 auto; padding: 0 32px; list-style: none; }
+.vol-card { position: relative; display: grid; grid-template-columns: 56px 1fr 110px; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--rule); align-items: baseline; transition: background 120ms ease; }
+.vol-card:hover { background: var(--tint-stone); }
+.vol-num { font-family: var(--mono); font-size: 12px; color: var(--blue); font-weight: 500; }
+.vol-body { display: flex; flex-direction: column; gap: 2px; }
+.vol-title { font-family: var(--display); font-size: 17px; line-height: 1.25; color: var(--pavement); margin: 0; }
+.vol-title a { color: inherit; text-decoration: none; }
+.vol-title a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.vol-title a::after { content: ''; position: absolute; inset: 0; }
+.vol-title a:focus-visible { outline: none; }
+.vol-card:has(a:focus-visible) { outline: 2px solid var(--blue); outline-offset: 4px; }
+.vol-arg { font-size: 13px; line-height: 1.45; color: var(--slate); margin: 0; }
+.vol-meta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--slate); text-align: right; }
+
+/* Narrow widths */
+@media (max-width: 720px) {
+  .cover { padding: 36px 24px 28px; }
+  .cover-title { font-size: 40px; }
+  .cover-subtitle { font-size: 18px; }
+  .cover-byline { grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 20px; padding-top: 18px; }
+  .chapter-slab { padding: 14px 20px; gap: 10px; }
+  .chapter-title { font-size: 20px; }
+  .chapter-deck { font-size: 13px; }
+  .vol-list { padding: 0 20px; }
+  .vol-card { grid-template-columns: 36px 1fr; gap: 8px 12px; padding: 10px 0; }
+  .vol-meta { grid-column: 2; text-align: left; }
+}
+
+/* --- Colophon ------------------------------------------------- */
+.colophon { background: var(--deep); color: var(--stone); padding: 18px 48px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; display: flex; justify-content: space-between; margin-top: 48px; }
+.colophon a { color: var(--lt-blue); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- COVER                                                        -->
+<!-- ============================================================ -->
+<header class="cover">
+  <div class="cover-masthead">
+    <span>INFOSYS CONSULTING · PRIMER SERIES</span>
+    <span>EDITION 2026.06 · 15 VOLUMES</span>
+  </div>
+  <h1 class="cover-title">The <em>Agentic AI</em> Primer</h1>
+  <p class="cover-subtitle">Fifteen volumes from foundations to enterprise transformation.</p>
+  <div class="cover-byline">
+    <div>
+      <div class="byline-label">Audience</div>
+      <div class="byline-value">Practitioners &amp; leaders</div>
+    </div>
+    <div>
+      <div class="byline-label">Format</div>
+      <div class="byline-value">Self-learning HTML primers</div>
+    </div>
+    <div>
+      <div class="byline-label">Volumes</div>
+      <div class="byline-value">15 vols across 5 tracks</div>
+    </div>
+    <div>
+      <div class="byline-label">Distribution</div>
+      <div class="byline-value">Public</div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================ -->
+<!-- THESIS                                                       -->
+<!-- ============================================================ -->
+<section class="thesis">
+  <div class="eyebrow"><span class="bar"></span><span>The series</span></div>
+  <blockquote class="thesis-pull">Read the volume you need; skim the rest as a map of the territory.</blockquote>
+  <p>Each volume is a self-contained primer — a one-sitting read on a single dimension of agentic AI. Foundations and reasoning engines first; then the building blocks (prompts, tools, memory, planning); then composition, evaluation, security and governance; then the regulatory and applied banking volumes that turn the patterns into real deployments. Read in order if you want the full arc, or jump straight to the volume that matches the question on your desk.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- HOW TO READ                                                  -->
+<!-- ============================================================ -->
+<section class="how-to-read">
+  <div class="eyebrow"><span class="bar"></span><span>How to read this series</span></div>
+  <p>Volumes are independent. Each opens in its own page, designed for a single-sitting read (~25–40 min). The companion <a href="../agentic-ai/index.html">Building Agentic AI Systems</a> course is the builder-track deep dive on the same material; this primer series is the breadth read for practitioners and leaders.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- TRACK I — FOUNDATIONS                                        -->
+<!-- ============================================================ -->
+<section class="chapter-slab">
+  <div class="chapter-num">Track I</div>
+  <h2 class="chapter-title"><em>Foundations</em></h2>
+  <p class="chapter-deck">What an LLM is, and what makes it a reasoning engine.</p>
+</section>
+<ol class="vol-list">
+  <li class="vol-card">
+    <span class="vol-num">VOL 01</span>
+    <div class="vol-body">
+      <h3 class="vol-title"><a href="vol-01-foundations.html">Agentic AI · Foundations</a></h3>
+      <p class="vol-arg">The foundational primer: what agentic AI is, what makes an agent an agent, and how the field arrived at the current moment.</p>
+    </div>
+    <div class="vol-meta">~35 MIN · TRACK I</div>
+  </li>
+  <li class="vol-card">
+    <span class="vol-num">VOL 02</span>
+    <div class="vol-body">
+      <h3 class="vol-title"><a href="vol-02-reasoning-engines.html">Language Models as Reasoning Engines</a></h3>
+      <p class="vol-arg">How an LLM reasons, where it breaks down, and what reasoning patterns make it usable in an agentic loop.</p>
+    </div>
+    <div class="vol-meta">~30 MIN · TRACK I</div>
+  </li>
+</ol>
+
+<!-- ============================================================ -->
+<!-- TRACK II — BUILDING BLOCKS                                   -->
+<!-- ============================================================ -->
+<section class="chapter-slab">
+  <div class="chapter-num">Track II</div>
+  <h2 class="chapter-title">Building <em>blocks</em></h2>
+  <p class="chapter-deck">Prompting, tools, memory, planning — the parts every agent uses.</p>
+</section>
+<ol class="vol-list">
+  <li class="vol-card">
+    <span class="vol-num">VOL 03</span>
+    <div class="vol-body">
+      <h3 class="vol-title"><a href="vol-03-prompting.html">Prompting &amp; Context Engineering</a></h3>
+      <p class="vol-arg">System prompts, few-shot, structured output. The discipline that turns "asking nicely" into something that ships.</p>
+    </div>
+    <div class="vol-meta">~30 MIN · TRACK II</div>
+  </li>
+  <li class="vol-card">
+    <span class="vol-num">VOL 04</span>
+    <div class="vol-body">
+      <h3 class="vol-title"><a href="vol-04-tools.html">Tools, Function Calling &amp; MCP</a></h3>
+      <p class="vol-arg">How the model reads and writes your systems. Tool schemas, validation, the Model Context Protocol.</p>
+    </div>
+    <div class="vol-meta">~25 MIN · TRACK II</div>
+  </li>
+  <li class="vol-card">
+    <span class="vol-num">VOL 05</span>
+    <div class="vol-body">
+      <h3 class="vol-title"><a href="vol-05-memory-rag.html">Memory, Knowledge &amp; RAG</a></h3>
+      <p class="vol-arg">Short-term context, long-term stores, retrieval-augmented generation. Where what the agent knows actually lives.</p>
+    </div>
+    <div class="vol-meta">~25 MIN · TRACK II</div>
+  </li>
+  <li class="vol-card">
+    <span class="vol-num">VOL 06</span>
+    <div class="vol-body">
+      <h3 class="vol-title"><a href="vol-06-reasoning.html">Reasoning &amp; Planning Patterns</a></h3>
+      <p class="vol-arg">ReAct, chain-of-thought, planner-executor, hierarchical task decomposition. The cognitive architectures of agents.</p>
+    </div>
+    <div class="vol-meta">~25 MIN · TRACK II</div>
+  </li>
+</ol>
+
+<!-- ============================================================ -->
+<!-- TRACK III — COMPOSITION & PRODUCTION                         -->
+<!-- ============================================================ -->
+<section class="chapter-slab">
+  <div class="chapter-num">Track III</div>
+  <h2 class="chapter-title">Composition &amp; <em>production</em></h2>
+  <p class="chapter-deck">Multi-agent, frameworks, evaluation — what separates a notebook from a deployment.</p>
+</section>
+<ol class="vol-list">
+  <li class="vol-card">
+    <span class="vol-num">VOL 07</span>
+    <div class="vol-body">
+      <h3 class="vol-title"><a href="vol-07-multi-agent.html">Multi-Agent Systems &amp; Orchestration</a></h3>
+      <p class="vol-arg">Orchestrator-worker, debate, hand-off, swarms. When more agents help, when they hurt.</p>
+    </div>
+    <div class="vol-meta">~25 MIN · TRACK III</div>
+  </li>
+  <li class="vol-card">
+    <span class="vol-num">VOL 08</span>
+    <div class="vol-body">
+      <h3 class="vol-title"><a href="vol-08-frameworks.html">Frameworks &amp; Platforms</a></h3>
+      <p class="vol-arg">LangChain, LangGraph, AutoGen, CrewAI, Claude Agent SDK. What each is good at; what to build vs buy.</p>
+    </div>
+    <div class="vol-meta">~25 MIN · TRACK III</div>
+  </li>
+  <li class="vol-card">
+    <span class="vol-num">VOL 09</span>
+    <div class="vol-body">
+      <h3 class="vol-title"><a href="vol-09-evaluation.html">Evaluation, Testing &amp; Observability</a></h3>
+      <p class="vol-arg">Task suites, judges, traces. The discipline that turns agents from demos into systems you can ship.</p>
+    </div>
+    <div class="vol-meta">~30 MIN · TRACK III</div>
+  </li>
+</ol>
+
+<!-- ============================================================ -->
+<!-- TRACK IV — RISK & GOVERNANCE                                 -->
+<!-- ============================================================ -->
+<section class="chapter-slab">
+  <div class="chapter-num">Track IV</div>
+  <h2 class="chapter-title">Risk &amp; <em>governance</em></h2>
+  <p class="chapter-deck">Security, governance, regulation — what holds up in audit.</p>
+</section>
+<ol class="vol-list">
+  <li class="vol-card">
+    <span class="vol-num">VOL 10</span>
+    <div class="vol-body">
+      <h3 class="vol-title"><a href="vol-10-security.html">Agent Security &amp; Adversarial Threats</a></h3>
+      <p class="vol-arg">Prompt injection, the lethal trifecta, tool authorization, red-team playbook. The threat model when agents act.</p>
+    </div>
+    <div class="vol-meta">~30 MIN · TRACK IV</div>
+  </li>
+  <li class="vol-card">
+    <span class="vol-num">VOL 11</span>
+    <div class="vol-body">
+      <h3 class="vol-title"><a href="vol-11-governance.html">AI Governance &amp; Operating Models</a></h3>
+      <p class="vol-arg">The policy stack, risk tiering, model cards, the deploy-and-measure loop. Engineering rigor visible to a regulator.</p>
+    </div>
+    <div class="vol-meta">~30 MIN · TRACK IV</div>
+  </li>
+  <li class="vol-card">
+    <span class="vol-num">VOL 12</span>
+    <div class="vol-body">
+      <h3 class="vol-title"><a href="vol-12-regulation.html">Regulation &amp; Compliance</a></h3>
+      <p class="vol-arg">EU AI Act, US executive orders, Singapore MAS, UK AISI. The regulatory landscape and how it maps to controls.</p>
+    </div>
+    <div class="vol-meta">~25 MIN · TRACK IV</div>
+  </li>
+</ol>
+
+<!-- ============================================================ -->
+<!-- TRACK V — APPLIED                                            -->
+<!-- ============================================================ -->
+<section class="chapter-slab">
+  <div class="chapter-num">Track V</div>
+  <h2 class="chapter-title">Applied in <em>banking &amp; enterprise</em></h2>
+  <p class="chapter-deck">Financial crime, AML/KYC, enterprise transformation — where the patterns prove out.</p>
+</section>
+<ol class="vol-list">
+  <li class="vol-card">
+    <span class="vol-num">VOL 13</span>
+    <div class="vol-body">
+      <h3 class="vol-title"><a href="vol-13-financial-crime.html">Agentic AI in Financial Crime &amp; Fraud</a></h3>
+      <p class="vol-arg">Triage, narrative drafting, case-pack assembly, sanctions adjudication. The high-volume FinCrime applications where agents move the needle.</p>
+    </div>
+    <div class="vol-meta">~30 MIN · TRACK V</div>
+  </li>
+  <li class="vol-card">
+    <span class="vol-num">VOL 14</span>
+    <div class="vol-body">
+      <h3 class="vol-title"><a href="vol-14-aml-kyc.html">Agentic AI in AML / KYC &amp; Investigations</a></h3>
+      <p class="vol-arg">CDD, perpetual KYC, alert investigations. How agentic AI reshapes the investigator's workflow.</p>
+    </div>
+    <div class="vol-meta">~30 MIN · TRACK V</div>
+  </li>
+  <li class="vol-card">
+    <span class="vol-num">VOL 15</span>
+    <div class="vol-body">
+      <h3 class="vol-title"><a href="vol-15-enterprise.html">Agentic AI &amp; Enterprise Transformation</a></h3>
+      <p class="vol-arg">Operating model, change management, ROI, organisational design. The leadership view of the agentic transition.</p>
+    </div>
+    <div class="vol-meta">~35 MIN · TRACK V</div>
+  </li>
+</ol>
+
+<!-- ============================================================ -->
+<!-- COLOPHON                                                     -->
+<!-- ============================================================ -->
+<footer class="colophon">
+  <span>INFOSYS CONSULTING · THE AGENTIC AI PRIMER · EDITION 2026.06</span>
+  <a href="../../index.html">← Back to collection</a>
+</footer>
+
+</body>
+</html>

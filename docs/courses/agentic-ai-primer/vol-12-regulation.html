@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Regulation & Compliance — Infosys Consulting Primer Vol. 12</title>
+<style>
+  /* ============================================================
+     INFOSYS CONSULTING — DESIGN SYSTEM TOKENS
+     Arial only · IC palette only · Deep Blue for cover only
+     ============================================================ */
+  :root{
+    --deep-blue:#182534;
+    --pavement:#404040;
+    --blue:#007CC3;
+    --lt-blue:#3699DA;
+    --stone:#A7A9AC;
+    --slate:#6D6E71;
+    --tint-blue:#E6F2FA;
+    --tint-stone:#F0F0F1;
+    --rule:#D6DCEA;
+    --white:#ffffff;
+    /* status — semantic only */
+    --high:#C0392B;
+    --med:#E67E22;
+    --low:#27AE60;
+    --sidebar-w:300px;
+    --maxread:840px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    color:var(--pavement);
+    background:var(--white);
+    line-height:1.62;
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--blue);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+
+  /* ===================== COVER ===================== */
+  .cover{
+    min-height:100vh;
+    background:var(--deep-blue);
+    color:var(--white);
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:64px 72px 40px;
+    position:relative;
+    overflow:hidden;
+  }
+  .cover::after{
+    content:"";
+    position:absolute;
+    right:-180px;top:-180px;
+    width:620px;height:620px;
+    border:1px solid rgba(54,153,218,.22);
+    border-radius:50%;
+  }
+  .cover::before{
+    content:"";
+    position:absolute;
+    right:-60px;bottom:-260px;
+    width:520px;height:520px;
+    border:1px solid rgba(54,153,218,.14);
+    border-radius:50%;
+  }
+  .cover-top{
+    font-size:12px;letter-spacing:4px;text-transform:uppercase;
+    color:var(--lt-blue);font-weight:bold;
+    display:flex;align-items:center;gap:14px;
+    z-index:2;
+  }
+  .cover-top .bar{width:42px;height:2px;background:var(--lt-blue);display:inline-block;}
+  .cover-main{z-index:2;}
+  .cover-vol{
+    font-size:140px;font-weight:bold;line-height:.9;color:var(--lt-blue);
+    letter-spacing:-4px;margin:0 0 8px;
+  }
+  .cover-vol span{font-size:30px;letter-spacing:2px;color:var(--stone);font-weight:bold;vertical-align:top;margin-left:8px;}
+  h1.cover-title{
+    font-size:62px;font-weight:bold;line-height:1.04;margin:6px 0 4px;letter-spacing:-1px;
+  }
+  h1.cover-title em{color:var(--lt-blue);font-style:italic;}
+  .cover-sub{font-size:21px;color:var(--white);font-weight:bold;margin:18px 0 12px;max-width:760px;}
+  .cover-lead{font-size:15px;color:var(--stone);max-width:720px;line-height:1.7;}
+  .cover-meta{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:0;
+    border-top:1px solid rgba(255,255,255,.16);
+    margin-top:38px;padding-top:22px;z-index:2;max-width:920px;
+  }
+  .cover-meta .m-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);margin-bottom:6px;}
+  .cover-meta .m-val{font-size:15px;color:var(--white);font-weight:bold;line-height:1.35;}
+  .cover-foot{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    font-size:11px;letter-spacing:1px;color:var(--stone);z-index:2;
+  }
+  .cover-foot .scroll{color:var(--lt-blue);font-weight:bold;letter-spacing:2px;text-transform:uppercase;}
+
+  /* ===================== READING LAYOUT ===================== */
+  .layout{display:flex;align-items:flex-start;max-width:1320px;margin:0 auto;}
+  .toc{
+    width:var(--sidebar-w);flex:0 0 var(--sidebar-w);
+    position:sticky;top:0;align-self:flex-start;
+    height:100vh;overflow-y:auto;
+    background:var(--deep-blue);color:var(--white);
+    padding:30px 26px 40px;
+  }
+  .toc-brand{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--lt-blue);font-weight:bold;margin-bottom:4px;}
+  .toc-vol{font-size:12px;color:var(--stone);margin-bottom:24px;}
+  .toc-part{
+    font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--lt-blue);
+    font-weight:bold;margin:22px 0 8px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);
+  }
+  .toc-part:first-of-type{border-top:none;padding-top:0;}
+  .toc a{
+    display:block;color:rgba(255,255,255,.78);font-size:13px;
+    padding:5px 0 5px 22px;position:relative;line-height:1.35;
+  }
+  .toc a:hover{color:var(--white);text-decoration:none;}
+  .toc a .num{position:absolute;left:0;color:var(--slate);font-size:11px;font-weight:bold;}
+  .toc a.special{color:var(--stone);padding-left:0;}
+
+  main{flex:1 1 auto;min-width:0;padding:64px 72px 120px;}
+  .read{max-width:var(--maxread);}
+
+  /* ===================== SECTIONS ===================== */
+  section{padding-top:30px;margin-bottom:36px;scroll-margin-top:20px;}
+  .eyebrow{
+    font-size:11px;letter-spacing:3px;text-transform:uppercase;
+    color:var(--blue);font-weight:bold;margin-bottom:6px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow .e-num{
+    background:var(--blue);color:#fff;border-radius:3px;
+    padding:2px 8px;font-size:11px;letter-spacing:1px;
+  }
+  h2.sec{font-size:30px;font-weight:bold;color:var(--pavement);margin:0 0 14px;line-height:1.15;letter-spacing:-.4px;}
+  h3{font-size:18px;font-weight:bold;color:var(--pavement);margin:30px 0 8px;}
+  h4{font-size:14px;font-weight:bold;color:var(--blue);text-transform:uppercase;letter-spacing:1px;margin:22px 0 6px;}
+  p{margin:0 0 14px;}
+  .lead-p{font-size:18px;color:var(--slate);line-height:1.6;margin-bottom:18px;}
+  strong{color:var(--pavement);}
+  ul,ol{margin:0 0 16px;padding-left:22px;}
+  li{margin-bottom:7px;}
+  .part-divider{
+    border-top:2px solid var(--rule);margin:54px 0 0;padding-top:8px;
+    font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:bold;
+  }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout{
+    border-left:4px solid var(--blue);
+    background:var(--tint-blue);
+    padding:16px 20px;margin:20px 0;border-radius:0 4px 4px 0;
+  }
+  .callout .c-tag{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;color:var(--blue);margin-bottom:4px;}
+  .callout p:last-child{margin-bottom:0;}
+  .callout.def{border-color:var(--blue);background:var(--tint-blue);}
+  .callout.def .c-tag{color:var(--blue);}
+  .callout.watch{border-color:var(--med);background:#FDF3E8;}
+  .callout.watch .c-tag{color:var(--med);}
+  .callout.take{border-color:var(--low);background:#EAF6EE;}
+  .callout.take .c-tag{color:var(--low);}
+
+  /* ===================== SCENARIO / CONCEPT CARDS ===================== */
+  .cards{display:grid;gap:14px;margin:20px 0;}
+  .cards.c2{grid-template-columns:1fr 1fr;}
+  .cards.c3{grid-template-columns:repeat(3,1fr);}
+  .card{
+    border:1px solid var(--rule);border-radius:6px;background:#fff;
+    padding:18px 18px 16px;position:relative;overflow:hidden;
+  }
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--lt-blue);}
+  .card.bar-blue::before{background:var(--blue);}
+  .card.bar-slate::before{background:var(--slate);}
+  .card.bar-high::before{background:var(--high);}
+  .card.bar-med::before{background:var(--med);}
+  .card.bar-low::before{background:var(--low);}
+  .card h5{font-size:15px;font-weight:bold;color:var(--pavement);margin:0 0 6px;}
+  .card .k{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--slate);font-weight:bold;}
+  .card p{font-size:13.5px;color:var(--slate);margin:6px 0 0;line-height:1.55;}
+  .pill{display:inline-block;font-size:10px;letter-spacing:1px;font-weight:bold;text-transform:uppercase;
+    padding:2px 8px;border-radius:10px;background:var(--tint-blue);color:var(--blue);margin-bottom:8px;}
+
+  /* ===================== TRACE / WORKED EXAMPLE ===================== */
+  .trace{
+    background:var(--deep-blue);color:#E8EDF2;border-radius:8px;
+    padding:22px 24px;margin:22px 0;font-size:13.5px;line-height:1.6;
+  }
+  .trace .t-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--lt-blue);font-weight:bold;margin-bottom:14px;}
+  .trace .step{display:grid;grid-template-columns:88px 1fr;gap:14px;padding:9px 0;border-top:1px solid rgba(255,255,255,.1);}
+  .trace .step:first-of-type{border-top:none;}
+  .trace .s-lbl{font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:bold;color:var(--lt-blue);padding-top:2px;}
+  .trace .s-body{color:#D6DEE6;}
+  .trace .s-body code{color:#9FD3F2;background:rgba(255,255,255,.06);padding:1px 5px;border-radius:3px;font-family:Consolas,Monaco,monospace;font-size:12.5px;}
+  .trace .think{color:var(--stone);font-style:italic;}
+
+  /* ===================== TABLES ===================== */
+  table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;}
+  thead th{
+    background:var(--pavement);color:#fff;text-align:left;
+    padding:9px 12px;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:bold;
+  }
+  tbody td{padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--slate);}
+  tbody tr:nth-child(even){background:var(--tint-stone);}
+  tbody td strong{color:var(--pavement);}
+
+  /* ===================== DIAGRAM FRAME ===================== */
+  .figure{margin:26px 0;border:1px solid var(--rule);border-radius:8px;padding:24px;background:#fff;}
+  .figure svg{display:block;width:100%;height:auto;}
+  .figure .cap{font-size:12px;color:var(--slate);margin-top:14px;text-align:center;font-style:italic;}
+
+  /* ===================== GLOSSARY ===================== */
+  .gloss dt{font-weight:bold;color:var(--pavement);margin-top:14px;font-size:14.5px;}
+  .gloss dd{margin:2px 0 0;color:var(--slate);font-size:13.5px;}
+
+  /* ===================== REFERENCES ===================== */
+  .refs{counter-reset:r;list-style:none;padding:0;}
+  .refs li{counter-increment:r;padding:10px 0 10px 40px;position:relative;border-bottom:1px solid var(--rule);font-size:13.5px;color:var(--slate);}
+  .refs li::before{content:counter(r);position:absolute;left:0;top:10px;background:var(--blue);color:#fff;
+    width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;}
+  .refs .r-src{color:var(--pavement);font-weight:bold;}
+  .prov{font-size:12.5px;color:var(--slate);background:var(--tint-stone);border:1px dashed var(--stone);border-radius:6px;padding:14px 18px;margin:18px 0;}
+
+  /* ===================== RESPONSIVE ===================== */
+  @media(max-width:1080px){
+    .toc{display:none;}
+    main{padding:48px 36px 90px;}
+    .cover{padding:48px 36px 32px;}
+    .cover-vol{font-size:96px;}
+    h1.cover-title{font-size:44px;}
+    .cards.c2,.cards.c3{grid-template-columns:1fr;}
+    .cover-meta{grid-template-columns:repeat(2,1fr);gap:18px;}
+  }
+  @media print{
+    .toc{display:none;}
+    .cover{page-break-after:always;}
+    .trace{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <div class="cover-top"><span class="bar"></span>Infosys Consulting&nbsp;·&nbsp;Agentic AI Series</div>
+  <div class="cover-main">
+    <div class="cover-vol">12<span>/ 15</span></div>
+    <h1 class="cover-title">Regulation &amp; <em>Compliance</em></h1>
+    <div class="cover-sub">The rules that bind AI in regulated industries — and how to build an agent that meets them.</div>
+    <p class="cover-lead">Governance is internal; regulation is external and enforced. This volume maps the landscape: the EU AI Act, the NIST AI RMF and ISO 42001, model-risk-management regimes, and the data and sector rules — then turns them into concrete design requirements for a compliant agent.</p>
+  </div>
+  <div class="cover-meta">
+    <div><div class="m-lbl">Volume</div><div class="m-val">12 of 15<br>Governance, Risk &amp; Security</div></div>
+    <div><div class="m-lbl">Domain</div><div class="m-val">AI &amp; Automation</div></div>
+    <div><div class="m-lbl">Audience</div><div class="m-val">Practitioners &amp; Leaders</div></div>
+    <div><div class="m-lbl">Version</div><div class="m-val">1.0 · 2026</div></div>
+    <div><div class="m-lbl">Reading Time</div><div class="m-val">~45 minutes</div></div>
+  </div>
+  <div class="cover-foot">
+    <div>Infosys Consulting&nbsp;·&nbsp;AI &amp; Automation Practice&nbsp;·&nbsp;Internal Learning Asset</div>
+    <div class="scroll">Scroll to begin ↓</div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <div class="toc-brand">Agentic AI Series</div>
+    <div class="toc-vol">Vol. 12 — Regulation</div>
+    <div class="toc-part">Part A · The landscape</div>
+    <a href="#s1"><span class="num">01</span>The regulatory map</a>
+    <a href="#s2"><span class="num">02</span>The EU AI Act</a>
+    <div class="toc-part">Part B · Frameworks</div>
+    <a href="#s3"><span class="num">03</span>NIST AI RMF &amp; ISO 42001</a>
+    <a href="#s4"><span class="num">04</span>Model risk management</a>
+    <a href="#s5"><span class="num">05</span>Data &amp; sector rules</a>
+    <div class="toc-part">Part C · Building for it</div>
+    <a href="#s6"><span class="num">06</span>Explainability &amp; audit</a>
+    <a href="#s7"><span class="num">07</span>A compliant agent</a>
+    <a href="#s8"><span class="num">08</span>Outlook</a>
+
+    <div class="toc-part">Reference</div>
+    <a href="#glossary" class="special">Glossary</a>
+    <a href="#refs" class="special">References &amp; reading order</a>
+  </nav>
+  <main>
+  <div class="read">
+  <section id="s1"><div class="eyebrow"><span class="e-num">01</span>Part A · The landscape</div>
+  <h2 class="sec">The regulatory map</h2>
+  <p class="lead-p">Governance (Vol. 11) is what an organisation chooses; regulation is what authorities require — and getting it wrong carries fines, enforcement, and reputational damage. For agentic AI in financial services, the rules come from two directions at once, and you must satisfy both.</p>
+  <p>There is the <strong>horizontal</strong> layer of AI-specific regulation and standards that apply across industries — the EU AI Act, the NIST AI RMF, ISO 42001 — and the <strong>vertical</strong> layer of long-standing financial-services rules that already govern models, decisions, data, and conduct, and that apply to an AI system just as they would to any other. An agent in a bank sits in the overlap, bound by both. Mapping which rules bite for a given use case is the first compliance task.</p>
+  <div class="callout def"><div class="c-tag">The shape of it</div><p>Most obligations are <em>risk-based</em>: the higher the stakes of the use case, the heavier the requirements. This dovetails with the risk tiering of Vol. 11 §2 — tier a use case once, and you've largely scoped both your governance and your regulatory burden.</p></div>
+  <div class="callout watch"><div class="c-tag">Watch out</div><p>Regulation here is fast-moving and jurisdiction-specific, and this primer is a snapshot. Treat everything below as orientation, not legal advice, and confirm current obligations with compliance and counsel for your jurisdictions before acting.</p></div></section>
+
+  <section id="s2"><div class="eyebrow"><span class="e-num">02</span>Part A · The landscape</div>
+  <h2 class="sec">The EU AI Act</h2>
+  <p class="lead-p">The EU AI Act is the most comprehensive AI law to date and a likely template for others, so it's worth understanding by structure even outside the EU. Its core idea is a <strong>risk-based tiering</strong> of AI systems with obligations scaling to risk.</p>
+  <table><thead><tr><th style="width:180px">Tier</th><th>Treatment</th></tr></thead><tbody>
+  <tr><td><strong>Unacceptable risk</strong></td><td>Prohibited outright (e.g. social scoring of the kind the Act bans).</td></tr>
+  <tr><td><strong>High risk</strong></td><td>Permitted with heavy obligations — risk management, data governance, documentation, transparency, human oversight, accuracy and security. Much creditworthiness and similar financial use falls here.</td></tr>
+  <tr><td><strong>Limited risk</strong></td><td>Transparency obligations (e.g. telling people they're interacting with AI).</td></tr>
+  <tr><td><strong>Minimal risk</strong></td><td>Largely unregulated.</td></tr></tbody></table>
+  <p>The high-risk obligations read almost like a specification for everything earlier volumes described: documented risk management (Vol. 11), data governance (Vol. 05), transparency and explainability (§6), human oversight (Vol. 11 §3), and robustness and security (Vols. 09–10). Build an agent well by this series' standards, and you have already done much of what the Act demands.</p></section>
+
+  <div class="part-divider">Part B · Frameworks</div>
+
+  <section id="s3"><div class="eyebrow"><span class="e-num">03</span>Part B · Frameworks</div>
+  <h2 class="sec">NIST AI RMF &amp; ISO 42001</h2>
+  <p class="lead-p">Where the AI Act is binding law, two frameworks are voluntary but widely adopted — and increasingly the way organisations <em>demonstrate</em> they are managing AI risk responsibly. They are the practical scaffolding for compliance.</p>
+  <div class="cards c2">
+  <div class="card"><div class="k">NIST AI RMF</div><h5>A risk-management process</h5><p>Organised around four functions — Govern, Map, Measure, Manage — it's a flexible, widely-referenced process for identifying and treating AI risk. Maps directly onto the governance and evaluation of Vols. 09 and 11.</p></div>
+  <div class="card"><div class="k">ISO/IEC 42001</div><h5>A certifiable management system</h5><p>The first AI management-system standard — an auditable, certifiable structure for governing AI across its lifecycle, analogous to ISO 27001 for security.</p></div></div>
+  <p>Neither is law, but both matter: regulators and clients increasingly expect alignment to them, and they translate high-level obligations into concrete, checkable practices. Adopting one gives an organisation a defensible, recognised answer to "how do you manage AI risk?"</p></section>
+
+  <section id="s4"><div class="eyebrow"><span class="e-num">04</span>Part B · Frameworks</div>
+  <h2 class="sec">Model risk management</h2>
+  <p class="lead-p">For financial institutions, the most directly applicable regime is one that predates modern AI entirely: <strong>model risk management (MRM)</strong>. An agent that influences a regulated decision is, in the eyes of these rules, a model — and decades of MRM expectation apply.</p>
+  <p>The lineage runs from the US supervisory guidance <strong>SR 11-7</strong> (and its successors in the evolving supervisory line) and equivalents elsewhere. The core expectations: models must be <em>validated</em> independently before use, <em>monitored</em> on an ongoing basis, thoroughly <em>documented</em>, and subject to <em>independent challenge</em> separate from the team that built them. Every one of these maps onto capabilities from earlier volumes — validation is evaluation against a golden set (Vol. 09 §3), monitoring is drift detection (Vol. 09 §7), the independent-challenge structure is the three lines of defence (Vol. 11 §5).</p>
+  <div class="callout def"><div class="c-tag">The key reframing</div><p>Banks should not treat agentic AI as an exotic new thing demanding a brand-new rulebook. It is, for regulatory purposes, a model — often a complex, autonomous, acting one — and it slots into the MRM frameworks institutions already run. The novelty is the autonomy and action, which extend MRM rather than escape it.</p></div></section>
+
+  <section id="s5"><div class="eyebrow"><span class="e-num">05</span>Part B · Frameworks</div>
+  <h2 class="sec">Data &amp; sector rules</h2>
+  <p class="lead-p">Beyond AI-specific rules, agents are bound by the data-protection and sector regulations that already govern the information and decisions they touch. These often bite hardest in practice.</p>
+  <p><strong>Data protection</strong> (GDPR and its global counterparts) governs personal data an agent processes — lawful basis, minimisation, purpose limitation — and includes provisions on automated decision-making and a right to explanation that bear directly on agentic decisions (§6). <strong>Sector rules</strong> add more: AML/CFT obligations (Vols. 13–14), consumer-protection and fair-lending rules, conduct and suitability requirements, and record-keeping mandates. An agent doesn't get a pass on any of these because it's AI — if a human doing the task would be bound, so is the agent, and the accountable owner (Vol. 11 §2) answers for it.</p>
+  <div class="callout watch"><div class="c-tag">Watch out</div><p>Data-protection and confidentiality rules constrain the architecture, not just the policy: where data can be processed, which model endpoints it may reach, what must stay on-premise (Vol. 02 §10, Vol. 10 §5). Compliance here is designed into the system from the start — it cannot be retrofitted onto an agent already wired to send data anywhere.</p></div></section>
+
+  <div class="part-divider">Part C · Building for it</div>
+
+  <section id="s6"><div class="eyebrow"><span class="e-num">06</span>Part C · Building for it</div>
+  <h2 class="sec">Explainability &amp; audit</h2>
+  <p class="lead-p">Two requirements recur across nearly every regime above: an organisation must be able to <em>explain</em> why an AI-influenced decision was made, and to <em>reconstruct</em> what happened after the fact. For agents, these are design requirements, not reporting afterthoughts.</p>
+  <p><strong>Explainability</strong> is challenging because models are not transparent (Vol. 02 §8). The practical answer is not to open the model but to make the <em>process</em> explainable: ground decisions in retrieved, cited evidence (Vol. 05), capture the reasoning trace (Vol. 06), and structure the output so the basis of a decision is recorded as data, not buried in prose. <strong>Auditability</strong> is the observability of Vol. 09 §6 serving a regulatory purpose — a complete trace of inputs, decisions, tool calls, and the context shown, retained so a decision can be examined months later. The same instrumentation that lets engineers debug an agent lets compliance defend it.</p>
+  <div class="callout take"><div class="c-tag">The convergence</div><p>Explainability and auditability are where good engineering and regulatory compliance become the same activity. Grounding, tracing, and structured output — built for quality and reliability — are exactly what the regulator asks for. Build for one and you largely get the other.</p></div></section>
+
+  <section id="s7"><div class="eyebrow"><span class="e-num">07</span>Part C · Building for it</div>
+  <h2 class="sec">A compliant agent</h2>
+  <p class="lead-p">Pulling the series together: what does a regulation-ready agent actually look like? Strikingly, it is just an agent built well by everything taught so far — compliance is largely the by-product of good engineering and governance.</p>
+  <div class="cards c2">
+  <div class="card bar-blue"><div class="k">Grounded</div><h5>Decisions from cited evidence</h5><p>Answers tied to retrieved sources, not model memory (Vol. 05) — the basis of explainability and the defence against hallucination.</p></div>
+  <div class="card bar-blue"><div class="k">Traced</div><h5>Every step recorded</h5><p>Full observability of inputs, reasoning, tools, and outputs (Vol. 09) — the audit trail.</p></div>
+  <div class="card bar-blue"><div class="k">Overseen</div><h5>Humans on the consequential</h5><p>The right oversight model per risk tier (Vol. 11 §3); irreversible actions gated.</p></div>
+  <div class="card bar-blue"><div class="k">Validated &amp; monitored</div><h5>Tested before, watched after</h5><p>Independent validation and ongoing monitoring per MRM (§4, Vol. 09).</p></div>
+  <div class="card bar-blue"><div class="k">Secured</div><h5>Least privilege, controlled data</h5><p>Defence in depth and data handling that meets confidentiality and residency rules (Vols. 05, 10).</p></div>
+  <div class="card bar-blue"><div class="k">Owned</div><h5>A named accountable human</h5><p>Clear ownership and documented governance across the lifecycle (Vol. 11).</p></div></div>
+  <div class="callout take"><div class="c-tag">The payoff of the whole series</div><p>There is no separate "compliance mode" to bolt on. An agent built to this series' standards — grounded, traced, overseen, validated, secured, owned — is, by construction, most of the way to compliant. That is the deepest reason the engineering disciplines came first.</p></div></section>
+
+  <section id="s8"><div class="eyebrow"><span class="e-num">08</span>Part C · Building for it</div>
+  <h2 class="sec">Outlook</h2>
+  <p class="lead-p">The regulatory picture is unsettled and moving fast — but the direction of travel is clear enough to design for, even as specifics shift.</p>
+  <p>Expect more AI-specific regulation globally, much of it echoing the EU's risk-based structure; growing regulatory attention to <em>autonomous and acting</em> systems specifically, where today's rules were mostly written for predictive models; and convergence of standards (NIST, ISO) into de-facto expectations. The robust strategy is not to chase each rule but to build on durable principles — accountability, transparency, oversight, validation, security — that nearly every regime shares. An organisation grounded in those adapts to new specifics with far less rework than one that engineered to the letter of a single regulation.</p>
+  <div class="callout take"><div class="c-tag">Where this goes next</div><p>The foundation is complete: you understand how agents work, how to build and evaluate them, and how to govern and comply. The series now turns to where it pays off — <strong>Vol. 13 — Agentic AI in Financial Crime &amp; Fraud</strong>, then AML/KYC (Vol. 14) and enterprise transformation (Vol. 15).</p></div>
+  <div class="prov"><strong>Provenance note.</strong> Regulatory specifics evolve rapidly and vary by jurisdiction; this is orientation, not legal advice. Confirm current obligations with compliance and counsel. FS figures elsewhere are directional 2025–26 estimates — sourced detail in Vols. 13–14.</div></section>
+
+  <section id="glossary"><div class="eyebrow"><span class="e-num">★</span>Reference</div><h2 class="sec">Glossary</h2>
+  <dl class="gloss">
+  <dt>Auditability</dt><dd>The ability to reconstruct what an AI system did and why, after the fact.</dd>
+  <dt>EU AI Act</dt><dd>The EU's comprehensive, risk-tiered AI law; a likely template internationally.</dd>
+  <dt>Explainability</dt><dd>The ability to give an understandable account of why a decision was made.</dd>
+  <dt>High-risk system</dt><dd>Under the AI Act, a category carrying heavy obligations; much financial use falls here.</dd>
+  <dt>ISO/IEC 42001</dt><dd>The first certifiable AI management-system standard.</dd>
+  <dt>Model risk management (MRM)</dt><dd>The financial-sector regime for validating, monitoring, and documenting models.</dd>
+  <dt>NIST AI RMF</dt><dd>A voluntary, widely-adopted AI risk-management framework (Govern, Map, Measure, Manage).</dd>
+  <dt>SR 11-7</dt><dd>US supervisory guidance on model risk management; foundational to bank MRM practice.</dd>
+  <dt>Automated decision-making</dt><dd>Decisions made without meaningful human involvement, subject to specific data-protection rules.</dd></dl></section>
+
+  <section id="refs"><div class="eyebrow"><span class="e-num">★</span>Reference</div><h2 class="sec">References &amp; reading order</h2>
+  <p class="lead-p">Suggested order: landscape (1–2), frameworks (3–5), then building for it (6–8). Orientation only — not legal advice.</p>
+  <ol class="refs">
+  <li><span class="r-src">European Union — Artificial Intelligence Act (Regulation (EU) 2024/1689).</span> <em>(§2.)</em></li>
+  <li><span class="r-src">NIST — AI Risk Management Framework (AI RMF 1.0) &amp; Generative AI Profile.</span> <em>(§3.)</em></li>
+  <li><span class="r-src">ISO/IEC 42001:2023 — AI Management System.</span> <em>(§3.)</em></li>
+  <li><span class="r-src">US Federal Reserve / OCC — SR 11-7, Guidance on Model Risk Management.</span> <em>(§4.)</em></li>
+  <li><span class="r-src">EU — General Data Protection Regulation (GDPR), incl. automated-decision provisions.</span> <em>(§5–§6.)</em></li>
+  <li><span class="r-src">FATF — Recommendations (AML/CFT obligations).</span> Sector rules. <em>(§5.)</em></li>
+  <li><span class="r-src">OECD — AI Principles.</span> Durable cross-regime principles. <em>(§8.)</em></li></ol>
+  <div class="prov"><strong>Provenance reminder.</strong> Regulatory detail evolves and varies by jurisdiction; confirm with counsel. FS figures are directional; sourced detail in Vols. 13–14.</div></section>
+
+  </div></main></div>
+  <footer style="background:#182534;color:#A7A9AC;padding:26px 40px;font-size:12px;letter-spacing:1px;text-align:center;">Infosys Consulting&nbsp;·&nbsp;Agentic AI Series&nbsp;·&nbsp;Vol. 12 of 15 — Regulation &amp; Compliance&nbsp;·&nbsp;Internal Learning Asset · v1.0 (2026)</footer>
+  </body></html>

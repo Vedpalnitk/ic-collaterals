@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Evaluation, Testing & Observability — Infosys Consulting Primer Vol. 09</title>
+<style>
+  /* ============================================================
+     INFOSYS CONSULTING — DESIGN SYSTEM TOKENS
+     Arial only · IC palette only · Deep Blue for cover only
+     ============================================================ */
+  :root{
+    --deep-blue:#182534;
+    --pavement:#404040;
+    --blue:#007CC3;
+    --lt-blue:#3699DA;
+    --stone:#A7A9AC;
+    --slate:#6D6E71;
+    --tint-blue:#E6F2FA;
+    --tint-stone:#F0F0F1;
+    --rule:#D6DCEA;
+    --white:#ffffff;
+    /* status — semantic only */
+    --high:#C0392B;
+    --med:#E67E22;
+    --low:#27AE60;
+    --sidebar-w:300px;
+    --maxread:840px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    color:var(--pavement);
+    background:var(--white);
+    line-height:1.62;
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--blue);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+
+  /* ===================== COVER ===================== */
+  .cover{
+    min-height:100vh;
+    background:var(--deep-blue);
+    color:var(--white);
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:64px 72px 40px;
+    position:relative;
+    overflow:hidden;
+  }
+  .cover::after{
+    content:"";
+    position:absolute;
+    right:-180px;top:-180px;
+    width:620px;height:620px;
+    border:1px solid rgba(54,153,218,.22);
+    border-radius:50%;
+  }
+  .cover::before{
+    content:"";
+    position:absolute;
+    right:-60px;bottom:-260px;
+    width:520px;height:520px;
+    border:1px solid rgba(54,153,218,.14);
+    border-radius:50%;
+  }
+  .cover-top{
+    font-size:12px;letter-spacing:4px;text-transform:uppercase;
+    color:var(--lt-blue);font-weight:bold;
+    display:flex;align-items:center;gap:14px;
+    z-index:2;
+  }
+  .cover-top .bar{width:42px;height:2px;background:var(--lt-blue);display:inline-block;}
+  .cover-main{z-index:2;}
+  .cover-vol{
+    font-size:140px;font-weight:bold;line-height:.9;color:var(--lt-blue);
+    letter-spacing:-4px;margin:0 0 8px;
+  }
+  .cover-vol span{font-size:30px;letter-spacing:2px;color:var(--stone);font-weight:bold;vertical-align:top;margin-left:8px;}
+  h1.cover-title{
+    font-size:62px;font-weight:bold;line-height:1.04;margin:6px 0 4px;letter-spacing:-1px;
+  }
+  h1.cover-title em{color:var(--lt-blue);font-style:italic;}
+  .cover-sub{font-size:21px;color:var(--white);font-weight:bold;margin:18px 0 12px;max-width:760px;}
+  .cover-lead{font-size:15px;color:var(--stone);max-width:720px;line-height:1.7;}
+  .cover-meta{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:0;
+    border-top:1px solid rgba(255,255,255,.16);
+    margin-top:38px;padding-top:22px;z-index:2;max-width:920px;
+  }
+  .cover-meta .m-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);margin-bottom:6px;}
+  .cover-meta .m-val{font-size:15px;color:var(--white);font-weight:bold;line-height:1.35;}
+  .cover-foot{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    font-size:11px;letter-spacing:1px;color:var(--stone);z-index:2;
+  }
+  .cover-foot .scroll{color:var(--lt-blue);font-weight:bold;letter-spacing:2px;text-transform:uppercase;}
+
+  /* ===================== READING LAYOUT ===================== */
+  .layout{display:flex;align-items:flex-start;max-width:1320px;margin:0 auto;}
+  .toc{
+    width:var(--sidebar-w);flex:0 0 var(--sidebar-w);
+    position:sticky;top:0;align-self:flex-start;
+    height:100vh;overflow-y:auto;
+    background:var(--deep-blue);color:var(--white);
+    padding:30px 26px 40px;
+  }
+  .toc-brand{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--lt-blue);font-weight:bold;margin-bottom:4px;}
+  .toc-vol{font-size:12px;color:var(--stone);margin-bottom:24px;}
+  .toc-part{
+    font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--lt-blue);
+    font-weight:bold;margin:22px 0 8px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);
+  }
+  .toc-part:first-of-type{border-top:none;padding-top:0;}
+  .toc a{
+    display:block;color:rgba(255,255,255,.78);font-size:13px;
+    padding:5px 0 5px 22px;position:relative;line-height:1.35;
+  }
+  .toc a:hover{color:var(--white);text-decoration:none;}
+  .toc a .num{position:absolute;left:0;color:var(--slate);font-size:11px;font-weight:bold;}
+  .toc a.special{color:var(--stone);padding-left:0;}
+
+  main{flex:1 1 auto;min-width:0;padding:64px 72px 120px;}
+  .read{max-width:var(--maxread);}
+
+  /* ===================== SECTIONS ===================== */
+  section{padding-top:30px;margin-bottom:36px;scroll-margin-top:20px;}
+  .eyebrow{
+    font-size:11px;letter-spacing:3px;text-transform:uppercase;
+    color:var(--blue);font-weight:bold;margin-bottom:6px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow .e-num{
+    background:var(--blue);color:#fff;border-radius:3px;
+    padding:2px 8px;font-size:11px;letter-spacing:1px;
+  }
+  h2.sec{font-size:30px;font-weight:bold;color:var(--pavement);margin:0 0 14px;line-height:1.15;letter-spacing:-.4px;}
+  h3{font-size:18px;font-weight:bold;color:var(--pavement);margin:30px 0 8px;}
+  h4{font-size:14px;font-weight:bold;color:var(--blue);text-transform:uppercase;letter-spacing:1px;margin:22px 0 6px;}
+  p{margin:0 0 14px;}
+  .lead-p{font-size:18px;color:var(--slate);line-height:1.6;margin-bottom:18px;}
+  strong{color:var(--pavement);}
+  ul,ol{margin:0 0 16px;padding-left:22px;}
+  li{margin-bottom:7px;}
+  .part-divider{
+    border-top:2px solid var(--rule);margin:54px 0 0;padding-top:8px;
+    font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:bold;
+  }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout{
+    border-left:4px solid var(--blue);
+    background:var(--tint-blue);
+    padding:16px 20px;margin:20px 0;border-radius:0 4px 4px 0;
+  }
+  .callout .c-tag{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;color:var(--blue);margin-bottom:4px;}
+  .callout p:last-child{margin-bottom:0;}
+  .callout.def{border-color:var(--blue);background:var(--tint-blue);}
+  .callout.def .c-tag{color:var(--blue);}
+  .callout.watch{border-color:var(--med);background:#FDF3E8;}
+  .callout.watch .c-tag{color:var(--med);}
+  .callout.take{border-color:var(--low);background:#EAF6EE;}
+  .callout.take .c-tag{color:var(--low);}
+
+  /* ===================== SCENARIO / CONCEPT CARDS ===================== */
+  .cards{display:grid;gap:14px;margin:20px 0;}
+  .cards.c2{grid-template-columns:1fr 1fr;}
+  .cards.c3{grid-template-columns:repeat(3,1fr);}
+  .card{
+    border:1px solid var(--rule);border-radius:6px;background:#fff;
+    padding:18px 18px 16px;position:relative;overflow:hidden;
+  }
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--lt-blue);}
+  .card.bar-blue::before{background:var(--blue);}
+  .card.bar-slate::before{background:var(--slate);}
+  .card.bar-high::before{background:var(--high);}
+  .card.bar-med::before{background:var(--med);}
+  .card.bar-low::before{background:var(--low);}
+  .card h5{font-size:15px;font-weight:bold;color:var(--pavement);margin:0 0 6px;}
+  .card .k{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--slate);font-weight:bold;}
+  .card p{font-size:13.5px;color:var(--slate);margin:6px 0 0;line-height:1.55;}
+  .pill{display:inline-block;font-size:10px;letter-spacing:1px;font-weight:bold;text-transform:uppercase;
+    padding:2px 8px;border-radius:10px;background:var(--tint-blue);color:var(--blue);margin-bottom:8px;}
+
+  /* ===================== TRACE / WORKED EXAMPLE ===================== */
+  .trace{
+    background:var(--deep-blue);color:#E8EDF2;border-radius:8px;
+    padding:22px 24px;margin:22px 0;font-size:13.5px;line-height:1.6;
+  }
+  .trace .t-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--lt-blue);font-weight:bold;margin-bottom:14px;}
+  .trace .step{display:grid;grid-template-columns:88px 1fr;gap:14px;padding:9px 0;border-top:1px solid rgba(255,255,255,.1);}
+  .trace .step:first-of-type{border-top:none;}
+  .trace .s-lbl{font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:bold;color:var(--lt-blue);padding-top:2px;}
+  .trace .s-body{color:#D6DEE6;}
+  .trace .s-body code{color:#9FD3F2;background:rgba(255,255,255,.06);padding:1px 5px;border-radius:3px;font-family:Consolas,Monaco,monospace;font-size:12.5px;}
+  .trace .think{color:var(--stone);font-style:italic;}
+
+  /* ===================== TABLES ===================== */
+  table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;}
+  thead th{
+    background:var(--pavement);color:#fff;text-align:left;
+    padding:9px 12px;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:bold;
+  }
+  tbody td{padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--slate);}
+  tbody tr:nth-child(even){background:var(--tint-stone);}
+  tbody td strong{color:var(--pavement);}
+
+  /* ===================== DIAGRAM FRAME ===================== */
+  .figure{margin:26px 0;border:1px solid var(--rule);border-radius:8px;padding:24px;background:#fff;}
+  .figure svg{display:block;width:100%;height:auto;}
+  .figure .cap{font-size:12px;color:var(--slate);margin-top:14px;text-align:center;font-style:italic;}
+
+  /* ===================== GLOSSARY ===================== */
+  .gloss dt{font-weight:bold;color:var(--pavement);margin-top:14px;font-size:14.5px;}
+  .gloss dd{margin:2px 0 0;color:var(--slate);font-size:13.5px;}
+
+  /* ===================== REFERENCES ===================== */
+  .refs{counter-reset:r;list-style:none;padding:0;}
+  .refs li{counter-increment:r;padding:10px 0 10px 40px;position:relative;border-bottom:1px solid var(--rule);font-size:13.5px;color:var(--slate);}
+  .refs li::before{content:counter(r);position:absolute;left:0;top:10px;background:var(--blue);color:#fff;
+    width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;}
+  .refs .r-src{color:var(--pavement);font-weight:bold;}
+  .prov{font-size:12.5px;color:var(--slate);background:var(--tint-stone);border:1px dashed var(--stone);border-radius:6px;padding:14px 18px;margin:18px 0;}
+
+  /* ===================== RESPONSIVE ===================== */
+  @media(max-width:1080px){
+    .toc{display:none;}
+    main{padding:48px 36px 90px;}
+    .cover{padding:48px 36px 32px;}
+    .cover-vol{font-size:96px;}
+    h1.cover-title{font-size:44px;}
+    .cards.c2,.cards.c3{grid-template-columns:1fr;}
+    .cover-meta{grid-template-columns:repeat(2,1fr);gap:18px;}
+  }
+  @media print{
+    .toc{display:none;}
+    .cover{page-break-after:always;}
+    .trace{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <div class="cover-top"><span class="bar"></span>Infosys Consulting&nbsp;·&nbsp;Agentic AI Series</div>
+  <div class="cover-main">
+    <div class="cover-vol">09<span>/ 15</span></div>
+    <h1 class="cover-title">Evaluation, Testing &amp; <em>Observability</em></h1>
+    <div class="cover-sub">How you know an agent works — and keep knowing it once it's live.</div>
+    <p class="cover-lead">Reliability is a property of the system, not the model (Vol. 01 §9). This volume makes it operational: what 'good' means for a probabilistic agent, how to build evals and golden datasets, LLM-as-judge, trajectory evaluation, production observability, and eval-driven development as an engineering practice.</p>
+  </div>
+  <div class="cover-meta">
+    <div><div class="m-lbl">Volume</div><div class="m-val">09 of 15<br>Architecting Agents</div></div>
+    <div><div class="m-lbl">Domain</div><div class="m-val">AI &amp; Automation</div></div>
+    <div><div class="m-lbl">Audience</div><div class="m-val">Practitioners &amp; Leaders</div></div>
+    <div><div class="m-lbl">Version</div><div class="m-val">1.0 · 2026</div></div>
+    <div><div class="m-lbl">Reading Time</div><div class="m-val">~45 minutes</div></div>
+  </div>
+  <div class="cover-foot">
+    <div>Infosys Consulting&nbsp;·&nbsp;AI &amp; Automation Practice&nbsp;·&nbsp;Internal Learning Asset</div>
+    <div class="scroll">Scroll to begin ↓</div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <div class="toc-brand">Agentic AI Series</div>
+    <div class="toc-vol">Vol. 09 — Evaluation</div>
+    <div class="toc-part">Part A · Why it's hard</div>
+    <a href="#s1"><span class="num">01</span>The reliability problem</a>
+    <a href="#s2"><span class="num">02</span>What &quot;good&quot; means</a>
+    <div class="toc-part">Part B · Measuring</div>
+    <a href="#s3"><span class="num">03</span>Evals &amp; golden datasets</a>
+    <a href="#s4"><span class="num">04</span>LLM-as-judge</a>
+    <a href="#s5"><span class="num">05</span>Trajectory &amp; component evals</a>
+    <div class="toc-part">Part C · Operating</div>
+    <a href="#s6"><span class="num">06</span>Observability &amp; tracing</a>
+    <a href="#s7"><span class="num">07</span>Monitoring &amp; drift</a>
+    <a href="#s8"><span class="num">08</span>Eval-driven development</a>
+    <a href="#s9"><span class="num">09</span>Evaluation in regulated FS</a>
+
+    <div class="toc-part">Reference</div>
+    <a href="#glossary" class="special">Glossary</a>
+    <a href="#refs" class="special">References &amp; reading order</a>
+  </nav>
+  <main>
+  <div class="read">
+  <section id="s1"><div class="eyebrow"><span class="e-num">01</span>Part A · Why it's hard</div>
+  <h2 class="sec">The reliability problem</h2>
+  <p class="lead-p">Conventional software is deterministic: the same input gives the same output, and a passing test stays passed. Agents are neither. They are probabilistic, multi-step, and open-ended — which makes "does it work?" a genuinely hard question and evaluation the discipline that answers it.</p>
+  <p>Two properties from earlier volumes make this acute. <strong>Non-determinism</strong> (Vol. 02 §8): the same prompt can yield different outputs, so one successful run proves nothing about the next. <strong>Compounding</strong> (Vol. 01 §9): across a long loop, small errors accumulate, so a system that's 95% reliable per step can be far less reliable end-to-end. Together they mean you cannot eyeball your way to confidence — you have to measure, repeatedly, against many cases.</p>
+  <div class="callout def"><div class="c-tag">The mindset shift</div><p>Stop asking "did it work?" (a single run) and start asking "what fraction of representative cases does it handle, and is that fraction holding or drifting?" Reliability is a measured rate, not a binary — and a property of the system you build, not the model you chose.</p></div></section>
+
+  <section id="s2"><div class="eyebrow"><span class="e-num">02</span>Part A · Why it's hard</div>
+  <h2 class="sec">What "good" means</h2>
+  <p class="lead-p">Before you can measure an agent, you have to define success — and for open-ended tasks that is harder than it sounds. There is rarely one right answer, so you evaluate along several dimensions.</p>
+  <table><thead><tr><th style="width:180px">Dimension</th><th>The question</th></tr></thead><tbody>
+  <tr><td><strong>Task success</strong></td><td>Did it achieve the goal — close the case correctly, extract the right fields, reach the right disposition?</td></tr>
+  <tr><td><strong>Groundedness</strong></td><td>Were claims supported by real evidence, or fabricated (Vol. 02 §7, Vol. 05 §8)?</td></tr>
+  <tr><td><strong>Trajectory quality</strong></td><td>Did it take a sensible path — the right tools, no wasted or destructive steps?</td></tr>
+  <tr><td><strong>Safety &amp; compliance</strong></td><td>Did it stay within policy, refuse what it should, and escalate when required?</td></tr>
+  <tr><td><strong>Cost &amp; latency</strong></td><td>Did it reach the outcome efficiently, within budget?</td></tr></tbody></table>
+  <p>Different uses weight these differently — a customer-facing agent prizes safety and groundedness; a back-office one may prize cost and throughput. The act of defining what "good" means for <em>your</em> agent, explicitly, is half the value of evaluation.</p></section>
+
+  <div class="part-divider">Part B · Measuring</div>
+
+  <section id="s3"><div class="eyebrow"><span class="e-num">03</span>Part B · Measuring</div>
+  <h2 class="sec">Evals &amp; golden datasets</h2>
+  <p class="lead-p">An <strong>eval</strong> is a repeatable test of an agent against a set of cases with known-good outcomes. A <strong>golden dataset</strong> is that curated set of representative inputs and their expected results. Together they turn "seems fine" into a number you can track across every change.</p>
+  <p>Building the golden set is the work that matters. It should span the real range of inputs — common cases, the tricky edge cases you care about, and known past failures — so the score reflects reality, not a flattering sample. Each change to the agent (a new prompt, a swapped model, a reworked tool) is then run against the whole set, and you watch whether the score improves or regresses. This is exactly the prompt-iteration discipline of Vol. 03 §7, scaled to the whole agent.</p>
+  <div class="callout take"><div class="c-tag">The payoff</div><p>A golden dataset is what lets you change an agent with confidence. Without it, every "improvement" is a gamble — you fix one case and silently break three. With it, you ship changes the way good software teams ship code: tested against a known baseline.</p></div></section>
+
+  <section id="s4"><div class="eyebrow"><span class="e-num">04</span>Part B · Measuring</div>
+  <h2 class="sec">LLM-as-judge</h2>
+  <p class="lead-p">Many agent outputs — a narrative, an analysis, a recommendation — have no single correct string to match against. <strong>LLM-as-judge</strong> uses a model to score them against a rubric, making open-ended quality measurable at scale.</p>
+  <p>You give a judge model the input, the agent's output, and clear scoring criteria ("is every claim supported by the cited evidence? is the disposition justified? 1–5"), and it produces a score and rationale. This scales human-like judgement across thousands of cases that no team could grade by hand. It is powerful and now standard — but it is itself a model, with all the same fallibility.</p>
+  <div class="callout watch"><div class="c-tag">Watch out</div><p>The judge can be wrong, biased toward verbosity or its own style, and gameable. Calibrate it against human judgement on a sample, use precise rubrics, and reserve human review for the highest-stakes evaluations. An LLM judge is a scalable approximation of human grading, not a replacement for it.</p></div></section>
+
+  <section id="s5"><div class="eyebrow"><span class="e-num">05</span>Part B · Measuring</div>
+  <h2 class="sec">Trajectory &amp; component evals</h2>
+  <p class="lead-p">For agents, the final answer is only half the story. The <em>path</em> matters too: an agent can reach a right answer through a reckless or lucky route that will fail next time. So you evaluate both outcomes and trajectories, and you evaluate components in isolation.</p>
+  <p><strong>Trajectory evaluation</strong> checks the sequence of steps — did it choose appropriate tools, avoid wasteful loops, take no destructive action, escalate when it should? <strong>Component evaluation</strong> tests pieces separately: retrieval quality apart from generation (Vol. 05 §8), each tool's reliability, a sub-agent on its own. Isolating components tells you <em>where</em> a system fails, which whole-system scores alone can't: a poor end result might be a retrieval problem, a reasoning problem, or a tool problem, and you fix each differently.</p>
+  <div class="callout def"><div class="c-tag">Why both</div><p>Outcome evals tell you <em>whether</em> the agent is good; trajectory and component evals tell you <em>why</em> it's good or bad and what to fix. Mature teams run all three, because debugging a probabilistic multi-step system needs the diagnostic resolution.</p></div></section>
+
+  <div class="part-divider">Part C · Operating</div>
+
+  <section id="s6"><div class="eyebrow"><span class="e-num">06</span>Part C · Operating</div>
+  <h2 class="sec">Observability &amp; tracing</h2>
+  <p class="lead-p">You cannot debug, audit, or trust what you cannot see. <strong>Observability</strong> is the instrumentation that records what an agent actually did — every reasoning step, tool call, result, and handoff — so a run can be understood and replayed.</p>
+  <div class="figure"><svg viewBox="0 0 720 150" role="img" aria-label="The eval and observability loop">
+  <defs><marker id="e" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L6,3 L0,6 Z" fill="#007CC3"/></marker></defs>
+  <g font-family="Arial" text-anchor="middle">
+  <rect x="20" y="50" width="120" height="46" rx="8" fill="#182534"/><text x="80" y="78" font-size="12" font-weight="bold" fill="#fff">Build / change</text>
+  <rect x="190" y="50" width="120" height="46" rx="8" fill="#404040"/><text x="250" y="71" font-size="11.5" fill="#fff">Eval vs.</text><text x="250" y="86" font-size="11.5" fill="#fff">golden set</text>
+  <rect x="360" y="50" width="120" height="46" rx="8" fill="#007CC3"/><text x="420" y="78" font-size="12" font-weight="bold" fill="#fff">Deploy</text>
+  <rect x="530" y="50" width="170" height="46" rx="8" fill="#404040"/><text x="615" y="71" font-size="11.5" fill="#fff">Observe &amp; monitor</text><text x="615" y="86" font-size="10.5" fill="#D6DCEA">trace · log · alert</text>
+  <line x1="140" y1="73" x2="186" y2="73" stroke="#007CC3" stroke-width="2" marker-end="url(#e)"/>
+  <line x1="310" y1="73" x2="356" y2="73" stroke="#007CC3" stroke-width="2" marker-end="url(#e)"/>
+  <line x1="480" y1="73" x2="526" y2="73" stroke="#007CC3" stroke-width="2" marker-end="url(#e)"/>
+  <path d="M615,96 Q615,135 320,135 Q80,135 80,98" fill="none" stroke="#A7A9AC" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#e)"/>
+  <text x="350" y="128" font-size="10.5" fill="#6D6E71" font-style="italic">Production failures become new golden-set cases — the loop closes.</text>
+  </g></svg><div class="cap">Evaluation and observability form one loop: test before deploy, observe in production, feed failures back.</div></div>
+  <p>A good <strong>trace</strong> captures the full story of a run in order — inputs, each model decision, each tool call and its result, timing, and cost. When something goes wrong, you replay the trace and see exactly where. For agents this is not just an engineering aid; it is the raw material of the audit trail a regulated deployment requires (Vols. 11–12), so observability and compliance are built by the same instrumentation.</p></section>
+
+  <section id="s7"><div class="eyebrow"><span class="e-num">07</span>Part C · Operating</div>
+  <h2 class="sec">Monitoring &amp; drift</h2>
+  <p class="lead-p">An agent that passed its evals at launch will not stay good on its own. The world changes around it, and quality drifts — so production monitoring is a permanent obligation, not a launch checklist.</p>
+  <p>Several things shift over time. Inputs change as customer behaviour and fraud patterns evolve (<em>data drift</em>), so cases the agent never saw start arriving. Underlying models get updated, subtly altering behaviour. New edge cases and failure modes surface only at scale. Monitoring watches live quality signals — success rates, escalation rates, cost, latency, user corrections — and alerts when they move, so degradation is caught early rather than discovered in an incident.</p>
+  <div class="callout watch"><div class="c-tag">Watch out</div><p>In financial crime, drift is not just a quality issue but a coverage risk: an agent tuned to last year's typologies may quietly miss this year's. Monitoring must track whether the agent still catches what it should, and the golden dataset must be refreshed as new patterns emerge — an evaluation set is a living asset.</p></div></section>
+
+  <section id="s8"><div class="eyebrow"><span class="e-num">08</span>Part C · Operating</div>
+  <h2 class="sec">Eval-driven development</h2>
+  <p class="lead-p">The mature practice ties it all together: <strong>eval-driven development</strong> treats evaluation the way good software treats automated testing. The agent isn't "done" when it demos — it's done when it passes its evals, and it stays done only while it keeps passing them.</p>
+  <p>In practice this means writing evals alongside (or before) building, running them on every change, gating deployment on the score, and feeding every production failure back into the golden set so the same mistake can't recur unnoticed. It reframes agent development from "prompt until the demo looks good" — how most pilots stall — into a measured engineering loop with a baseline you defend. This is the single biggest predictor of whether an agent reaches reliable production.</p>
+  <div class="callout take"><div class="c-tag">The throughline</div><p>Vol. 01 §9 named evaluation, observability, and guardrails as the three defences against unreliability. This volume operationalised the first two into a development discipline. Evaluation is not a phase; it is how you build and run agents you can trust.</p></div></section>
+
+  <section id="s9"><div class="eyebrow"><span class="e-num">09</span>Part C · Operating</div>
+  <h2 class="sec">Evaluation in regulated FS</h2>
+  <p class="lead-p">In financial services, evaluation and observability are not optional engineering hygiene — they are regulatory requirements wearing technical clothes. Model-risk regimes (Vol. 12) demand exactly what this volume describes.</p>
+  <p>The mapping is direct. <strong>Validation</strong> before deployment is an eval against a representative, documented dataset. <strong>Ongoing monitoring</strong> is drift detection and live quality signals. <strong>Auditability</strong> is the trace of every decision and the context behind it. <strong>Documentation</strong> is the record of what was tested, how it scored, and what changed. An institution that builds rigorous evaluation and observability is, largely, building its model-risk evidence at the same time — which is why these capabilities are foundational, not a later add-on, for any agent that touches a regulated decision.</p>
+  <div class="callout take"><div class="c-tag">Where this goes next</div><p>You can now prove an agent works and keep it working. <strong>Vol. 10 — Agent Security &amp; Adversarial Threats</strong> is the consolidated threat model every volume has deferred; then governance and regulation (Vols. 11–12) and the domain applications (Vols. 13–15).</p></div>
+  <div class="prov"><strong>Provenance note.</strong> Figures for agent evaluation practice and adoption in financial services are directional 2025–26 secondary-source estimates; verify against primaries before client use. Sourced detail in Vols. 13–14.</div></section>
+
+  <section id="glossary"><div class="eyebrow"><span class="e-num">★</span>Reference</div><h2 class="sec">Glossary</h2>
+  <dl class="gloss">
+  <dt>Data drift</dt><dd>Gradual change in the inputs an agent sees over time, degrading performance tuned to older patterns.</dd>
+  <dt>Eval</dt><dd>A repeatable test of an agent against cases with known-good outcomes.</dd>
+  <dt>Eval-driven development</dt><dd>Treating evaluation like automated testing: write evals, gate changes on them, feed failures back.</dd>
+  <dt>Golden dataset</dt><dd>A curated, representative set of inputs and expected outcomes used as the evaluation baseline.</dd>
+  <dt>Groundedness</dt><dd>The degree to which output is supported by real evidence rather than fabricated.</dd>
+  <dt>LLM-as-judge</dt><dd>Using a model to score open-ended outputs against a rubric, scaling human-like judgement.</dd>
+  <dt>Observability</dt><dd>Instrumentation that records what an agent did, enabling debugging, replay, and audit.</dd>
+  <dt>Trace</dt><dd>An ordered record of a single run — inputs, decisions, tool calls, results, timing, cost.</dd>
+  <dt>Trajectory evaluation</dt><dd>Assessing the path an agent took, not just its final output.</dd></dl></section>
+
+  <section id="refs"><div class="eyebrow"><span class="e-num">★</span>Reference</div><h2 class="sec">References &amp; reading order</h2>
+  <p class="lead-p">Suggested order: why it's hard (1–2), measuring (3–5), then operating (6–9).</p>
+  <ol class="refs">
+  <li><span class="r-src">Anthropic &amp; OpenAI — evaluation / "evals" documentation.</span> Practical eval design. <em>(§3–§5.)</em></li>
+  <li><span class="r-src">Zheng et al. — "Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena."</span> <em>(§4.)</em></li>
+  <li><span class="r-src">Liu et al. — "G-Eval: NLG Evaluation using GPT-4 with Better Human Alignment."</span> <em>(§4.)</em></li>
+  <li><span class="r-src">RAGAS — retrieval/groundedness evaluation framework.</span> <em>(§2, §5.)</em></li>
+  <li><span class="r-src">LangSmith / tracing-platform documentation.</span> Observability and tracing. <em>(§6.)</em></li>
+  <li><span class="r-src">NIST — AI RMF (Measure &amp; Manage functions).</span> <em>(§9.)</em></li>
+  <li><span class="r-src">US Federal Reserve / OCC — SR 11-7 (validation &amp; ongoing monitoring).</span> <em>(§7, §9.)</em></li></ol>
+  <div class="prov"><strong>Provenance reminder.</strong> FS figures are directional secondary-source estimates, deliberately not stated precisely; verify before reuse. Sourced detail in Vols. 13–14.</div></section>
+
+  </div></main></div>
+  <footer style="background:#182534;color:#A7A9AC;padding:26px 40px;font-size:12px;letter-spacing:1px;text-align:center;">Infosys Consulting&nbsp;·&nbsp;Agentic AI Series&nbsp;·&nbsp;Vol. 09 of 15 — Evaluation, Testing &amp; Observability&nbsp;·&nbsp;Internal Learning Asset · v1.0 (2026)</footer>
+  </body></html>
